@@ -1,0 +1,107 @@
+/**
+ * Backend server using Node.js, Express, and MySQL to handle API requests.
+ * Includes an API endpoint to add class details into the database.
+ */
+
+const express = require("express"); // Framework for building the web server.
+// const mysql = require("mysql2"); // MySQL client library for connecting to the database.
+const moment = require("moment"); // Library for date and time formatting.
+const cors = require("cors"); // Middleware to enable Cross-Origin Resource Sharing (CORS).
+const dotenv = require('dotenv');
+dotenv.config();
+
+const app = express(); // Initialize the Express application.
+
+// Enable CORS to allow requests from different origins.
+app.use(cors());
+
+// Middleware to parse JSON and URL-encoded data from requests.
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+/**
+ * Create a connection to the MySQL database.
+ * Update the credentials based on your database setup.
+ */
+const db = mysql.createConnection({
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
+    port: process.env.DB_PORT
+});
+
+// Connect to the MySQL database and handle any connection errors.
+db.connect(err => {
+    if (err) {
+        console.error("Database connection failed:", err);
+        throw err; // Terminate the process if connection fails.
+    }
+    console.log("MySQL Connected!");
+});
+
+/**
+ * POST API to add a class to the database.
+ * Endpoint: /api/add_class
+ * Expects a JSON body with the following fields:
+ * - courseCode: string
+ * - title: string
+ * - date: string (DD/MM/YYYY format)
+ * - timeStart: string (e.g., "3:00 PM")
+ * - timeEnd: string (e.g., "5:00 PM")
+ * - location: string
+ */
+app.post("/api/add_class", (req, res) => {
+    console.log("Received data:", req.body);
+
+    // Destructure and validate the request body.
+    const { courseCode, title, date, timeStart, timeEnd, location } = req.body;
+
+    if (!courseCode || !title || !date || !timeStart || !timeEnd || !location) {
+        // Respond with a 400 status code if any required fields are missing.
+        return res.status(400).send({
+            "Status_Code": 400,
+            "Message": "Missing required fields"
+        });
+    }
+
+    // Format the date and time for compatibility with MySQL.
+    const formattedDate = moment(date, "DD/MM/YYYY").format("YYYY-MM-DD");
+    const formattedTimeStart = moment(timeStart, "h:mm A").format("HH:mm:ss");
+    const formattedTimeEnd = moment(timeEnd, "h:mm A").format("HH:mm:ss");
+
+    // SQL query to insert class details into the "class" table.
+    const query = `
+        INSERT INTO class (courseCode, title, date, timeStart, timeEnd, classLocation)
+        VALUES (?, ?, ?, ?, ?, ?)
+    `;
+
+    const values = [courseCode, title, formattedDate, formattedTimeStart, formattedTimeEnd, location];
+
+    // Execute the SQL query and handle the result or errors.
+    db.query(query, values, (err, result) => {
+        if (err) {
+            console.error("Error inserting data:", err);
+            return res.status(500).send({
+                "Status_Code": 500,
+                "Message": "Failed to add class data",
+                "Error": err.message
+            });
+        }
+
+        console.log("Class added successfully:", result);
+
+        // Respond with a success message and the inserted ID.
+        res.status(200).send({
+            "Status_Code": 200,
+            "Message": "Class Data Is Added Successfully",
+            "Inserted_Id": result.insertId
+        });
+    });
+});
+
+// Start the server and listen on the specified port.
+const PORT = 3000;
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+});
