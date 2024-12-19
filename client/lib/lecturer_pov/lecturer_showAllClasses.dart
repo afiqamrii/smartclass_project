@@ -1,7 +1,7 @@
 // ignore: file_names
 import 'package:flutter/material.dart';
-import 'package:smartclass_fyp_2024/lecturer_pov/lecturer_createclass.dart';
-import 'package:smartclass_fyp_2024/services/api.dart';
+import '../lecturer_pov/lecturer_createclass.dart';
+import '../services/api.dart';
 import '../models/class_models.dart';
 
 class LectViewAllClass extends StatelessWidget {

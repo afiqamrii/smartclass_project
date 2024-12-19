@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:smartclass_fyp_2024/services/api.dart';
+import '../services/api.dart';
 import '../lecturer_pov/lecturer_showAllClasses.dart';
 import '../models/class_models.dart';
 
