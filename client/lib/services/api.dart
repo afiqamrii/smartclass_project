@@ -3,7 +3,7 @@
 import 'dart:convert'; // Provides JSON encoding and decoding functionality.
 import 'package:flutter/material.dart'; // Flutter framework for UI components.
 import 'package:http/http.dart' as http;
-import 'package:smartclass_fyp_2024/models/class_models.dart'; // HTTP package for making API requests.
+import '../models/class_models.dart'; // HTTP package for making API requests.
 
 /// A class to handle API interactions for the application.
 class Api {
