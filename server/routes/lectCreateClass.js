@@ -144,6 +144,39 @@ router.put("/updateclass/:id", async (req, res) => {
         });
     }
 });
+
+// DELETE API to delete a class from the database
+// Endpoint: /class/deleteclass
+router.delete("/deleteclass/:id", async (req, res) => {
+    try {
+        const id = req.params.id;
+
+        // SQL query to delete data
+        const query = `
+            DELETE FROM class
+            WHERE id = ?
+        `;
+
+        // Use the pool to execute the query
+        const [result] = await pool.query(query, [id]);
+
+        console.log("Class deleted successfully:", result);
+
+        res.status(200).send({
+            "Status_Code": 200,
+            "Message": "Class Data Is Deleted Successfully",
+            "Deleted_Id": id
+        });
+    } catch (err) {
+        console.error("Error deleting data:", err.message);
+
+        res.status(500).send({
+            "Status_Code": 500,
+            "Message": "Failed to delete class data",
+            "Error": err.message
+        });
+    }
+})
         
 
 
