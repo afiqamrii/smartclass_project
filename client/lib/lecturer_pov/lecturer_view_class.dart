@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:smartclass_fyp_2024/lecturer_pov/lecturer_update_class.dart';
 import '../models/class_models.dart';
+import '../services/api.dart';
 
 class LecturerViewClass extends StatelessWidget {
   final ClassModel classItem;
@@ -19,7 +20,13 @@ class LecturerViewClass extends StatelessWidget {
         ),
         centerTitle: true,
       ),
-      body: _topClassCard(context),
+      body: Column(
+        children: [
+          _topClassCard(context),
+          const SizedBox(height: 16),
+          _deleteButton(context),
+        ],
+      ),
     );
   }
 
@@ -157,5 +164,54 @@ class LecturerViewClass extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  Widget _deleteButton(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.black, // Background color
+        ),
+        onPressed: () async {
+          bool confirm = await _showConfirmationDialog(context);
+          if (confirm) {
+            await Api.deleteClass(Api.baseUrl, classItem.id);
+            Navigator.pop(context);
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Class deleted successfully')),
+            );
+          }
+        },
+        child: const Text(
+          'Delete Class',
+          style: TextStyle(color: Colors.white),
+        ),
+      ),
+    );
+  }
+
+  Future<bool> _showConfirmationDialog(BuildContext context) async {
+    return await showDialog<bool>(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: const Text('Confirm Delete'),
+              content:
+                  const Text('Are you sure you want to delete this class?'),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(false),
+                  child: const Text('Cancel'),
+                ),
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(true),
+                  child: const Text('Delete'),
+                ),
+              ],
+            );
+          },
+        ) ??
+        false;
   }
 }
