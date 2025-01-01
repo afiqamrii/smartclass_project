@@ -38,7 +38,7 @@ class _LectUpdateClassState extends State<LectUpdateClass> {
 
   @override
   void dispose() {
-    // Dispose of controllers to free up resources
+    // Release the resources used by the controllers
     _courseCodeController.dispose();
     _titleController.dispose();
     _dateController.dispose();

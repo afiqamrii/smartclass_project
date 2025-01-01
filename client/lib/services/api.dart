@@ -129,4 +129,26 @@ class Api {
       debugPrint("Error: $e");
     }
   }
+
+  //DELETE API
+  /// Sends a DELETE request to delete a class from the backend database.
+  /// [url] is the URL of the API endpoint to delete the class.
+  /// [id] is the ID of the class to be deleted.
+  static deleteClass(String url, int id) async {
+    try {
+      var uri = Uri.parse("${url}deleteclass/$id");
+      final res = await http.delete(uri);
+
+      if (res.statusCode == 200) {
+        var responseData = jsonDecode(res.body);
+        // ignore: avoid_print
+        print(responseData);
+      } else {
+        print("Failed to delete class: ${res.statusCode}");
+        print("Response: ${res.body}");
+      }
+    } catch (e) {
+      debugPrint("Error: $e");
+    }
+  }
 }
