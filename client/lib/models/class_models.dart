@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart'; // Add this package for date and time formatting
+import 'package:intl/intl.dart';
 
 class ClassModel {
+  final int id;
   final String courseCode;
   final String courseName;
   final String location;
@@ -10,6 +11,7 @@ class ClassModel {
   final String date;
 
   ClassModel({
+    required this.id,
     required this.courseCode,
     required this.courseName,
     required this.location,
@@ -18,21 +20,34 @@ class ClassModel {
     required this.date,
   });
 
-  /// Factory method to create a `ClassModel` from API JSON data
+  Map<String, dynamic> toJson() {
+    DateTime parsedDate = DateFormat('dd MMMM yyyy').parse(date);
+    String formattedDate = DateFormat('yyyy-MM-dd').format(parsedDate);
+
+    return {
+      'id': id,
+      'courseCode': courseCode,
+      'title': courseName,
+      'classLocation': location,
+      'timeStart': startTime,
+      'timeEnd': endTime,
+      'date': formattedDate,
+    };
+  }
+
   factory ClassModel.fromJson(Map<String, dynamic> json) {
-    // Parse and format the date
     DateTime parsedDate = DateTime.parse(json['date']);
     String formattedDate = DateFormat('dd MMMM yyyy').format(parsedDate);
 
-    // Parse and format start and end times
     TimeOfDay startTime = _parseTime(json['timeStart']);
     TimeOfDay endTime = _parseTime(json['timeEnd']);
     String formattedStartTime = _formatTime(startTime);
     String formattedEndTime = _formatTime(endTime);
 
     return ClassModel(
+      id: json['id'],
       courseCode: json['courseCode'],
-      courseName: json['title'], // Map `title` to `courseName`
+      courseName: json['title'],
       location: json['classLocation'] ?? "Not Specified",
       startTime: formattedStartTime,
       endTime: formattedEndTime,
@@ -40,85 +55,15 @@ class ClassModel {
     );
   }
 
-  /// Converts the raw time string to a `TimeOfDay`
   static TimeOfDay _parseTime(String time) {
     final parts = time.split(":");
     return TimeOfDay(hour: int.parse(parts[0]), minute: int.parse(parts[1]));
   }
 
-  /// Formats a `TimeOfDay` to a 12-hour string with "a.m." or "p.m."
   static String _formatTime(TimeOfDay time) {
     final now = DateTime.now();
-    final formattedTime = DateTime(
-      now.year,
-      now.month,
-      now.day,
-      time.hour,
-      time.minute,
-    );
-    return DateFormat('h:mm a').format(formattedTime).replaceAll('.', '');
+    final dt = DateTime(now.year, now.month, now.day, time.hour, time.minute);
+    final format = DateFormat.jm(); // '6:00 AM'
+    return format.format(dt);
   }
 }
-
-
-
-
-
-
-
-// // import 'package:flutter/material.dart';
-
-// class ClassModel {
-//   final String courseCode;
-//   final String courseName;
-//   final String location;
-//   final String startTime;
-//   final String endTime;
-//   final String date;
-
-//   ClassModel({
-//     required this.courseCode,
-//     required this.courseName,
-//     required this.location,
-//     required this.startTime,
-//     required this.endTime,
-//     required this.date,
-//   });
-
-//   static List<ClassModel> getClasses() {
-//     return [
-//       ClassModel(
-//         courseCode: "CSE3023",
-//         courseName: "Object Oriented Programming (K1)",
-//         location: "B12-03",
-//         startTime: "11 a.m.",
-//         endTime: "1 p.m.",
-//         date: "21 June 2024",
-//       ),
-//       ClassModel(
-//         courseCode: "CSF3253",
-//         courseName: "Intelligent Systems (K2)",
-//         location: "B12-03",
-//         startTime: "4 p.m.",
-//         endTime: "6 p.m.",
-//         date: "21 June 2024",
-//       ),
-//       ClassModel(
-//         courseCode: "CSF3253",
-//         courseName: "Intelligent Systems (K2)",
-//         location: "B12-03",
-//         startTime: "4 p.m.",
-//         endTime: "6 p.m.",
-//         date: "21 June 2024",
-//       ),
-//       ClassModel(
-//         courseCode: "CSF3253",
-//         courseName: "Intelligent Systems (K2)",
-//         location: "B12-03",
-//         startTime: "4 p.m.",
-//         endTime: "6 p.m.",
-//         date: "21 June 2024",
-//       ),
-//     ];
-//   }
-// }

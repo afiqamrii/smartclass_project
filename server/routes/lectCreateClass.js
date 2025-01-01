@@ -91,59 +91,52 @@ router.get("/viewclass", async (req, res) => {
 // Endpoint: /class/updateclass
 router.put("/updateclass/:id", async (req, res) => {
     try {
-        console.log("Received data:", req.body);
-// Destructure and validate the request body
-    const { courseCode, title, date, timeStart, timeEnd, classLocation } = req.body;
-
-        const id = req.params.id;
-
-        // if (!id || !courseCode || !title || !date || !timeStart || !timeEnd || !classLocation) {
-        //     console.error("Validation error: Missing required fields");
-        //     return res.status(400).send({
-        //         "Status_Code": 400,
-        //         "Message": "Missing required fields",
-        //         "Required_Fields": [ "id", "courseCode", "title", "date", "timeStart", "timeEnd", "classLocation"]
-        //     });
-        // }
-
-        // Format the date and time for compatibility with MySQL
-        // const formattedDate = moment(date, "DD/MM/YYYY").format("DD/MM/YYYY");
-        const formattedTimeStart = moment(timeStart, "HH:mm:ss").format("HH:mm:ss");
-        const formattedTimeEnd = moment(timeEnd, "HH:mm:ss").format("HH:mm:ss");
-
-        // SQL query to update data
-        const query = `
-            UPDATE class
-            SET courseCode = ?, title = ?, date = ?, timeStart = ?, timeEnd = ?, classLocation = ?
-            WHERE id = ?
-        `;
-
-        const values = [courseCode, title, date, formattedTimeStart, formattedTimeEnd, classLocation, id];
-
-        // Use the pool to execute the query
-        const [result] = await pool.query(query, values);
-
-        console.log("Class updated successfully:", result);
-
-        res.status(200).send({
-            "Status_Code": 200,
-            "Message": "Class Data Is Updated Successfully",
-            "Updated_Id": id
-        });
+      console.log("Received data:", req.body);
+      const { courseCode, title, date, timeStart, timeEnd, classLocation } = req.body;
+      const id = req.params.id;
+  
+    //   if (!id || !courseCode || !title || !date || !timeStart || !timeEnd || !classLocation) {
+    //     return res.status(400).send({
+    //       "Status_Code": 400,
+    //       "Message": "Missing required fields"
+    //     });
+    //   }
+  
+      const formattedDate = moment(date, "YYYY-MM-DD").format("YYYY-MM-DD");
+      const formattedTimeStart = moment(timeStart, "HH:mm:ss").format("HH:mm:ss");
+      const formattedTimeEnd = moment(timeEnd, "HH:mm:ss").format("HH:mm:ss");
+  
+      const query = `
+        UPDATE class
+        SET courseCode = ?, title = ?, date = ?, timeStart = ?, timeEnd = ?, classLocation = ?
+        WHERE id = ?
+      `;
+  
+      const values = [courseCode, title, formattedDate, formattedTimeStart, formattedTimeEnd, classLocation, id];
+  
+      const [result] = await pool.query(query, values);
+  
+      console.log("Class updated successfully:", result);
+  
+      res.status(200).send({
+        "Status_Code": 200,
+        "Message": "Class Data Is Updated Successfully",
+        "Updated_Id": id
+      });
     } catch (err) {
-        console.error("Error updating data:", err.message);
-        console.error("Error stack trace:", err.stack);
-
-        res.status(500).send({
-            "Status_Code": 500,
-            "Message": "Failed to update class data",
-            "Error": {
-                "Message": err.message,
-                "Stack": err.stack
-            }
-        });
+      console.error("Error updating data:", err.message);
+      console.error("Error stack trace:", err.stack);
+  
+      res.status(500).send({
+        "Status_Code": 500,
+        "Message": "Failed to update class data",
+        "Error": {
+          "Message": err.message,
+          "Stack": err.stack
+        }
+      });
     }
-});
+  });
 
 // DELETE API to delete a class from the database
 // Endpoint: /class/deleteclass
