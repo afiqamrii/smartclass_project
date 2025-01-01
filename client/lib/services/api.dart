@@ -89,4 +89,44 @@ class Api {
 
     return classes;
   }
+
+  //PUT API
+  /// Sends a PUT request to update a class in the backend database.
+  /// [url] is the URL of the API endpoint to update the class.
+  /// [data] is the class data to be updated.
+  /// Example:
+  /// ```
+  /// {
+  ///   'id': 1,
+  ///   'courseCode': 'CS101',
+  ///   'title': 'Introduction to Programming',
+  ///   'date': '11/12/2024',
+  ///   'timeStart': '3:00 PM',
+  ///   'timeEnd': '5:00 PM',
+  ///   'classLocation': 'Room 101'
+  /// }
+  /// ```
+  static updateClass(String url, ClassModel data) async {
+    try {
+      var uri = Uri.parse("${url}updateclass/${data.id}");
+      final res = await http.put(
+        uri,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode(data.toJson()),
+      );
+
+      if (res.statusCode == 200) {
+        var responseData = jsonDecode(res.body);
+        // ignore: avoid_print
+        print(responseData);
+      } else {
+        print("Failed to update class: ${res.statusCode}");
+        print("Response: ${res.body}");
+      }
+    } catch (e) {
+      debugPrint("Error: $e");
+    }
+  }
 }
