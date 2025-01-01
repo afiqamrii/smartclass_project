@@ -1,5 +1,6 @@
 // ignore: file_names
 import 'package:flutter/material.dart';
+import 'package:smartclass_fyp_2024/lecturer_pov/lecturer_view_class.dart';
 import '../lecturer_pov/lecturer_createclass.dart';
 import '../services/api.dart';
 import '../models/class_models.dart';
@@ -123,7 +124,13 @@ class LectViewAllClass extends StatelessWidget {
                                 ),
                                 GestureDetector(
                                   onTap: () {
-                                    // Handle "View All" action here
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => LecturerViewClass(
+                                            classItem: classItem),
+                                      ),
+                                    );
                                   },
                                   child: const Text(
                                     "View all >",
