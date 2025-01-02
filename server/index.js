@@ -15,6 +15,7 @@ const express = require("express");
 const cors = require("cors");
 const pool = require("./data/database");
 const lectCreateClassRoutres = require("./routes/lectCreateClass");
+const generateTranscriptionTextRoutes = require("./routes/saveTranscriptionText");
 const path = require("path");
 
 // Initialize the Express application.
@@ -34,4 +35,9 @@ app.listen(PORT, "127.0.0.1", () => {
 });
 
 //Routes
+
+//Create a new class
 app.use("/class", lectCreateClassRoutres);
+
+//Save transcription text
+app.use("/classrecording", generateTranscriptionTextRoutes);
