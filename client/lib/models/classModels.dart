@@ -27,7 +27,7 @@ class ClasTestModel {
     classes.add(ClasTestModel(
       id: 1,
       courseCode: 'CSE201',
-      courseName: 'Data Structures and Algorithms',
+      courseName: 'Artificial Intelligence',
       location: 'Room 202',
       startTime: '8:00 AM',
       endTime: '9:30 AM',
