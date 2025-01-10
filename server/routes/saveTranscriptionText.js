@@ -60,7 +60,7 @@ router.get("/gettranscriptiontext", async (req, res) => {
     try {
         // SQL query to retrieve data
         const query = `
-            SELECT (transcriptionText) FROM ClassRecording where recordingId = 1
+            SELECT (transcriptionText) FROM ClassRecording where recordingId = 11
         `;
 
         // Use the pool to execute the query
@@ -80,7 +80,8 @@ router.get("/gettranscriptiontext", async (req, res) => {
             "Error": err.message
         });
     }   
-})
+});
+
 
 
 
