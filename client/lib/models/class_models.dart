@@ -55,11 +55,13 @@ class ClassModel {
     );
   }
 
+  // Change time format
   static TimeOfDay _parseTime(String time) {
     final parts = time.split(":");
     return TimeOfDay(hour: int.parse(parts[0]), minute: int.parse(parts[1]));
   }
 
+  // Change time format
   static String _formatTime(TimeOfDay time) {
     final now = DateTime.now();
     final dt = DateTime(now.year, now.month, now.day, time.hour, time.minute);

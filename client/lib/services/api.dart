@@ -2,7 +2,9 @@
 
 import 'dart:convert'; // Provides JSON encoding and decoding functionality.
 import 'package:flutter/material.dart'; // Flutter framework for UI components.
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
+import 'package:http/http.dart';
 import '../models/class_models.dart'; // HTTP package for making API requests.
 
 /// A class to handle API interactions for the application.
@@ -10,6 +12,49 @@ class Api {
   /// The base URL of the backend server's API.
   /// Replace the URL with your actual backend server address.
   static const baseUrl = "http://10.0.2.2:3000/class/";
+
+  //GET API
+  /// Sends a GET request to retrieve data from the backend database.
+  ///
+  /// [url] is the URL of the API endpoint to retrieve data from.
+  /// Example: "http://10.0.2.2:3000/class/"
+  static Future<List<ClassModel>> getClassData(String url) async {
+    List<ClassModel> classes = [];
+    var uri = Uri.parse("${url}viewclass");
+
+    try {
+      final res = await http.get(uri);
+      if (res.statusCode == 200) {
+        var data = jsonDecode(res.body); // Parse JSON response
+        if (data['Data'] != null) {
+          classes = (data['Data'] as List)
+              .map((value) => ClassModel.fromJson(value))
+              .toList();
+        }
+      } else {
+        print("Failed to fetch data: ${res.statusCode}");
+        print("Response: ${res.body}");
+      }
+    } catch (e) {
+      debugPrint("Error: $e");
+    }
+
+    return classes;
+  }
+
+  Future<List<ClassModel>> getClasses() async {
+    Response response = await get(Uri.parse("${baseUrl}viewclass"));
+
+    //Check whether the response is successful or not.
+    if (response.statusCode == 200) {
+      final List result = jsonDecode(response.body)['Data'];
+      //Use user model to return data as a LIST
+      return result.map(((e) => ClassModel.fromJson(e))).toList();
+      //Show the error message if the response is not successful.
+    } else {
+      throw Exception(response.reasonPhrase);
+    }
+  }
 
   //POST API
   /// Sends a POST request to add a class to the backend database.
@@ -59,35 +104,6 @@ class Api {
       // Print any errors encountered during the API request.
       debugPrint("Error: $e");
     }
-  }
-
-  //GET API
-  /// Sends a GET request to retrieve data from the backend database.
-  ///
-  /// [url] is the URL of the API endpoint to retrieve data from.
-  /// Example: "http://10.0.2.2:3000/class/"
-  static Future<List<ClassModel>> getClassData(String url) async {
-    List<ClassModel> classes = [];
-    var uri = Uri.parse("${url}viewclass");
-
-    try {
-      final res = await http.get(uri);
-      if (res.statusCode == 200) {
-        var data = jsonDecode(res.body); // Parse JSON response
-        if (data['Data'] != null) {
-          classes = (data['Data'] as List)
-              .map((value) => ClassModel.fromJson(value))
-              .toList();
-        }
-      } else {
-        print("Failed to fetch data: ${res.statusCode}");
-        print("Response: ${res.body}");
-      }
-    } catch (e) {
-      debugPrint("Error: $e");
-    }
-
-    return classes;
   }
 
   //PUT API
@@ -152,3 +168,7 @@ class Api {
     }
   }
 }
+
+//Create a Provider Object
+final classProvider = Provider<Api>((ref) =>
+    Api()); //Entry point of the API macam share state , if there is change in UI . It will update the UI.

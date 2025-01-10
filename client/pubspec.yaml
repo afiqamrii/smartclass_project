@@ -38,6 +38,10 @@ dependencies:
   flutter_svg: ^2.0.16
   http: any
   intl: ^0.20.1
+  flutter_riverpod: ^2.6.1
+  liquid_pull_to_refresh: ^3.0.1
+  lottie: ^3.2.0
+  custom_refresh_indicator: ^4.0.1
 
 dev_dependencies:
   flutter_test:
@@ -65,6 +69,7 @@ flutter:
   assets:
     - assets/icons/
     - assets/pictures/
+    - assets/animations/
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
