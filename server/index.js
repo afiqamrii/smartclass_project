@@ -16,6 +16,7 @@ const cors = require("cors");
 const pool = require("./data/database");
 const lectCreateClassRoutres = require("./routes/lectCreateClass");
 const generateTranscriptionTextRoutes = require("./routes/saveTranscriptionText");
+const generateSummarizedTextRoutes = require("./routes/saveSummarizedText");
 const path = require("path");
 
 // Initialize the Express application.
@@ -41,3 +42,7 @@ app.use("/class", lectCreateClassRoutres);
 
 //Save transcription text
 app.use("/classrecording", generateTranscriptionTextRoutes);
+
+//Save summarized text
+//Save transcription text
+app.use("/classrecording", generateSummarizedTextRoutes);
