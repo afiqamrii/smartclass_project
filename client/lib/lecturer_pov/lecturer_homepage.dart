@@ -1,4 +1,5 @@
-import 'package:flutter/cupertino.dart';
+// ignore_for_file: unused_result
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
@@ -6,7 +7,7 @@ import 'package:smartclass_fyp_2024/dataprovider/data_provider.dart';
 import 'package:smartclass_fyp_2024/lecturer_pov/lecturer_viewSummarization.dart';
 import 'package:smartclass_fyp_2024/models/classModels.dart';
 import 'package:smartclass_fyp_2024/test.dart';
-import '../lecturer_pov/lecturer_showAllClasses.dart';
+import 'lecturer_show_all_classes.dart';
 import '../models/class_models.dart';
 
 // ignore: must_be_immutable
@@ -42,6 +43,7 @@ class LectHomepage extends ConsumerWidget {
   //Handel the refresh and reload the data from provider to update the data
   Future<void> _handleRefresh(WidgetRef ref) async {
     //Reload the data in class provider
+    // ignore: await_only_futures
     await ref.refresh(classDataProvider);
     //reloading take some time..
     return await Future.delayed(const Duration(seconds: 1));
@@ -82,9 +84,10 @@ class LectHomepage extends ConsumerWidget {
             animSpeedFactor: 4,
             showChildOpacityTransition: false,
             child: Padding(
-              padding: const EdgeInsets.only(left: 20.0),
+              padding: const EdgeInsets.only(left: 18.0),
               child: ListView(
                 children: [
+                  const SizedBox(height: 10),
                   const Text(
                     "Welcome to SmartClass",
                     style: TextStyle(fontSize: 16, color: Colors.purple),
