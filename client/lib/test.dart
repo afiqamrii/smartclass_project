@@ -1,4 +1,4 @@
-import 'package:flutter/cupertino.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:smartclass_fyp_2024/dataprovider/data_provider.dart';
@@ -10,6 +10,7 @@ class MyWidget extends ConsumerWidget {
 
   Future<void> _handleRefresh(WidgetRef ref) async {
     //Reload the data in class provider
+    // ignore: await_only_futures, unused_result
     await ref.refresh(classDataProvider);
     //reloading take some time..
     return await Future.delayed(const Duration(seconds: 1));
