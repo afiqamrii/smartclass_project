@@ -5,7 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:smartclass_fyp_2024/dataprovider/data_provider.dart';
 import 'package:smartclass_fyp_2024/lecturer_pov/lecturer_viewSummarization.dart';
-import 'package:smartclass_fyp_2024/models/classModels.dart';
+import 'package:smartclass_fyp_2024/models/class_models_test.dart';
 import 'package:smartclass_fyp_2024/test.dart';
 import 'lecturer_show_all_classes.dart';
 import '../models/class_models.dart';
