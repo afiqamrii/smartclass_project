@@ -1,48 +1,48 @@
-// ignore: file_names
+
+// ignore_for_file: unused_result
+
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
+import 'package:smartclass_fyp_2024/dataprovider/data_provider.dart';
 import 'package:smartclass_fyp_2024/lecturer_pov/lecturer_view_class.dart';
 import '../lecturer_pov/lecturer_createclass.dart';
-import '../services/api.dart';
 import '../models/class_models.dart';
 
-class LectViewAllClass extends StatelessWidget {
+class LectViewAllClass extends ConsumerWidget {
   const LectViewAllClass({super.key});
 
-  @override
-  Widget build(BuildContext context) {
-    // Fetch data from the database
-    Future<List<ClassModel>> fetchClasses() async {
-      const String apiUrl =
-          'http://10.0.2.2:3000/class/'; // Replace with your API URL
-      return await Api.getClassData(apiUrl);
-    }
+  // Handle the refresh and reload the data from provider to update the UI
+  Future<void> _handleRefresh(WidgetRef ref) async {
+    //Reload the data in class provider
+    // ignore: await_only_futures
+    await ref.refresh(classDataProvider);
+    //reloading take some time..
+    return await Future.delayed(const Duration(seconds: 1));
+  }
 
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final data = ref.watch(classDataProvider);
     return Scaffold(
       appBar: appBar(context),
-      body: FutureBuilder<List<ClassModel>>(
-        future: fetchClasses(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(
-              child: Text(
-                "Error: ${snapshot.error}",
-                style: const TextStyle(color: Colors.red),
-              ),
-            );
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(
-              child: Text(
-                "No classes available.",
-                style: TextStyle(fontSize: 16, color: Colors.black54),
-              ),
-            );
-          } else {
-            final classes = snapshot.data!;
-            return _todayClassesSection(classes, context);
-          }
+      body: data.when(
+        data: (data) {
+          List<ClassModel> classes = data;
+          return LiquidPullToRefresh(
+            onRefresh: () => _handleRefresh(ref),
+            color: Colors.deepPurple,
+            height: 100,
+            animSpeedFactor: 2,
+            backgroundColor: Colors.deepPurple[200],
+            showChildOpacityTransition: false,
+            child: _todayClassesSection(classes, context),
+          );
         },
+        error: (err, s) => Text(err.toString()),
+        loading: () => const Center(
+          child: CircularProgressIndicator(),
+        ),
       ),
     );
   }
