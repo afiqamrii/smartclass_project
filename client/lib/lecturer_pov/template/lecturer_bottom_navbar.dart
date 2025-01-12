@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:smartclass_fyp_2024/lecturer_pov/lecturer_homepage.dart';
 import 'package:smartclass_fyp_2024/lecturer_pov/lecturer_myclass.dart';
 import 'package:smartclass_fyp_2024/lecturer_pov/lecturer_profile_page.dart';
@@ -30,27 +31,57 @@ class _LectBottomNavBarState extends State<LectBottomNavBar> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: _screens[_currentIndex],
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,
-        onTap: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-        },
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          border: Border.all(color: Colors.black.withOpacity(0.1)),
+          borderRadius: const BorderRadius.vertical(
+            top: Radius.circular(20),
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.class_),
-            label: 'My Class',
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 15),
+          child: GNav(
+            selectedIndex: _currentIndex,
+            onTabChange: (index) {
+              setState(() {
+                _currentIndex = index;
+              });
+            },
+            color: Colors.grey.shade700,
+            activeColor: Colors.purple, // selected icon and text color
+            tabBackgroundColor:
+                Colors.purple.withOpacity(0.1), // selected tab background color
+            padding: const EdgeInsets.all(15),
+            gap: 6,
+            tabs: const [
+              GButton(
+                icon: Icons.home,
+                text: 'Home',
+              ),
+              GButton(
+                icon: Icons.class_,
+                text: 'My Class',
+              ),
+              GButton(
+                icon: Icons.person,
+                text: 'Profile',
+              ),
+              // BottomNavigationBarItem(
+              //   icon: Icon(Icons.home),
+              //   label: 'Home',
+              // ),
+              // BottomNavigationBarItem(
+              //   icon: Icon(Icons.class_),
+              //   label: 'My Class',
+              // ),
+              // BottomNavigationBarItem(
+              //   icon: Icon(Icons.person),
+              //   label: 'Profile',
+              // ),
+            ],
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
-          ),
-        ],
+        ),
       ),
     );
   }
