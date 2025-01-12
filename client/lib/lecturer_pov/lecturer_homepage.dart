@@ -30,7 +30,7 @@ class LectHomepage extends ConsumerWidget {
 //   //   _classesFuture = fetchClasses();
 //   // }
 
-//   //Get class dari class model
+  //Get class dari class model
   void getClasses() {
     classes = ClasTestModel.getClass();
   }

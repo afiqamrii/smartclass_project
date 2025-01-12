@@ -27,7 +27,7 @@ class _LectCreateClassState extends State<LectCreateClass> {
 
   Padding _createClassSection(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(left: 50.0, right: 50.0, top: 40.0),
+      padding: const EdgeInsets.only(left: 50.0, right: 50.0, top: 20.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -90,11 +90,11 @@ class _LectCreateClassState extends State<LectCreateClass> {
                 Api.addClass(data);
               },
               icon: const Icon(
-                Icons.add,
+                Icons.check,
                 color: Color.fromARGB(255, 255, 255, 255),
               ),
               label: const Text(
-                "Create Class",
+                "Saves Class",
                 style: TextStyle(
                   fontSize: 16.0,
                   color: Color.fromARGB(255, 255, 255, 255),
