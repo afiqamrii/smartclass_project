@@ -1,4 +1,3 @@
-
 // ignore_for_file: unused_result
 
 import 'package:flutter/material.dart';
@@ -6,7 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:smartclass_fyp_2024/dataprovider/data_provider.dart';
 import 'package:smartclass_fyp_2024/lecturer_pov/lecturer_view_class.dart';
-import '../lecturer_pov/lecturer_createclass.dart';
+import '../lecturer_pov/lecturer_create_class.dart';
 import '../models/class_models.dart';
 
 class LectViewAllClass extends ConsumerWidget {
