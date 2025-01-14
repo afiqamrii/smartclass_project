@@ -35,6 +35,7 @@ class ClassModel {
     };
   }
 
+  // Convert JSON object to ClassModel
   factory ClassModel.fromJson(Map<String, dynamic> json) {
     DateTime parsedDate = DateTime.parse(json['date']);
     String formattedDate = DateFormat('dd MMMM yyyy').format(parsedDate);

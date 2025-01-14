@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:quickalert/quickalert.dart';
+import 'package:smartclass_fyp_2024/lecturer_pov/lecturer_view_class.dart';
 import '../models/class_models.dart';
 import '../services/api.dart';
 
 class LectUpdateClass extends StatefulWidget {
   final ClassModel classItem;
 
-  const LectUpdateClass({Key? key, required this.classItem}) : super(key: key);
+  const LectUpdateClass({super.key, required this.classItem});
 
   @override
   State<LectUpdateClass> createState() => _LectUpdateClassState();
@@ -111,7 +113,38 @@ class _LectUpdateClassState extends State<LectUpdateClass> {
                       location: _classLocationController.text,
                     );
 
-                    await Api.updateClass(Api.baseUrl, updatedClass);
+                    final response =
+                        await Api.updateClass(Api.baseUrl, updatedClass);
+
+                    //Show QuickAlert message for user if the update is error or success
+                    if (response['Status_Code'] == 200) {
+                      QuickAlert.show(
+                        context: context,
+                        type: QuickAlertType.success,
+                        text: 'Class updated successfully',
+                        confirmBtnText: 'OK',
+                        onConfirmBtnTap: () {
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  LecturerViewClass(classItem: updatedClass),
+                            ),
+                          );
+                        },
+                      );
+                    } else {
+                      QuickAlert.show(
+                        // ignore: use_build_context_synchronously
+                        context: context,
+                        type: QuickAlertType.error,
+                        text: 'Failed to update class, try again!',
+                        confirmBtnText: 'OK',
+                        onConfirmBtnTap: () {
+                          Navigator.pop(context);
+                        },
+                      );
+                    }
 
                     // Navigator.pop(context);
                     // ScaffoldMessenger.of(context).showSnackBar(
