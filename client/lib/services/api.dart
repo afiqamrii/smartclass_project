@@ -95,14 +95,17 @@ class Api {
         var data = jsonDecode(res.body.toString());
         // ignore: avoid_print
         print(data);
+        return data;
       } else {
         // Print an error message with the status code and response body.
         print("Failed to upload DATA: ${res.statusCode}");
         print("Response: ${res.body}");
+        return null;
       }
     } catch (e) {
       // Print any errors encountered during the API request.
       debugPrint("Error: $e");
+      return null;
     }
   }
 
@@ -137,12 +140,15 @@ class Api {
         var responseData = jsonDecode(res.body);
         // ignore: avoid_print
         print(responseData);
+        return responseData;
       } else {
         print("Failed to update class: ${res.statusCode}");
         print("Response: ${res.body}");
+        return null;
       }
     } catch (e) {
       debugPrint("Error: $e");
+      return null;
     }
   }
 

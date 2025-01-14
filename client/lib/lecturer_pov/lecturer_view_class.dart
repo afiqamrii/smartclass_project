@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:smartclass_fyp_2024/lecturer_pov/lecturer_update_class.dart';
 import '../models/class_models.dart';
 import '../services/api.dart';
@@ -6,165 +7,328 @@ import '../services/api.dart';
 class LecturerViewClass extends StatelessWidget {
   final ClassModel classItem;
 
-  const LecturerViewClass({Key? key, required this.classItem})
-      : super(key: key);
+  const LecturerViewClass({super.key, required this.classItem});
+
+  Future<void> _handleRefresh() async {
+    //reloading take some time..
+    return await Future.delayed(const Duration(seconds: 1));
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[200],
       appBar: AppBar(
+        leading: GestureDetector(
+          onTap: () {
+            Navigator.pop(context);
+          },
+          child: const Padding(
+            padding: EdgeInsets.only(left: 20.0),
+            child: Row(
+              children: [
+                Icon(
+                  Icons.arrow_back_ios,
+                  color: Colors.black,
+                  size: 20,
+                ),
+              ],
+            ),
+          ),
+        ),
         title: Text(
           '${classItem.courseCode} - ${classItem.courseName}',
-          style: const TextStyle(fontSize: 18, color: Colors.black),
+          style: const TextStyle(
+            fontSize: 15,
+            color: Colors.black,
+          ),
         ),
         centerTitle: true,
       ),
       body: Column(
         children: [
-          _topClassCard(context),
-          const SizedBox(height: 16),
+          LiquidPullToRefresh(
+            onRefresh: () => _handleRefresh(),
+            color: Colors.deepPurple,
+            height: 100,
+            backgroundColor: Colors.deepPurple[200],
+            animSpeedFactor: 4,
+            showChildOpacityTransition: false,
+            //Sini start part in the body tu
+            child: Padding(
+              padding:
+                  const EdgeInsets.symmetric(vertical: 20.0, horizontal: 20),
+              child: Card(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                //Make sure the picture follow the Card shape
+                clipBehavior: Clip.antiAlias,
+                child: IntrinsicHeight(
+                  child: Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      //Image layer
+                      Image.asset(
+                        'assets/pictures/compPicture.jpg',
+                        fit: BoxFit.cover,
+                      ),
+                      //Blur black gradient layer
+                      // Partial Blur and Black Overlay Layer
+                      Positioned(
+                        top: 50,
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.bottomCenter,
+                              end: Alignment.topCenter,
+                              colors: [
+                                Colors.black.withOpacity(0.8),
+                                Colors.transparent,
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+
+                      //Text layer
+                      Padding(
+                        padding: const EdgeInsets.all(15.0),
+                        child: Column(
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                GestureDetector(
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => LectUpdateClass(
+                                          classItem: classItem,
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                  child: Image.asset(
+                                    'assets/icons/editicon.png',
+                                    height: 25,
+                                    width: 25,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 60),
+                            //Start of details or class in the card.
+                            Padding(
+                              padding:
+                                  const EdgeInsets.only(left: 10.0, right: 10),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      SizedBox(
+                                        width:
+                                            MediaQuery.of(context).size.width *
+                                                0.7,
+                                        child: Text(
+                                          "${classItem.courseCode} - ${classItem.courseName}",
+                                          style: const TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(
+                                        height: 5,
+                                      ),
+                                      //Time and date and lect name of the class goes hereeeee
+                                      Text(
+                                        "${classItem.startTime} - ${classItem.endTime}",
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 13,
+                                        ),
+                                      ),
+                                      Text(
+                                        classItem.date,
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 13,
+                                        ),
+                                      ),
+                                      const SizedBox(
+                                        height: 10,
+                                      ),
+                                      SizedBox(
+                                        width:
+                                            MediaQuery.of(context).size.width *
+                                                0.7,
+                                        child: Text(
+                                          "Lecturer : Dr Nor | "
+                                          "Location : ${classItem.location}",
+                                          style: const TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 13,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 100),
           _deleteButton(context),
         ],
       ),
     );
   }
 
-  Padding _topClassCard(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Stack(
-        children: [
-          Card(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16.0),
-            ),
-            elevation: 6,
-            child: Container(
-              height: 220,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(16.0),
-                gradient: const LinearGradient(
-                  colors: [Color(0xFF3700B3), Color(0xFF6200EA)],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-              ),
-              child: Row(
-                children: [
-                  // Left Section: Picture
-                  Expanded(
-                    flex: 1,
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Image.asset(
-                            'assets/pictures/compPicture.jpg',
-                            height: 80,
-                            fit: BoxFit.contain,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  // Right Section: Text Details
-                  Expanded(
-                    flex: 2,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 16.0, horizontal: 8.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          Text(
-                            "${classItem.courseCode} - ${classItem.courseName}",
-                            style: const TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
-                          ),
-                          Row(
-                            children: [
-                              const Icon(Icons.access_time_outlined,
-                                  color: Colors.white70, size: 20),
-                              const SizedBox(width: 5.0),
-                              Text(
-                                "${classItem.startTime} - ${classItem.endTime}",
-                                style: const TextStyle(color: Colors.white70),
-                              ),
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              const Icon(Icons.calendar_today_outlined,
-                                  color: Colors.white70, size: 20),
-                              const SizedBox(width: 5.0),
-                              Text(
-                                classItem.date,
-                                style: const TextStyle(color: Colors.white70),
-                              ),
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              const Icon(Icons.location_on_outlined,
-                                  color: Colors.white70, size: 20),
-                              const SizedBox(width: 5.0),
-                              Text(
-                                classItem.location,
-                                style: const TextStyle(color: Colors.white70),
-                              ),
-                            ],
-                          ),
-                          Text(
-                            "Lecturer: Dr Nor",
-                            style: const TextStyle(color: Colors.white70),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          Positioned(
-            top: 8,
-            right: 8,
-            child: InkWell(
-              onTap: () {
-                // Action when the edit icon is tapped
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Edit button tapped!')),
-                );
-              },
-              child: Container(
-                child: IconButton(
-                  icon: Image.asset(
-                    'assets/icons/edit-button.png',
-                    color: Colors.white,
-                    width: 24.0, // Adjust the width as needed
-                    height: 24.0, // Adjust the height as needed
-                  ),
-                  onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) =>
-                                LectUpdateClass(classItem: classItem)));
-                  },
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+  // Padding _topClassCard(BuildContext context) {
+  //   return Padding(
+  //     padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 20),
+  //     child: Card(
+  //       shape: RoundedRectangleBorder(
+  //         borderRadius: BorderRadius.circular(15),
+  //       ),
+  //       //Make sure the picture follow the Card shape
+  //       clipBehavior: Clip.antiAlias,
+  //       child: IntrinsicHeight(
+  //         child: Stack(
+  //           fit: StackFit.expand,
+  //           children: [
+  //             //Image layer
+  //             Image.asset(
+  //               'assets/pictures/compPicture.jpg',
+  //               fit: BoxFit.cover,
+  //             ),
+  //             //Blur black gradient layer
+  //             // Partial Blur and Black Overlay Layer
+  //             Positioned(
+  //               top: 50,
+  //               left: 0,
+  //               right: 0,
+  //               bottom: 0,
+  //               child: Container(
+  //                 decoration: BoxDecoration(
+  //                   gradient: LinearGradient(
+  //                     begin: Alignment.bottomCenter,
+  //                     end: Alignment.topCenter,
+  //                     colors: [
+  //                       Colors.black.withOpacity(0.85),
+  //                       Colors.transparent,
+  //                     ],
+  //                   ),
+  //                 ),
+  //               ),
+  //             ),
+
+  //             //Text layer
+  //             Padding(
+  //               padding: const EdgeInsets.all(15.0),
+  //               child: Column(
+  //                 children: [
+  //                   Row(
+  //                     mainAxisAlignment: MainAxisAlignment.end,
+  //                     children: [
+  //                       GestureDetector(
+  //                         onTap: () {
+  //                           // Handle process here
+  //                         },
+  //                         child: Image.asset(
+  //                           'assets/icons/editicon.png',
+  //                           height: 25,
+  //                           width: 25,
+  //                         ),
+  //                       ),
+  //                     ],
+  //                   ),
+  //                   const SizedBox(height: 50),
+  //                   //Start of details or class in the card.
+  //                   Padding(
+  //                     padding: const EdgeInsets.only(
+  //                         left: 7.0, right: 10, bottom: 5),
+  //                     child: Row(
+  //                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //                       children: [
+  //                         Column(
+  //                           crossAxisAlignment: CrossAxisAlignment.start,
+  //                           children: [
+  //                             SizedBox(
+  //                               width: MediaQuery.of(context).size.width * 0.6,
+  //                               child: Text(
+  //                                 "${classItem.courseCode} - ${classItem.courseName}",
+  //                                 style: const TextStyle(
+  //                                   color: Colors.white,
+  //                                   fontSize: 18,
+  //                                   fontWeight: FontWeight.bold,
+  //                                 ),
+  //                               ),
+  //                             ),
+  //                             const SizedBox(
+  //                               height: 5,
+  //                             ),
+  //                             //Time and date and lect name of the class goes hereeeee
+  //                             Text(
+  //                               "${classItem.startTime} - ${classItem.endTime}",
+  //                               style: const TextStyle(
+  //                                 color: Colors.white,
+  //                                 fontSize: 13,
+  //                               ),
+  //                             ),
+  //                             Text(
+  //                               classItem.date,
+  //                               style: const TextStyle(
+  //                                 color: Colors.white,
+  //                                 fontSize: 13,
+  //                               ),
+  //                             ),
+  //                             const SizedBox(
+  //                               height: 5,
+  //                             ),
+  //                             SizedBox(
+  //                               width: MediaQuery.of(context).size.width * 0.7,
+  //                               child: const Text(
+  //                                 "Lecturer : Dr Nor | "
+  //                                 "Location : Halu ",
+  //                                 style: TextStyle(
+  //                                   color: Colors.white,
+  //                                   fontSize: 13,
+  //                                 ),
+  //                               ),
+  //                             ),
+  //                           ],
+  //                         ),
+  //                       ],
+  //                     ),
+  //                   ),
+  //                 ],
+  //               ),
+  //             ),
+  //           ],
+  //         ),
+  //       ),
+  //     ),
+  //   );
+  // }
 
   Widget _deleteButton(BuildContext context) {
     return Padding(
@@ -177,7 +341,9 @@ class LecturerViewClass extends StatelessWidget {
           bool confirm = await _showConfirmationDialog(context);
           if (confirm) {
             await Api.deleteClass(Api.baseUrl, classItem.id);
+            // ignore: use_build_context_synchronously
             Navigator.pop(context);
+            // ignore: use_build_context_synchronously
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text('Class deleted successfully')),
             );
