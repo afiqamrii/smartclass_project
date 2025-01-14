@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:smartclass_fyp_2024/dataprovider/data_provider.dart';
 import 'package:smartclass_fyp_2024/lecturer_pov/lecturer_viewSummarization.dart';
+import 'package:smartclass_fyp_2024/lecturer_pov/lecturer_view_class.dart';
 import 'package:smartclass_fyp_2024/models/class_models_test.dart';
 import 'package:smartclass_fyp_2024/test.dart';
 import 'lecturer_show_all_classes.dart';
@@ -328,7 +329,8 @@ class LectHomepage extends ConsumerWidget {
       BuildContext context, List<ClassModel> classDataItem) {
     return SizedBox(
       width: MediaQuery.of(context).size.width * 1.0,
-      height: 175,
+      height: 170,
+      //Show all class in the card
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         itemCount: classDataItem.length,
@@ -338,95 +340,107 @@ class LectHomepage extends ConsumerWidget {
           return GestureDetector(
             onTap: () {
               // Navigate to class detail page
-              // Navigator.push(
-              //   context,
-              //   MaterialPageRoute(
-              //     builder: (context) => LectClassDetail(
-              //       classData: classData,
-              //     ),
-              //   ),
-              // );
-            },
-            child: Container(
-              width: MediaQuery.of(context).size.width * 0.6,
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12.0),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withOpacity(0.1),
-                    blurRadius: 8,
-                    offset: const Offset(0, 4),
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => LecturerViewClass(
+                    classItem: classData,
                   ),
-                ],
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Course Title
-                  Text(
-                    "${classData.courseCode} - ${classData.courseName}",
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black87,
+                ),
+              );
+            },
+            child: IntrinsicHeight(
+              child: IntrinsicWidth(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(
+                    minWidth: 300,
+                  ),
+                  child: Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(12.0),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.1),
+                          blurRadius: 8,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: SizedBox(
+                      width: 200,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Course Title
+                          Text(
+                            "${classData.courseCode} - ${classData.courseName}",
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black87,
+                            ),
+                          ),
+                          const SizedBox(height: 15),
+
+                          // Location
+                          Row(
+                            children: [
+                              const Icon(Icons.location_on,
+                                  size: 16, color: Colors.grey),
+                              const SizedBox(width: 5),
+                              Text(
+                                classData.location,
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.black54,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 10),
+
+                          // Time
+                          Row(
+                            children: [
+                              const Icon(Icons.schedule,
+                                  size: 16, color: Colors.grey),
+                              const SizedBox(width: 5),
+                              Text(
+                                "${classData.startTime} - ${classData.endTime}",
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.black54,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 10),
+
+                          // Date
+                          Row(
+                            children: [
+                              const Icon(Icons.calendar_today,
+                                  size: 16, color: Colors.grey),
+                              const SizedBox(width: 5),
+                              Text(
+                                classData.date,
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.black54,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 10),
+                        ],
+                      ),
                     ),
                   ),
-                  const SizedBox(height: 15),
-
-                  // Location
-                  Row(
-                    children: [
-                      const Icon(Icons.location_on,
-                          size: 16, color: Colors.grey),
-                      const SizedBox(width: 5),
-                      Text(
-                        classData.location,
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: Colors.black54,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 10),
-
-                  // Time
-                  Row(
-                    children: [
-                      const Icon(Icons.schedule, size: 16, color: Colors.grey),
-                      const SizedBox(width: 5),
-                      Text(
-                        "${classData.startTime} - ${classData.endTime}",
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: Colors.black54,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 10),
-
-                  // Date
-                  Row(
-                    children: [
-                      const Icon(Icons.calendar_today,
-                          size: 16, color: Colors.grey),
-                      const SizedBox(width: 5),
-                      Text(
-                        classData.date,
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: Colors.black54,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 10),
-                ],
+                ),
               ),
             ),
           );

@@ -34,13 +34,13 @@ class _LectBottomNavBarState extends State<LectBottomNavBar> {
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           color: Colors.white,
-          border: Border.all(color: Colors.black.withOpacity(0.1)),
+          border: Border.all(color: Colors.white.withOpacity(0.15)),
           borderRadius: const BorderRadius.vertical(
-            top: Radius.circular(20),
+            top: Radius.circular(0),
           ),
         ),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 15),
+          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 7),
           child: GNav(
             selectedIndex: _currentIndex,
             onTabChange: (index) {
@@ -48,11 +48,11 @@ class _LectBottomNavBarState extends State<LectBottomNavBar> {
                 _currentIndex = index;
               });
             },
-            color: Colors.grey.shade700,
+            color: Colors.black,
             activeColor: Colors.purple, // selected icon and text color
             tabBackgroundColor:
                 Colors.purple.withOpacity(0.1), // selected tab background color
-            padding: const EdgeInsets.all(15),
+            padding: const EdgeInsets.all(11),
             gap: 6,
             tabs: const [
               GButton(
@@ -65,20 +65,13 @@ class _LectBottomNavBarState extends State<LectBottomNavBar> {
               ),
               GButton(
                 icon: Icons.person,
+                leading: CircleAvatar(
+                  backgroundImage: AssetImage(
+                      'assets/pictures/compPicture.jpg'), //Later letak gambar disini from database / gambar user
+                  radius: 15,
+                ),
                 text: 'Profile',
               ),
-              // BottomNavigationBarItem(
-              //   icon: Icon(Icons.home),
-              //   label: 'Home',
-              // ),
-              // BottomNavigationBarItem(
-              //   icon: Icon(Icons.class_),
-              //   label: 'My Class',
-              // ),
-              // BottomNavigationBarItem(
-              //   icon: Icon(Icons.person),
-              //   label: 'Profile',
-              // ),
             ],
           ),
         ),

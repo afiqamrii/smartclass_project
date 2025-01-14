@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:quickalert/quickalert.dart';
+import 'package:smartclass_fyp_2024/lecturer_pov/lecturer_show_all_classes.dart';
+import 'package:smartclass_fyp_2024/lecturer_pov/lecturer_view_class.dart';
 import '../services/api.dart';
 
 class LectCreateClass extends StatefulWidget {
@@ -31,21 +34,36 @@ class _LectCreateClassState extends State<LectCreateClass> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          //Here is the create class section , pass to the method inputField to create the input fields (title, description, date, time, location)
           // Subject Code Input
-          inputField('Course Code', 'e.g : CSE3403', null,
-              controller: courseCodeController),
-          const SizedBox(height: 20),
+          inputField(
+            'Course Code',
+            'e.g : CSE3403',
+            10,
+            null,
+            controller: courseCodeController,
+          ),
+          const SizedBox(height: 5),
 
           // Title Input
-          inputField('Title', 'e.g : Programming (K1) , Max 50 words', null,
-              controller: titleController),
-          const SizedBox(height: 20),
+          inputField(
+            'Title',
+            'e.g : Programming (K1) , Max 50 words',
+            50,
+            null,
+            controller: titleController,
+          ),
+          const SizedBox(height: 5),
 
           // Date Input
           inputField(
             'Date',
             'e.g 20 October 2023',
-            () => pickDate(context, dateController),
+            null,
+            () => pickDate(
+              context,
+              dateController,
+            ),
             controller: dateController,
           ),
           const SizedBox(height: 20),
@@ -54,7 +72,11 @@ class _LectCreateClassState extends State<LectCreateClass> {
           inputField(
             'Time Start',
             'e.g 11.00 a.m',
-            () => pickTime(context, timeStartController),
+            null,
+            () => pickTime(
+              context,
+              timeStartController,
+            ),
             controller: timeStartController,
           ),
           const SizedBox(height: 20),
@@ -63,21 +85,29 @@ class _LectCreateClassState extends State<LectCreateClass> {
           inputField(
             'Time End',
             'e.g 1.00 p.m',
-            () => pickTime(context, timeEndController),
+            null,
+            () => pickTime(
+              context,
+              timeEndController,
+            ),
             controller: timeEndController,
           ),
           const SizedBox(height: 20),
 
           // Location Input
-          inputField('Location', 'e.g BK-01', null,
-              controller: locationController),
-          const SizedBox(height: 20),
+          inputField(
+            'Location',
+            'e.g BK-01',
+            30,
+            null,
+            controller: locationController,
+          ),
+          const SizedBox(height: 5),
 
           // Create Class Button
-          Padding(
-            padding: const EdgeInsets.only(left: 50, right: 50, top: 20),
+          Center(
             child: ElevatedButton.icon(
-              onPressed: () {
+              onPressed: () async {
                 var data = {
                   'courseCode': courseCodeController.text,
                   'title': titleController.text,
@@ -87,7 +117,33 @@ class _LectCreateClassState extends State<LectCreateClass> {
                   'location': locationController.text,
                 };
 
-                Api.addClass(data);
+                final response = await Api.addClass(data);
+
+                if (response != null && response['Status_Code'] == 200) {
+                  QuickAlert.show(
+                    // ignore: use_build_context_synchronously
+                    context: context,
+                    type: QuickAlertType.success,
+                    text: "Class Created Successfully",
+                    onConfirmBtnTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const LectViewAllClass()),
+                      );
+                    },
+                  );
+                } else {
+                  QuickAlert.show(
+                    // ignore: use_build_context_synchronously
+                    context: context,
+                    type: QuickAlertType.error,
+                    text: "Missing Required Fields, Try Again!",
+                    onConfirmBtnTap: () {
+                      Navigator.pop(context);
+                    },
+                  );
+                }
               },
               icon: const Icon(
                 Icons.check,
@@ -106,7 +162,7 @@ class _LectCreateClassState extends State<LectCreateClass> {
                   borderRadius: BorderRadius.circular(54.0),
                 ),
                 padding: const EdgeInsets.symmetric(
-                    horizontal: 35.0, vertical: 16.0),
+                    horizontal: 20.0, vertical: 12.0),
               ),
             ),
           ),
@@ -156,7 +212,8 @@ class _LectCreateClassState extends State<LectCreateClass> {
   }
 
   // Input Field Widget
-  Widget inputField(String label, String placeholder, VoidCallback? onTap,
+  Widget inputField(
+      String label, String placeholder, int? maxLength, VoidCallback? onTap,
       {TextEditingController? controller}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -171,6 +228,7 @@ class _LectCreateClassState extends State<LectCreateClass> {
         const SizedBox(height: 8),
         TextFormField(
           controller: controller,
+          maxLength: maxLength,
           readOnly: onTap != null,
           onTap: onTap,
           decoration: InputDecoration(
