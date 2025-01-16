@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:quickalert/quickalert.dart';
 import 'package:smartclass_fyp_2024/lecturer_pov/lecturer_show_all_classes.dart';
-import 'package:smartclass_fyp_2024/lecturer_pov/lecturer_view_class.dart';
 import '../services/api.dart';
 
 class LectCreateClass extends StatefulWidget {
@@ -25,14 +24,14 @@ class _LectCreateClassState extends State<LectCreateClass> {
     return Scaffold(
         appBar: appBar(context),
         body: _createClassSection(context),
-        resizeToAvoidBottomInset: false);
+        resizeToAvoidBottomInset: true);
   }
 
   Padding _createClassSection(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(left: 50.0, right: 50.0, top: 20.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      padding: const EdgeInsets.only(left: 30.0, right: 30.0),
+      child: ListView(
+        padding: const EdgeInsets.only(bottom: 50, top: 10),
         children: [
           //Here is the create class section , pass to the method inputField to create the input fields (title, description, date, time, location)
           // Subject Code Input
@@ -41,6 +40,7 @@ class _LectCreateClassState extends State<LectCreateClass> {
             'e.g : CSE3403',
             10,
             null,
+            textCapitalization: TextCapitalization.characters,
             controller: courseCodeController,
           ),
           const SizedBox(height: 5),
@@ -51,6 +51,7 @@ class _LectCreateClassState extends State<LectCreateClass> {
             'e.g : Programming (K1) , Max 50 words',
             50,
             null,
+            textCapitalization: TextCapitalization.words,
             controller: titleController,
           ),
           const SizedBox(height: 5),
@@ -60,6 +61,7 @@ class _LectCreateClassState extends State<LectCreateClass> {
             'Date',
             'e.g 20 October 2023',
             null,
+            textCapitalization: TextCapitalization.none,
             () => pickDate(
               context,
               dateController,
@@ -73,6 +75,7 @@ class _LectCreateClassState extends State<LectCreateClass> {
             'Time Start',
             'e.g 11.00 a.m',
             null,
+            textCapitalization: TextCapitalization.none,
             () => pickTime(
               context,
               timeStartController,
@@ -86,6 +89,7 @@ class _LectCreateClassState extends State<LectCreateClass> {
             'Time End',
             'e.g 1.00 p.m',
             null,
+            textCapitalization: TextCapitalization.none,
             () => pickTime(
               context,
               timeEndController,
@@ -98,8 +102,9 @@ class _LectCreateClassState extends State<LectCreateClass> {
           inputField(
             'Location',
             'e.g BK-01',
-            30,
+            25,
             null,
+            textCapitalization: TextCapitalization.words,
             controller: locationController,
           ),
           const SizedBox(height: 5),
@@ -120,6 +125,7 @@ class _LectCreateClassState extends State<LectCreateClass> {
                 final response = await Api.addClass(data);
 
                 if (response != null && response['Status_Code'] == 200) {
+                  //Shows a success message using QuickAlert for create class is successfull
                   QuickAlert.show(
                     // ignore: use_build_context_synchronously
                     context: context,
@@ -134,6 +140,7 @@ class _LectCreateClassState extends State<LectCreateClass> {
                     },
                   );
                 } else {
+                  //Shows an error message using QuickAlert for create class is not successfull
                   QuickAlert.show(
                     // ignore: use_build_context_synchronously
                     context: context,
@@ -174,12 +181,12 @@ class _LectCreateClassState extends State<LectCreateClass> {
   // App Bar Section
   AppBar appBar(BuildContext context) {
     return AppBar(
-      toolbarHeight: 80.0,
-      backgroundColor: Colors.transparent,
+      toolbarHeight: 60.0,
+      backgroundColor: Colors.grey[100],
       title: const Text(
         'Create Class',
         style: TextStyle(
-          fontSize: 22,
+          fontSize: 19,
           color: Colors.black,
         ),
       ),
@@ -194,34 +201,37 @@ class _LectCreateClassState extends State<LectCreateClass> {
           padding: EdgeInsets.only(left: 20.0),
           child: Row(
             children: [
-              Icon(Icons.arrow_back_ios, color: Colors.black, size: 20),
-              SizedBox(width: 5),
-              Text(
-                "Back",
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 16,
-                ),
+              Icon(
+                Icons.arrow_back_ios,
+                color: Colors.black,
+                size: 20,
               ),
             ],
           ),
         ),
       ),
       titleSpacing: 0,
+      shape: Border(
+        bottom: BorderSide(
+          color: Colors.grey[300]!,
+          width: 1.0,
+        ),
+      ),
     );
   }
 
   // Input Field Widget
   Widget inputField(
       String label, String placeholder, int? maxLength, VoidCallback? onTap,
-      {TextEditingController? controller}) {
+      {TextEditingController? controller,
+      required TextCapitalization textCapitalization}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           label,
           style: const TextStyle(
-            fontSize: 16,
+            fontSize: 13,
             fontWeight: FontWeight.w500,
           ),
         ),
@@ -230,6 +240,7 @@ class _LectCreateClassState extends State<LectCreateClass> {
           controller: controller,
           maxLength: maxLength,
           readOnly: onTap != null,
+          textCapitalization: textCapitalization,
           onTap: onTap,
           decoration: InputDecoration(
             hintText: placeholder,

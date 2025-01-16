@@ -1,4 +1,3 @@
-// ignore_for_file: unused_result
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -64,6 +63,8 @@ class LectHomepage extends ConsumerWidget {
           'Hello Dr. Afiq!',
           style: TextStyle(color: Colors.black, fontSize: 22),
         ),
+        leading: null,
+        automaticallyImplyLeading: false,
         actions: [
           IconButton(
             icon: const Icon(Icons.notifications, color: Colors.black),
@@ -135,143 +136,150 @@ class LectHomepage extends ConsumerWidget {
                         ],
                       ),
                       const SizedBox(height: 2),
+                      //Start of Card of Class Summarization Status
                       Column(
                         children: List.generate(classes.length, (index) {
                           return Padding(
                             padding: const EdgeInsets.only(
                                 bottom: 13.0, right: 20.0),
-                            child: Container(
-                              height: 150,
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(12.0),
-                                //Give the shadow to the card
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.grey.withOpacity(0.5),
-                                    spreadRadius: 1,
-                                    blurRadius: 6,
-                                    offset: const Offset(8, 7),
-                                  ),
-                                ],
-                              ),
-                              // Card content
-                              child: Padding(
-                                padding: const EdgeInsets.all(15.0),
-                                //Class Title
-                                child: Row(
-                                  children: [
-                                    Container(
-                                      width: MediaQuery.of(context).size.width *
-                                          0.6,
-                                      color: Colors.white,
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            '${classes[index].courseCode} - ${classes[index].courseName}',
-                                          ),
-                                          const SizedBox(height: 32),
-                                          //Class Time
-                                          Row(
-                                            children: [
-                                              const Icon(
-                                                Icons.timer_outlined,
-                                                size: 15,
-                                              ),
-                                              const SizedBox(width: 3),
-                                              Text(
-                                                '${classes[index].startTime} - ${classes[index].endTime}',
-                                                style: const TextStyle(
-                                                  fontSize: 12.5,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                          const SizedBox(
-                                            height: 8,
-                                          ),
-                                          //Class Date Section
-                                          Row(
-                                            children: [
-                                              const Icon(
-                                                Icons.calendar_today_rounded,
-                                                size: 15,
-                                              ),
-                                              const SizedBox(width: 4),
-                                              Text(
-                                                classes[index].date,
-                                                style: const TextStyle(
-                                                  fontSize: 12.5,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ],
-                                      ),
+                            child: IntrinsicHeight(
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(12.0),
+                                  //Give the shadow to the card
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.grey.withOpacity(0.5),
+                                      spreadRadius: 1,
+                                      blurRadius: 6,
+                                      offset: const Offset(8, 7),
                                     ),
-                                    const SizedBox(width: 10),
-                                    //Right Side of the Card
-                                    Container(
-                                      color: Colors.white,
-                                      width: MediaQuery.of(context).size.width *
-                                          0.2,
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.end,
-                                        //Summarization Status
-                                        children: [
-                                          Container(
-                                            width: 80,
-                                            height: 30,
-                                            decoration: BoxDecoration(
-                                              color: classes[index]
-                                                          .summarization ==
-                                                      "Available"
-                                                  ? const Color(0xff00A619)
-                                                  : const Color(0xffCC3300),
-                                              borderRadius:
-                                                  BorderRadius.circular(50.0),
+                                  ],
+                                ),
+                                // Card content
+                                child: Padding(
+                                  padding: const EdgeInsets.all(15.0),
+                                  //Start of the content in side each card of class summarization
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Container(
+                                        width:
+                                            MediaQuery.of(context).size.width *
+                                                0.5,
+                                        color: Colors.white,
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              '${classes[index].courseCode} - ${classes[index].courseName}',
                                             ),
-                                            child: Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
+                                            const SizedBox(height: 32),
+                                            //Class Time
+                                            Row(
                                               children: [
+                                                const Icon(
+                                                  Icons.timer_outlined,
+                                                  size: 15,
+                                                ),
+                                                const SizedBox(width: 3),
                                                 Text(
-                                                  classes[index].summarization,
+                                                  '${classes[index].startTime} - ${classes[index].endTime}',
                                                   style: const TextStyle(
-                                                    fontSize: 10,
-                                                    color: Color(0xffFFFFFF),
+                                                    fontSize: 12.5,
                                                   ),
                                                 ),
                                               ],
                                             ),
-                                          ),
-                                          //View All Button
-                                          TextButton(
-                                            onPressed: () {
-                                              Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                      builder: (context) =>
-                                                          const LecturerViewsummarization()));
-                                            },
-                                            child: const Text(
-                                              "View All >",
-                                              style: TextStyle(
-                                                fontSize: 11,
-                                                fontWeight: FontWeight.bold,
-                                                color: Colors.purple,
+                                            const SizedBox(
+                                              height: 8,
+                                            ),
+                                            //Class Date Section
+                                            Row(
+                                              children: [
+                                                const Icon(
+                                                  Icons.calendar_today_rounded,
+                                                  size: 15,
+                                                ),
+                                                const SizedBox(width: 4),
+                                                Text(
+                                                  classes[index].date,
+                                                  style: const TextStyle(
+                                                    fontSize: 12.5,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      const SizedBox(width: 10),
+                                      //Right Side of the Card
+                                      Container(
+                                        color: Colors.white,
+                                        width:
+                                            MediaQuery.of(context).size.width *
+                                                0.2,
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.end,
+                                          //Summarization Status
+                                          children: [
+                                            Container(
+                                              width: 80,
+                                              height: 30,
+                                              decoration: BoxDecoration(
+                                                color: classes[index]
+                                                            .summarization ==
+                                                        "Available"
+                                                    ? const Color(0xff00A619)
+                                                    : const Color(0xffCC3300),
+                                                borderRadius:
+                                                    BorderRadius.circular(50.0),
+                                              ),
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                children: [
+                                                  Text(
+                                                    classes[index]
+                                                        .summarization,
+                                                    style: const TextStyle(
+                                                      fontSize: 8,
+                                                      color: Color(0xffFFFFFF),
+                                                    ),
+                                                  ),
+                                                ],
                                               ),
                                             ),
-                                          ),
-                                        ],
+                                            //View All Button
+                                            TextButton(
+                                              onPressed: () {
+                                                Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            const LecturerViewsummarization()));
+                                              },
+                                              child: const Text(
+                                                "View All >",
+                                                style: TextStyle(
+                                                  fontSize: 10,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Colors.purple,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
                                       ),
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
                               ),
                             ),

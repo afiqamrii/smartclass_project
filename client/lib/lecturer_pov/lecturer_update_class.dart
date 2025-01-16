@@ -76,7 +76,27 @@ class _LectUpdateClassState extends State<LectUpdateClass> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Update Class'),
+        title: const Text(
+          'Update Class',
+          style: TextStyle(fontSize: 18),
+        ),
+        leading: GestureDetector(
+          onTap: () {
+            Navigator.pop(context);
+          },
+          child: const Padding(
+            padding: EdgeInsets.only(left: 20.0),
+            child: Row(
+              children: [
+                Icon(
+                  Icons.arrow_back_ios,
+                  color: Colors.black,
+                  size: 20,
+                ),
+              ],
+            ),
+          ),
+        ),
         centerTitle: true,
       ),
       body: Padding(
@@ -119,6 +139,7 @@ class _LectUpdateClassState extends State<LectUpdateClass> {
                     //Show QuickAlert message for user if the update is error or success
                     if (response['Status_Code'] == 200) {
                       QuickAlert.show(
+                        // ignore: use_build_context_synchronously
                         context: context,
                         type: QuickAlertType.success,
                         text: 'Class updated successfully',
