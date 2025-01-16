@@ -50,21 +50,10 @@ class LectViewAllClass extends ConsumerWidget {
   // Today's Classes Section
   Padding _todayClassesSection(List<ClassModel> classes, BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(left: 10, right: 30),
+      padding: const EdgeInsets.only(left: 10, right: 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Padding(
-            padding: EdgeInsets.only(left: 20.0),
-            child: Text(
-              "Today's Classes",
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-          const SizedBox(height: 20.0),
           Expanded(
             child: ListView.builder(
               itemCount:
@@ -73,76 +62,94 @@ class LectViewAllClass extends ConsumerWidget {
                 if (index < classes.length) {
                   final classItem = classes[index];
                   return Padding(
-                    padding: const EdgeInsets.only(left: 20.0, bottom: 16.0),
-                    child: Card(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12.0),
-                      ),
-                      elevation: 2,
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              "${classItem.courseCode} - ${classItem.courseName}",
-                              style: const TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
+                    padding: const EdgeInsets.only(
+                      left: 10.0,
+                      bottom: 5.0,
+                      top: 10,
+                    ),
+                    child: IntrinsicHeight(
+                      child: Card(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12.0),
+                        ),
+                        elevation: 2,
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            //Title of the class
+                            children: [
+                              Text(
+                                "${classItem.courseCode} - ${classItem.courseName}",
+                                style: const TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
-                            ),
-                            const SizedBox(height: 8.0),
-                            Row(
-                              children: [
-                                const Icon(Icons.location_on_outlined,
-                                    size: 20),
-                                const SizedBox(width: 8.0),
-                                Text(classItem.location),
-                              ],
-                            ),
-                            const SizedBox(height: 8.0),
-                            Row(
-                              children: [
-                                const Icon(Icons.access_time_outlined,
-                                    size: 20),
-                                const SizedBox(width: 8.0),
-                                Text(
-                                    "${classItem.startTime} - ${classItem.endTime}"),
-                              ],
-                            ),
-                            const SizedBox(height: 8.0),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Row(
+                              const SizedBox(height: 8.0),
+                              //Location of the class
+                              SizedBox(
+                                width: 250,
+                                child: Row(
                                   children: [
-                                    const Icon(Icons.calendar_today_outlined,
+                                    const Icon(Icons.location_on_outlined,
                                         size: 20),
-                                    const SizedBox(width: 8.0),
-                                    Text(classItem.date),
+                                    const SizedBox(
+                                      width: 8.0,
+                                    ),
+                                    Text(
+                                      classItem.location,
+                                    ),
                                   ],
                                 ),
-                                GestureDetector(
-                                  onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => LecturerViewClass(
-                                            classItem: classItem),
+                              ),
+                              const SizedBox(height: 8.0),
+                              //Time of the class
+                              Row(
+                                children: [
+                                  const Icon(Icons.access_time_outlined,
+                                      size: 20),
+                                  const SizedBox(width: 8.0),
+                                  Text(
+                                      "${classItem.startTime} - ${classItem.endTime}"),
+                                ],
+                              ),
+                              const SizedBox(height: 8.0),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Row(
+                                    children: [
+                                      const Icon(Icons.calendar_today_outlined,
+                                          size: 20),
+                                      const SizedBox(width: 8.0),
+                                      Text(classItem.date),
+                                    ],
+                                  ),
+                                  GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              LecturerViewClass(
+                                                  classItem: classItem),
+                                        ),
+                                      );
+                                    },
+                                    child: const Text(
+                                      "View all >",
+                                      style: TextStyle(
+                                        color: Colors.purple,
+                                        fontWeight: FontWeight.bold,
                                       ),
-                                    );
-                                  },
-                                  child: const Text(
-                                    "View all >",
-                                    style: TextStyle(
-                                      color: Colors.purple,
-                                      fontWeight: FontWeight.bold,
                                     ),
                                   ),
-                                ),
-                              ],
-                            ),
-                          ],
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
@@ -195,10 +202,9 @@ class LectViewAllClass extends ConsumerWidget {
   AppBar appBar(BuildContext context) {
     return AppBar(
       elevation: 0,
-      leadingWidth: 90,
       leading: GestureDetector(
         onTap: () {
-          Navigator.push(
+          Navigator.pushReplacement(
             context,
             MaterialPageRoute(
               builder: (context) => LectHomepage(),
@@ -209,17 +215,28 @@ class LectViewAllClass extends ConsumerWidget {
           padding: EdgeInsets.only(left: 20.0),
           child: Row(
             children: [
-              Icon(Icons.arrow_back_ios, color: Colors.black, size: 20),
-              SizedBox(width: 5),
-              Text(
-                "Back",
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 16,
-                ),
+              Icon(
+                Icons.arrow_back_ios,
+                color: Colors.black,
+                size: 18,
               ),
             ],
           ),
+        ),
+      ),
+      title: const Text(
+        "Today's Classes",
+        style: TextStyle(
+          fontSize: 17,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+      centerTitle: true,
+      //Give a bottom border
+      shape: Border(
+        bottom: BorderSide(
+          color: Colors.grey[300]!,
+          width: 1.0,
         ),
       ),
       titleSpacing: 0,

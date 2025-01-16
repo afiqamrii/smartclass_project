@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
+import 'package:smartclass_fyp_2024/lecturer_pov/lecturer_show_all_classes.dart';
 import 'package:smartclass_fyp_2024/lecturer_pov/lecturer_update_class.dart';
 import '../models/class_models.dart';
 import '../services/api.dart';
@@ -21,7 +22,12 @@ class LecturerViewClass extends StatelessWidget {
       appBar: AppBar(
         leading: GestureDetector(
           onTap: () {
-            Navigator.pop(context);
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const LectViewAllClass(),
+              ),
+            );
           },
           child: const Padding(
             padding: EdgeInsets.only(left: 20.0),
@@ -41,6 +47,13 @@ class LecturerViewClass extends StatelessWidget {
           style: const TextStyle(
             fontSize: 15,
             color: Colors.black,
+          ),
+        ),
+        // Give a border at the bottom
+        shape: Border(
+          bottom: BorderSide(
+            color: Colors.grey[300]!,
+            width: 1.0,
           ),
         ),
         centerTitle: true,

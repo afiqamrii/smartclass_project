@@ -227,9 +227,9 @@ class LecturerProfilePage extends StatelessWidget {
                         ),
                       ),
                       //End of List of button / Features of account settings
-                      SizedBox(
-                        height: MediaQuery.of(context).size.width * 0.88,
-                      ),
+                      // SizedBox(
+                      //   height: MediaQuery.of(context).size.width * 0.8,
+                      // ),
                       //Logout Button
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,

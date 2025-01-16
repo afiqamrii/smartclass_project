@@ -11,7 +11,10 @@ import '../models/class_models.dart'; // HTTP package for making API requests.
 class Api {
   /// The base URL of the backend server's API.
   /// Replace the URL with your actual backend server address.
-  static const baseUrl = "http://10.0.2.2:3000/class/";
+  // static const baseUrl = "http://10.0.2.2:3000/class/";
+
+  //Use physical phone
+  static const baseUrl = "http://192.168.0.99:3000/class/";
 
   //GET API
   /// Sends a GET request to retrieve data from the backend database.
