@@ -31,7 +31,7 @@ app.use(express.json());
 // Start the server and listen on the specified port.
 const PORT = 3000;
 
-app.listen(PORT, "127.0.0.1", () => {
+app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
 

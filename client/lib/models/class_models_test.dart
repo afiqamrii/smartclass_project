@@ -1,5 +1,3 @@
-
-
 class ClasTestModel {
   final int id;
   final String courseCode;
@@ -26,7 +24,7 @@ class ClasTestModel {
     classes.add(ClasTestModel(
       id: 1,
       courseCode: 'CSE201',
-      courseName: 'Artificial Intelligence',
+      courseName: 'Artificial Intelligence Neural Fuzzy Logic',
       location: 'Room 202',
       startTime: '8:00 AM',
       endTime: '9:30 AM',
