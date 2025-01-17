@@ -4,10 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:smartclass_fyp_2024/dataprovider/data_provider.dart';
-import 'package:smartclass_fyp_2024/lecturer_pov/lecturer_homepage.dart';
 import 'package:smartclass_fyp_2024/lecturer_pov/lecturer_view_class.dart';
+import 'package:smartclass_fyp_2024/lecturer_pov/template/lecturer_bottom_navbar.dart';
 import '../lecturer_pov/lecturer_create_class.dart';
-import '../models/class_models.dart';
+import '../models/lecturer/class_models.dart';
 
 class LectViewAllClass extends ConsumerWidget {
   const LectViewAllClass({super.key});
@@ -82,7 +82,7 @@ class LectViewAllClass extends ConsumerWidget {
                               Text(
                                 "${classItem.courseCode} - ${classItem.courseName}",
                                 style: const TextStyle(
-                                  fontSize: 18,
+                                  fontSize: 16,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
@@ -99,6 +99,11 @@ class LectViewAllClass extends ConsumerWidget {
                                     ),
                                     Text(
                                       classItem.location,
+                                      style: const TextStyle(
+                                        fontFamily: 'FigtreeRegular',
+                                        fontWeight: FontWeight.w500,
+                                        fontSize: 13,
+                                      ),
                                     ),
                                   ],
                                 ),
@@ -111,7 +116,13 @@ class LectViewAllClass extends ConsumerWidget {
                                       size: 20),
                                   const SizedBox(width: 8.0),
                                   Text(
-                                      "${classItem.startTime} - ${classItem.endTime}"),
+                                    "${classItem.startTime} - ${classItem.endTime}",
+                                    style: const TextStyle(
+                                      fontFamily: 'FigtreeRegular',
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 13,
+                                    ),
+                                  ),
                                 ],
                               ),
                               const SizedBox(height: 8.0),
@@ -124,7 +135,14 @@ class LectViewAllClass extends ConsumerWidget {
                                       const Icon(Icons.calendar_today_outlined,
                                           size: 20),
                                       const SizedBox(width: 8.0),
-                                      Text(classItem.date),
+                                      Text(
+                                        classItem.date,
+                                        style: const TextStyle(
+                                          fontFamily: 'FigtreeRegular',
+                                          fontWeight: FontWeight.w500,
+                                          fontSize: 13,
+                                        ),
+                                      ),
                                     ],
                                   ),
                                   GestureDetector(
@@ -142,7 +160,9 @@ class LectViewAllClass extends ConsumerWidget {
                                       "View all >",
                                       style: TextStyle(
                                         color: Colors.purple,
-                                        fontWeight: FontWeight.bold,
+                                        fontFamily: 'FigtreeRegular',
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 11,
                                       ),
                                     ),
                                   ),
@@ -207,7 +227,7 @@ class LectViewAllClass extends ConsumerWidget {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-              builder: (context) => LectHomepage(),
+              builder: (context) => const LectBottomNavBar(initialIndex: 0),
             ),
           );
         },

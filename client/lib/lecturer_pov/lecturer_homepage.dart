@@ -1,14 +1,13 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:smartclass_fyp_2024/dataprovider/data_provider.dart';
 import 'package:smartclass_fyp_2024/lecturer_pov/lecturer_viewSummarization.dart';
 import 'package:smartclass_fyp_2024/lecturer_pov/lecturer_view_class.dart';
-import 'package:smartclass_fyp_2024/models/class_models_test.dart';
+import 'package:smartclass_fyp_2024/models/lecturer/class_models_test.dart';
 import 'package:smartclass_fyp_2024/test.dart';
 import 'lecturer_show_all_classes.dart';
-import '../models/class_models.dart';
+import '../models/lecturer/class_models.dart';
 
 // ignore: must_be_immutable
 class LectHomepage extends ConsumerWidget {
@@ -55,26 +54,26 @@ class LectHomepage extends ConsumerWidget {
     //get data from provider
     final data = ref.watch(classDataProvider);
     return Scaffold(
-      backgroundColor: Colors.grey[100],
-      appBar: AppBar(
-        backgroundColor: Colors.grey[100],
-        elevation: 0,
-        title: const Text(
-          'Hello Dr. Afiq!',
-          style: TextStyle(color: Colors.black, fontSize: 22),
-        ),
-        leading: null,
-        automaticallyImplyLeading: false,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.notifications, color: Colors.black),
-            onPressed: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => const MyWidget()));
-            },
-          ),
-        ],
-      ),
+      // backgroundColor: Colors.grey[100],
+      // appBar: AppBar(
+      //   backgroundColor: Colors.grey[100],
+      //   elevation: 0,
+      //   title: const Text(
+      //     'Hello Dr. Afiq!',
+      //     style: TextStyle(color: Colors.black, fontSize: 22),
+      //   ),
+      //   leading: null,
+      //   automaticallyImplyLeading: false,
+      //   actions: [
+      //     IconButton(
+      //       icon: const Icon(Icons.notifications, color: Colors.black),
+      //       onPressed: () {
+      //         Navigator.push(context,
+      //             MaterialPageRoute(builder: (context) => const MyWidget()));
+      //       },
+      //     ),
+      //   ],
+      // ),
       body: data.when(
         data: (data) {
           List<ClassModel> classData = data;
@@ -86,13 +85,64 @@ class LectHomepage extends ConsumerWidget {
             animSpeedFactor: 4,
             showChildOpacityTransition: false,
             child: Padding(
-              padding: const EdgeInsets.only(left: 18.0),
+              padding: const EdgeInsets.only(
+                left: 18.0,
+                top: 10,
+              ),
               child: ListView(
                 children: [
-                  const SizedBox(height: 10),
-                  const Text(
-                    "Welcome to SmartClass",
-                    style: TextStyle(fontSize: 16, color: Colors.purple),
+                  //Top title section
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      //Hello Dr. Afiq top title
+                      const Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "Hello Dr. Afiq!",
+                            style: TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          //Welcome to Smart Class top title
+                          Text.rich(
+                            TextSpan(
+                              text: "Welcome to ",
+                              style: TextStyle(
+                                fontSize: 16,
+                              ),
+                              children: [
+                                TextSpan(
+                                  text: "Smart Class",
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.purple,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                      //Right Side for notification icon
+                      Padding(
+                        padding: const EdgeInsets.only(right: 10.0),
+                        child: IconButton(
+                          icon: const Icon(Icons.notifications,
+                              color: Colors.black),
+                          onPressed: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => const MyWidget()));
+                          },
+                        ),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 20),
                   // Today's Classes Header
@@ -109,7 +159,7 @@ class LectHomepage extends ConsumerWidget {
                           const Text(
                             "Summarization",
                             style: TextStyle(
-                              fontSize: 18,
+                              fontSize: 17,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -126,7 +176,7 @@ class LectHomepage extends ConsumerWidget {
                               child: Text(
                                 "View All >",
                                 style: TextStyle(
-                                  fontSize: 13,
+                                  fontSize: 11,
                                   fontWeight: FontWeight.bold,
                                   color: Colors.purple,
                                 ),
@@ -261,10 +311,14 @@ class LectHomepage extends ConsumerWidget {
                                             TextButton(
                                               onPressed: () {
                                                 Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                        builder: (context) =>
-                                                            const LecturerViewsummarization()));
+                                                  context,
+                                                  MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        const LecturerViewsummarization(
+                                                      classId: 3,
+                                                    ),
+                                                  ),
+                                                );
                                               },
                                               child: const Text(
                                                 "View All >",
@@ -308,7 +362,7 @@ class LectHomepage extends ConsumerWidget {
         const Text(
           "Today's Classes",
           style: TextStyle(
-            fontSize: 18,
+            fontSize: 17,
             fontWeight: FontWeight.bold,
             color: Colors.black87,
           ),
@@ -320,12 +374,15 @@ class LectHomepage extends ConsumerWidget {
                 MaterialPageRoute(
                     builder: (context) => const LectViewAllClass()));
           },
-          child: const Text(
-            "View all >",
-            style: TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.bold,
-              color: Colors.purple,
+          child: const Padding(
+            padding: EdgeInsets.only(right: 10.0),
+            child: Text(
+              "View all >",
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.bold,
+                color: Colors.purple,
+              ),
             ),
           ),
         ),

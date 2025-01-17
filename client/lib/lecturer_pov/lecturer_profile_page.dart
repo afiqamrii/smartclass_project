@@ -89,7 +89,9 @@ class LecturerProfilePage extends StatelessWidget {
                 ),
               ),
             ),
-
+            const SizedBox(
+              height: 10,
+            ),
             Expanded(
               child: Container(
                 width: double.infinity,
@@ -107,7 +109,7 @@ class LecturerProfilePage extends StatelessWidget {
                       const Text(
                         "Account Settings",
                         style: TextStyle(
-                          fontSize: 20,
+                          fontSize: 18,
                           fontWeight: FontWeight.w800,
                         ),
                       ),
@@ -136,8 +138,8 @@ class LecturerProfilePage extends StatelessWidget {
                                     children: [
                                       Image.asset(
                                         'assets/icons/user.png',
-                                        width: 25,
-                                        height: 25,
+                                        width: 20,
+                                        height: 20,
                                       ),
                                       const SizedBox(width: 10),
                                       const Column(
@@ -166,7 +168,7 @@ class LecturerProfilePage extends StatelessWidget {
                             ),
                             //Make a horizontal line
                             Divider(
-                              color: Colors.black.withOpacity(0.5),
+                              color: Colors.black.withOpacity(0.15),
                               thickness: 1,
                             ),
                             const SizedBox(height: 12),
@@ -189,8 +191,8 @@ class LecturerProfilePage extends StatelessWidget {
                                     children: [
                                       Image.asset(
                                         'assets/icons/report.png',
-                                        width: 25,
-                                        height: 25,
+                                        width: 20,
+                                        height: 20,
                                       ),
                                       const SizedBox(width: 10),
                                       const Column(
@@ -219,7 +221,7 @@ class LecturerProfilePage extends StatelessWidget {
                             ),
                             //Make a horizontal line
                             Divider(
-                              color: Colors.black.withOpacity(0.5),
+                              color: Colors.black.withOpacity(0.15),
                               thickness: 1,
                             ),
                             const SizedBox(height: 12),

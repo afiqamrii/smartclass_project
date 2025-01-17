@@ -27,7 +27,7 @@ router.put("/savesummarizedtext", async (req, res) => {
         // SQL query to insert data
         const query = `
             UPDATE ClassRecording
-            SET summarizedText = ?
+            SET summaryText = ?
             WHERE recordingId = 11
         `;
 

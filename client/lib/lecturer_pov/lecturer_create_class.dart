@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:quickalert/quickalert.dart';
 import 'package:smartclass_fyp_2024/lecturer_pov/lecturer_show_all_classes.dart';
-import '../services/api.dart';
+import '../services/lecturer/classApi.dart';
 
 class LectCreateClass extends StatefulWidget {
   const LectCreateClass({super.key});

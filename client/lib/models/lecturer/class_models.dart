@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class ClassModel {
-  final int id;
+  final int classId;
   final String courseCode;
   final String courseName;
   final String location;
@@ -11,7 +11,7 @@ class ClassModel {
   final String date;
 
   ClassModel({
-    required this.id,
+    required this.classId,
     required this.courseCode,
     required this.courseName,
     required this.location,
@@ -20,14 +20,15 @@ class ClassModel {
     required this.date,
   });
 
+  // Convert ClassModel to JSON
   Map<String, dynamic> toJson() {
     DateTime parsedDate = DateFormat('dd MMMM yyyy').parse(date);
     String formattedDate = DateFormat('yyyy-MM-dd').format(parsedDate);
 
     return {
-      'id': id,
+      'classId': classId,
       'courseCode': courseCode,
-      'title': courseName,
+      'className': courseName,
       'classLocation': location,
       'timeStart': startTime,
       'timeEnd': endTime,
@@ -46,9 +47,9 @@ class ClassModel {
     String formattedEndTime = _formatTime(endTime);
 
     return ClassModel(
-      id: json['id'],
+      classId: json['classId'],
       courseCode: json['courseCode'],
-      courseName: json['title'],
+      courseName: json['className'],
       location: json['classLocation'] ?? "Not Specified",
       startTime: formattedStartTime,
       endTime: formattedEndTime,

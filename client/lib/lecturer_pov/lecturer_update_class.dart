@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:quickalert/quickalert.dart';
 import 'package:smartclass_fyp_2024/lecturer_pov/lecturer_view_class.dart';
-import '../models/class_models.dart';
-import '../services/api.dart';
+import '../models/lecturer/class_models.dart';
+import '../services/lecturer/classApi.dart';
 
 class LectUpdateClass extends StatefulWidget {
   final ClassModel classItem;
@@ -124,7 +124,7 @@ class _LectUpdateClassState extends State<LectUpdateClass> {
                 onPressed: () async {
                   if (_formKey.currentState!.validate()) {
                     final updatedClass = ClassModel(
-                      id: widget.classItem.id,
+                      classId: widget.classItem.classId,
                       courseCode: _courseCodeController.text,
                       courseName: _titleController.text,
                       date: _dateController.text,
