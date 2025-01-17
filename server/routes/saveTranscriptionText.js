@@ -26,7 +26,7 @@ router.post("/savetranscriptiontext", async (req, res) => {
 
         // SQL query to insert data
         const query = `
-            INSERT INTO ClassRecording (transcriptionText, summarizedText)
+            INSERT INTO ClassRecording (transcriptionText, summaryText)
             VALUES (?,?)
         `;
 
