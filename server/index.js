@@ -17,6 +17,7 @@ const pool = require("./data/database");
 const lectCreateClassRoutres = require("./routes/lectCreateClass");
 const generateTranscriptionTextRoutes = require("./routes/saveTranscriptionText");
 const generateSummarizedTextRoutes = require("./routes/saveSummarizedText");
+const lectAccessSummarizationRoutes = require("./routes/lectAccessSummarization");
 const path = require("path");
 
 // Initialize the Express application.
@@ -46,3 +47,6 @@ app.use("/classrecording", generateTranscriptionTextRoutes);
 //Save summarized text
 //Save transcription text
 app.use("/classrecording", generateSummarizedTextRoutes);
+
+//Access summarized text
+app.use("/classSummarization", lectAccessSummarizationRoutes);

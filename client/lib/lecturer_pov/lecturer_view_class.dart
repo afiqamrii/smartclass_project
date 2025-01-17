@@ -2,14 +2,39 @@ import 'package:flutter/material.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:smartclass_fyp_2024/lecturer_pov/lecturer_show_all_classes.dart';
 import 'package:smartclass_fyp_2024/lecturer_pov/lecturer_update_class.dart';
-import '../models/class_models.dart';
-import '../services/api.dart';
+import '../models/lecturer/class_models.dart';
+import '../services/lecturer/classApi.dart';
 
-class LecturerViewClass extends StatelessWidget {
+class LecturerViewClass extends StatefulWidget {
   final ClassModel classItem;
 
   const LecturerViewClass({super.key, required this.classItem});
 
+  @override
+  State<LecturerViewClass> createState() => _LecturerViewClassState();
+}
+
+class _LecturerViewClassState extends State<LecturerViewClass> {
+  //Toggle light for lecture recording
+  bool light = false;
+  Icon initialMicIcon = const Icon(
+    Icons.mic_off_rounded,
+    color: Colors.white,
+    size: 20,
+  );
+  // Set initial text for Recording
+  Text initialRecordingText = const Text(
+    "Recording",
+    style: TextStyle(
+      fontSize: 16,
+      fontWeight: FontWeight.bold,
+      color: Colors.black87,
+    ),
+  );
+  //Set initial color for mic container
+  Color initialColor = const Color.fromARGB(255, 255, 61, 61);
+
+  //Refresh function
   Future<void> _handleRefresh() async {
     //reloading take some time..
     return await Future.delayed(const Duration(seconds: 1));
@@ -43,7 +68,7 @@ class LecturerViewClass extends StatelessWidget {
           ),
         ),
         title: Text(
-          '${classItem.courseCode} - ${classItem.courseName}',
+          '${widget.classItem.courseCode} - ${widget.classItem.courseName}',
           style: const TextStyle(
             fontSize: 15,
             color: Colors.black,
@@ -121,7 +146,7 @@ class LecturerViewClass extends StatelessWidget {
                                       context,
                                       MaterialPageRoute(
                                         builder: (context) => LectUpdateClass(
-                                          classItem: classItem,
+                                          classItem: widget.classItem,
                                         ),
                                       ),
                                     );
@@ -152,7 +177,7 @@ class LecturerViewClass extends StatelessWidget {
                                             MediaQuery.of(context).size.width *
                                                 0.7,
                                         child: Text(
-                                          "${classItem.courseCode} - ${classItem.courseName}",
+                                          "${widget.classItem.courseCode} - ${widget.classItem.courseName}",
                                           style: const TextStyle(
                                             color: Colors.white,
                                             fontSize: 18,
@@ -165,17 +190,19 @@ class LecturerViewClass extends StatelessWidget {
                                       ),
                                       //Time and date and lect name of the class goes hereeeee
                                       Text(
-                                        "${classItem.startTime} - ${classItem.endTime}",
+                                        "${widget.classItem.startTime} - ${widget.classItem.endTime}",
                                         style: const TextStyle(
                                           color: Colors.white,
                                           fontSize: 13,
+                                          fontFamily: 'FigtreeRegular',
                                         ),
                                       ),
                                       Text(
-                                        classItem.date,
+                                        widget.classItem.date,
                                         style: const TextStyle(
                                           color: Colors.white,
                                           fontSize: 13,
+                                          fontFamily: 'FigtreeRegular',
                                         ),
                                       ),
                                       const SizedBox(
@@ -187,7 +214,7 @@ class LecturerViewClass extends StatelessWidget {
                                                 0.7,
                                         child: Text(
                                           "Lecturer : Dr Nor | "
-                                          "Location : ${classItem.location}",
+                                          "Location : ${widget.classItem.location}",
                                           style: const TextStyle(
                                             color: Colors.white,
                                             fontSize: 13,
@@ -208,7 +235,170 @@ class LecturerViewClass extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(height: 100),
+          const SizedBox(height: 5),
+          //List of button section (Attendance , Lecture Recording Activation and See the Summarization)
+          Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 22.0,
+            ),
+            child: IntrinsicHeight(
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.only(
+                      left: 20.0, right: 20, top: 10, bottom: 15),
+                  child: Column(
+                    children: [
+                      //Attendance Button Section
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          //Attendance button
+                          const Text(
+                            "Attendance",
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black87,
+                            ),
+                          ),
+                          IconButton(
+                            onPressed: () {},
+                            icon: Icon(
+                              Icons.arrow_forward_ios,
+                              size: 20,
+                              color: Colors.black.withOpacity(0.5),
+                            ),
+                          ),
+                        ],
+                      ),
+                      Divider(
+                        thickness: 1,
+                        color: Colors.black.withOpacity(0.15),
+                      ),
+                      //Lecture Recording Activation button
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            "Lecture Recording",
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black87,
+                            ),
+                          ),
+                          const SizedBox(height: 5),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Row(
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.all(5),
+                                    decoration: BoxDecoration(
+                                      color: initialColor,
+                                      borderRadius: BorderRadius.circular(5),
+                                    ),
+                                    child: initialMicIcon,
+                                  ),
+                                  const SizedBox(width: 5),
+                                  //Set initial recording text
+                                  initialRecordingText,
+                                ],
+                              ),
+
+                              //Toggle Switch for recording
+                              Switch(
+                                value: light,
+                                activeColor: Colors.green,
+                                onChanged: (bool value) async {
+                                  //Switch toogle for lecture recording activation here
+                                  setState(() {
+                                    light = value;
+                                    if (light == true) {
+                                      initialMicIcon = const Icon(
+                                        Icons.mic,
+                                        size: 20,
+                                        color: Colors.white,
+                                      );
+                                      //Set initial color of caontainer to green
+                                      initialColor = Colors.green;
+                                      //Set text to "Recording Started"
+                                      initialRecordingText = const Text(
+                                        "Recording Started !",
+                                        style: TextStyle(
+                                          color: Colors.green,
+                                          fontSize: 16,
+                                        ),
+                                      );
+                                    }
+                                    if (light == false) {
+                                      initialMicIcon = const Icon(
+                                        Icons.mic_off,
+                                        size: 20,
+                                        color: Colors.white,
+                                      );
+                                      //Set initial color of container to red back
+                                      initialColor = Colors.red;
+                                      //Set text to "Recording"
+
+                                      initialRecordingText = const Text(
+                                        "Recording",
+                                        style: TextStyle(
+                                          color: Colors.black,
+                                          fontSize: 16,
+                                        ),
+                                      );
+                                    }
+                                  });
+
+                                  // Handle when toggle is tapped here
+                                },
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                      Divider(
+                        thickness: 1,
+                        color: Colors.black.withOpacity(0.15),
+                      ),
+                      //Summarization button
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text(
+                            "View Summarization",
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black87,
+                            ),
+                          ),
+                          IconButton(
+                            onPressed: () {},
+                            icon: Icon(
+                              Icons.arrow_forward_ios,
+                              size: 20,
+                              color: Colors.black.withOpacity(0.5),
+                            ),
+                          ),
+                        ],
+                      ),
+                      Divider(
+                        thickness: 1,
+                        color: Colors.black.withOpacity(0.15),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
           _deleteButton(context),
         ],
       ),
@@ -216,133 +406,6 @@ class LecturerViewClass extends StatelessWidget {
   }
 
   // Padding _topClassCard(BuildContext context) {
-  //   return Padding(
-  //     padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 20),
-  //     child: Card(
-  //       shape: RoundedRectangleBorder(
-  //         borderRadius: BorderRadius.circular(15),
-  //       ),
-  //       //Make sure the picture follow the Card shape
-  //       clipBehavior: Clip.antiAlias,
-  //       child: IntrinsicHeight(
-  //         child: Stack(
-  //           fit: StackFit.expand,
-  //           children: [
-  //             //Image layer
-  //             Image.asset(
-  //               'assets/pictures/compPicture.jpg',
-  //               fit: BoxFit.cover,
-  //             ),
-  //             //Blur black gradient layer
-  //             // Partial Blur and Black Overlay Layer
-  //             Positioned(
-  //               top: 50,
-  //               left: 0,
-  //               right: 0,
-  //               bottom: 0,
-  //               child: Container(
-  //                 decoration: BoxDecoration(
-  //                   gradient: LinearGradient(
-  //                     begin: Alignment.bottomCenter,
-  //                     end: Alignment.topCenter,
-  //                     colors: [
-  //                       Colors.black.withOpacity(0.85),
-  //                       Colors.transparent,
-  //                     ],
-  //                   ),
-  //                 ),
-  //               ),
-  //             ),
-
-  //             //Text layer
-  //             Padding(
-  //               padding: const EdgeInsets.all(15.0),
-  //               child: Column(
-  //                 children: [
-  //                   Row(
-  //                     mainAxisAlignment: MainAxisAlignment.end,
-  //                     children: [
-  //                       GestureDetector(
-  //                         onTap: () {
-  //                           // Handle process here
-  //                         },
-  //                         child: Image.asset(
-  //                           'assets/icons/editicon.png',
-  //                           height: 25,
-  //                           width: 25,
-  //                         ),
-  //                       ),
-  //                     ],
-  //                   ),
-  //                   const SizedBox(height: 50),
-  //                   //Start of details or class in the card.
-  //                   Padding(
-  //                     padding: const EdgeInsets.only(
-  //                         left: 7.0, right: 10, bottom: 5),
-  //                     child: Row(
-  //                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  //                       children: [
-  //                         Column(
-  //                           crossAxisAlignment: CrossAxisAlignment.start,
-  //                           children: [
-  //                             SizedBox(
-  //                               width: MediaQuery.of(context).size.width * 0.6,
-  //                               child: Text(
-  //                                 "${classItem.courseCode} - ${classItem.courseName}",
-  //                                 style: const TextStyle(
-  //                                   color: Colors.white,
-  //                                   fontSize: 18,
-  //                                   fontWeight: FontWeight.bold,
-  //                                 ),
-  //                               ),
-  //                             ),
-  //                             const SizedBox(
-  //                               height: 5,
-  //                             ),
-  //                             //Time and date and lect name of the class goes hereeeee
-  //                             Text(
-  //                               "${classItem.startTime} - ${classItem.endTime}",
-  //                               style: const TextStyle(
-  //                                 color: Colors.white,
-  //                                 fontSize: 13,
-  //                               ),
-  //                             ),
-  //                             Text(
-  //                               classItem.date,
-  //                               style: const TextStyle(
-  //                                 color: Colors.white,
-  //                                 fontSize: 13,
-  //                               ),
-  //                             ),
-  //                             const SizedBox(
-  //                               height: 5,
-  //                             ),
-  //                             SizedBox(
-  //                               width: MediaQuery.of(context).size.width * 0.7,
-  //                               child: const Text(
-  //                                 "Lecturer : Dr Nor | "
-  //                                 "Location : Halu ",
-  //                                 style: TextStyle(
-  //                                   color: Colors.white,
-  //                                   fontSize: 13,
-  //                                 ),
-  //                               ),
-  //                             ),
-  //                           ],
-  //                         ),
-  //                       ],
-  //                     ),
-  //                   ),
-  //                 ],
-  //               ),
-  //             ),
-  //           ],
-  //         ),
-  //       ),
-  //     ),
-  //   );
-  // }
-
   Widget _deleteButton(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -353,7 +416,7 @@ class LecturerViewClass extends StatelessWidget {
         onPressed: () async {
           bool confirm = await _showConfirmationDialog(context);
           if (confirm) {
-            await Api.deleteClass(Api.baseUrl, classItem.id);
+            await Api.deleteClass(Api.baseUrl, widget.classItem.classId);
             // ignore: use_build_context_synchronously
             Navigator.pop(context);
             // ignore: use_build_context_synchronously

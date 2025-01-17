@@ -16,9 +16,9 @@ router.post("/addclass", async (req, res) => {
         console.log("Received data:", req.body);
 
         // Destructure and validate the request body
-        const { courseCode, title, date, timeStart, timeEnd, location } = req.body;
+        const { courseCode, className, date, timeStart, timeEnd, location } = req.body;
 
-        if (!courseCode || !title || !date || !timeStart || !timeEnd || !location) {
+        if (!courseCode || !className || !date || !timeStart || !timeEnd || !classLocation) {
             return res.status(400).send({
                 "Status_Code": 400,
                 "Message": "Missing required fields"
@@ -32,11 +32,11 @@ router.post("/addclass", async (req, res) => {
 
         // SQL query to insert data
         const query = `
-            INSERT INTO class (courseCode, title, date, timeStart, timeEnd, classLocation)
+            INSERT INTO class (courseCode, className, date, timeStart, timeEnd, classLocation)
             VALUES (?, ?, ?, ?, ?, ?)
         `;
 
-        const values = [courseCode, title, formattedDate, formattedTimeStart, formattedTimeEnd, location];
+        const values = [courseCode, className, formattedDate, formattedTimeStart, formattedTimeEnd, location];
 
         // Use the pool to execute the query
         const [result] = await pool.query(query, values);
@@ -92,10 +92,10 @@ router.get("/viewclass", async (req, res) => {
 router.put("/updateclass/:id", async (req, res) => {
     try {
       console.log("Received data:", req.body);
-      const { courseCode, title, date, timeStart, timeEnd, classLocation } = req.body;
+      const { courseCode, className, date, timeStart, timeEnd, classLocation } = req.body;
       const id = req.params.id;
   
-    //   if (!id || !courseCode || !title || !date || !timeStart || !timeEnd || !classLocation) {
+    //   if (!id || !courseCode || !className || !date || !timeStart || !timeEnd || !classLocation) {
     //     return res.status(400).send({
     //       "Status_Code": 400,
     //       "Message": "Missing required fields"
@@ -108,11 +108,11 @@ router.put("/updateclass/:id", async (req, res) => {
   
       const query = `
         UPDATE class
-        SET courseCode = ?, title = ?, date = ?, timeStart = ?, timeEnd = ?, classLocation = ?
-        WHERE id = ?
+        SET courseCode = ?, className = ?, date = ?, timeStart = ?, timeEnd = ?, classLocation = ?
+        WHERE classId = ?
       `;
   
-      const values = [courseCode, title, formattedDate, formattedTimeStart, formattedTimeEnd, classLocation, id];
+      const values = [courseCode, className, formattedDate, formattedTimeStart, formattedTimeEnd, classLocation, id];
   
       const [result] = await pool.query(query, values);
   
@@ -147,7 +147,7 @@ router.delete("/deleteclass/:id", async (req, res) => {
         // SQL query to delete data
         const query = `
             DELETE FROM class
-            WHERE id = ?
+            WHERE classId = ?
         `;
 
         // Use the pool to execute the query

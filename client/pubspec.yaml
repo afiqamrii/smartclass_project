@@ -91,6 +91,10 @@ flutter:
      - family: Figtree
        fonts:
          - asset: fonts/Figtree-Bold.ttf
+    
+     - family : FigtreeRegular
+       fonts:
+         - asset: fonts/Figtree-Regular.ttf
   #       - asset: fonts/Schyler-Italic.ttf
   #         style: italic
   #   - family: Trajan Pro
