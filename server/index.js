@@ -18,6 +18,7 @@ const lectCreateClassRoutres = require("./routes/lectCreateClass");
 const generateTranscriptionTextRoutes = require("./routes/saveTranscriptionText");
 const generateSummarizedTextRoutes = require("./routes/saveSummarizedText");
 const lectAccessSummarizationRoutes = require("./routes/lectAccessSummarization");
+const sendCommandToMQTT = require("./routes/sendCommandToMQTT");
 const path = require("path");
 
 // Initialize the Express application.
@@ -50,3 +51,6 @@ app.use("/classrecording", generateSummarizedTextRoutes);
 
 //Access summarized text
 app.use("/classSummarization", lectAccessSummarizationRoutes);
+
+//Send to MQTT
+app.use("/mqtt", sendCommandToMQTT);
