@@ -174,41 +174,6 @@ class LectViewAllClass extends ConsumerWidget {
                       ),
                     ),
                   );
-                } else {
-                  return Padding(
-                    padding: const EdgeInsets.all(20.0),
-                    child: Align(
-                      alignment: Alignment.center,
-                      child: ElevatedButton.icon(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const LectCreateClass()),
-                          );
-                        },
-                        icon: const Icon(
-                          Icons.add,
-                          color: Color.fromARGB(255, 255, 255, 255),
-                        ),
-                        label: const Text(
-                          "Create Class",
-                          style: TextStyle(
-                            fontSize: 15.0,
-                            color: Color.fromARGB(255, 255, 255, 255),
-                          ),
-                        ),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xff323232),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(54.0),
-                          ),
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 15.0, vertical: 13.0),
-                        ),
-                      ),
-                    ),
-                  );
                 }
               },
             ),
@@ -260,6 +225,26 @@ class LectViewAllClass extends ConsumerWidget {
         ),
       ),
       titleSpacing: 0,
+      //action
+      actions: [
+        Padding(
+          padding: const EdgeInsets.only(right: 20.0),
+          child: GestureDetector(
+            onTap: () {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const LectCreateClass(),
+                ),
+              );
+            },
+            child: Image.asset(
+              "assets/icons/add.png",
+              height: 25,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
