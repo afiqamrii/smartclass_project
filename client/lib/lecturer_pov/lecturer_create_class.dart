@@ -195,7 +195,12 @@ class _LectCreateClassState extends State<LectCreateClass> {
       leadingWidth: 90,
       leading: GestureDetector(
         onTap: () {
-          Navigator.pop(context);
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const LectViewAllClass(),
+            ),
+          );
         },
         child: const Padding(
           padding: EdgeInsets.only(left: 20.0),

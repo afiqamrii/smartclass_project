@@ -5,6 +5,7 @@ import 'package:flutter/material.dart'; // Flutter framework for UI components.
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
+import 'package:smartclass_fyp_2024/models/lecturer/classSum_model.dart';
 import '../../models/lecturer/class_models.dart'; // HTTP package for making API requests.
 
 /// A class to handle API interactions for the application.
@@ -15,7 +16,7 @@ class Api {
   // //Based url for HOSTPOT MyPhone
   // static const baseUrl = "http://172.20.10.2:3000/class/";
 
-  //GET API Using provider
+  //GET API Using provider to all classes data
   Future<List<ClassModel>> getClasses() async {
     Response response = await get(Uri.parse("${baseUrl}viewclass"));
 
@@ -24,6 +25,22 @@ class Api {
       final List result = jsonDecode(response.body)['Data'];
       //Use user model to return data as a LIST
       return result.map(((e) => ClassModel.fromJson(e))).toList();
+      //Show the error message if the response is not successful.
+    } else {
+      throw Exception(response.reasonPhrase);
+    }
+  }
+
+  //GET API Using provider to the class with summarization status
+  Future<List<ClassSumModel>> getClassesWithSummarization() async {
+    Response response =
+        await get(Uri.parse("${baseUrl}viewSummarizationStatus"));
+
+    //Check whether the response is successful or not.
+    if (response.statusCode == 200) {
+      final List result = jsonDecode(response.body)['Data'];
+      //Use user model to return data as a LIST
+      return result.map(((e) => ClassSumModel.fromJson(e))).toList();
       //Show the error message if the response is not successful.
     } else {
       throw Exception(response.reasonPhrase);
