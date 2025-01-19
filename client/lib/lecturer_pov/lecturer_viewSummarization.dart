@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:smartclass_fyp_2024/dataprovider/data_provider.dart';
-import 'package:smartclass_fyp_2024/models/lecturer/summarization_models.dart';
+import 'package:smartclass_fyp_2024/lecturer_pov/lecturer_editsummarization.dart';
+import 'package:smartclass_fyp_2024/lecturer_pov/template/lecturer_bottom_navbar.dart';
 
 class LecturerViewsummarization extends ConsumerWidget {
   final int classId;
@@ -12,6 +13,7 @@ class LecturerViewsummarization extends ConsumerWidget {
   //Handle refresh and reload the data from data providero
   Future<void> _handleRefresh(WidgetRef ref) async {
     //Reload the daaata from provider
+    // ignore: unused_result, await_only_futures
     await ref.refresh(classDataProviderSummarization(classId));
     //reloading take some time..
     return await Future.delayed(const Duration(seconds: 1));
@@ -33,7 +35,14 @@ class LecturerViewsummarization extends ConsumerWidget {
         centerTitle: true,
         leading: IconButton(
           onPressed: () {
-            Navigator.pop(context);
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) {
+                  return const LectBottomNavBar(initialIndex: 0);
+                },
+              ),
+            );
           },
           icon: const Padding(
             padding: EdgeInsets.only(left: 9.0),
@@ -85,7 +94,20 @@ class LecturerViewsummarization extends ConsumerWidget {
                     Padding(
                       padding: const EdgeInsets.only(top: 10.0, right: 10),
                       child: IconButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => LecturerEditsummarization(
+                                summarizationData: summarizationData[0]
+                                    .summaryText
+                                    .split(
+                                        '\n'), // Split the string into a list of strings,
+                                summarizationClassId: classId,
+                              ),
+                            ),
+                          );
+                        },
                         icon: const Icon(Icons.edit_note),
                         iconSize: 28,
                       ),

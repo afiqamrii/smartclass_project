@@ -4,7 +4,6 @@ import 'package:quickalert/models/quickalert_type.dart';
 import 'package:quickalert/widgets/quickalert_dialog.dart';
 import 'package:smartclass_fyp_2024/lecturer_pov/lecturer_show_all_classes.dart';
 import 'package:smartclass_fyp_2024/lecturer_pov/lecturer_update_class.dart';
-import 'package:smartclass_fyp_2024/lecturer_pov/template/lecturer_bottom_navbar.dart';
 import 'package:smartclass_fyp_2024/services/lecturer/favoriotApi.dart';
 import 'package:smartclass_fyp_2024/lecturer_pov/lecturer_viewSummarization.dart';
 import '../models/lecturer/class_models.dart';

@@ -34,5 +34,4 @@ router.get("/accesssummarization/:classId", async (req, res) => {
 });
 
 
-
 module.exports = router;
