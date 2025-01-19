@@ -10,14 +10,16 @@ const router = express.Router();
 
 // POST API to add transcription text to the database
 // Endpoint: /classrecording/savetranscriptiontext
-router.post("/savetranscriptiontext", async (req, res) => {
+router.post("/savetranscriptiontext/:classId", async (req, res) => {
     try {
         console.log("Received data:", req.body);
 
         // Destructure and validate the request body
-        const { transcriptionText, summarizedText } = req.body;
+        const { transcriptionText, summarizedText , recordingStatus } = req.body;
 
-        if (!transcriptionText) {
+        const { classId } = req.params;
+
+        if (!transcriptionText || !classId || !recordingStatus ) {
             return res.status(400).send({
                 "Status_Code": 400,
                 "Message": "Missing required field: transcriptionText"
@@ -26,14 +28,16 @@ router.post("/savetranscriptiontext", async (req, res) => {
 
         // SQL query to insert data
         const query = `
-            INSERT INTO ClassRecording (transcriptionText, summaryText)
-            VALUES (?,?)
+            INSERT INTO ClassRecording (transcriptionText, summaryText , classId , recordingStatus)
+            VALUES (?,?, ? , ?)
         `;
 
         // Execute the query
         const [result] = await pool.execute(query, [
             transcriptionText,
             summarizedText || null, // Default summarizedText to null if not provided
+            classId,
+            recordingStatus,
         ]);
 
         // Send response
@@ -44,6 +48,7 @@ router.post("/savetranscriptiontext", async (req, res) => {
                 classRecordingId: result.insertId,
                 transcriptionText: transcriptionText,
                 summarizedText: summarizedText || null,
+                classId
             },
         });
     } catch (error) {
@@ -55,12 +60,65 @@ router.post("/savetranscriptiontext", async (req, res) => {
     }
 });
 
+// //PUT API to add summarized text to the database
+// // Endpoint: /classrecording/savesummarizedtext
+// router.put("/updatetranscriptiontext/:classId", async (req, res) => {
+//     try {
+//         console.log("Received data:", req.body);
+
+//         // Destructure and validate the request body
+//         const { transcriptionText , summarizedText} = req.body;
+
+//         const { classId } = req.params;
+
+//         if (!transcriptionText) {
+//             return res.status(400).send({
+//                 "Status_Code": 400,
+//                 "Message": "Missing required field: transcriptionText"
+//             });
+//         }
+
+//         // SQL query to insert data
+//         const query = `
+//             UPDATE ClassRecording
+//             SET transcriptionText = ?
+//             WHERE classId = ?
+//         `;
+
+//         // Execute the query
+//         const [result] = await pool.execute(query, [
+//             transcriptionText,
+//             summarizedText || null, // Default summarizedText to null if not provided
+//             classId,
+//         ]);
+
+//         // Send response
+//         res.status(201).send({
+//             "Status_Code": 201,
+//             "Message": "Transcription text updated successfully",
+//             "Data": {
+//                 classRecordingId: result.insertId,
+//                 transcriptionText: transcriptionText,
+//                 summarizedText: summarizedText || null,
+//                 classId
+//             },
+//         });
+//     } catch (error) {
+//         console.error("Error saving summarized text:", error);
+//         res.status(500).send({
+//             "Status_Code": 500,
+//             "Message": "Internal Server Error",
+//         });
+//     }
+// });
+
+
 //GET API to get transcription text from the database
 router.get("/gettranscriptiontext", async (req, res) => {
     try {
         // SQL query to retrieve data
         const query = `
-            SELECT (transcriptionText) FROM ClassRecording where recordingId = 11
+            SELECT transcriptionText , classId , recordingId FROM ClassRecording where recordingStatus = "New"
         `;
 
         // Use the pool to execute the query

@@ -5,8 +5,11 @@ import 'package:http/http.dart';
 import 'package:smartclass_fyp_2024/models/lecturer/summarization_models.dart';
 
 class Summarizationapi {
-  //Based url
+  //Based url for WIFI Rumah
   static const baseUrl = "http://192.168.0.99:3000/classSummarization/";
+
+  // //Based url for HOSTPOT MyPhone
+  // static const baseUrl = "http://172.20.10.2:3000/classSummarization/";
 
   // Get Summarization
   Future<List<SummarizationModels>> getSummarization(int classId) async {

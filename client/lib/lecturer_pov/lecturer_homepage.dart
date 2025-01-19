@@ -360,7 +360,7 @@ class LectHomepage extends ConsumerWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         const Text(
-          "Today's Classes",
+          "All Classes",
           style: TextStyle(
             fontSize: 17,
             fontWeight: FontWeight.bold,
@@ -425,11 +425,13 @@ class LectHomepage extends ConsumerWidget {
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(12.0),
+                      //Give the shadow to the card
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.grey.withOpacity(0.1),
-                          blurRadius: 8,
-                          offset: const Offset(0, 4),
+                          color: Colors.grey.withOpacity(0.25),
+                          spreadRadius: 0,
+                          blurRadius: 6,
+                          offset: const Offset(0, 3),
                         ),
                       ],
                     ),
@@ -489,7 +491,7 @@ class LectHomepage extends ConsumerWidget {
                           Row(
                             children: [
                               const Icon(Icons.calendar_today,
-                                  size: 16, color: Colors.grey),
+                                  size: 16, color: Colors.black54),
                               const SizedBox(width: 5),
                               Text(
                                 classData.date,

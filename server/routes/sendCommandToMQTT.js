@@ -20,9 +20,15 @@ const router = express.Router();
 router.use(express.json());
 router.use(express.urlencoded({ extended: true }));
 
-router.post('/send-command', (req, res) => {
+router.post('/send-command/:classId', (req, res) => {
   const command = req.body.command;
-  const payload = '{"device_developer_id":"' + device_developer_id + '","data":{"command":"' + command + '"}}';
+  const { classId } = req.body;
+
+  // Debug print to check the received data
+  console.log("Received command:", command);
+  console.log("Received classId:", classId);
+
+  const payload = '{"device_developer_id":"' + device_developer_id + '","data":{"command":"' + command + '","classId":"' + classId + '"}}';
   mqttClient.publish(topic, payload, (err) => {
     if (err) {
       console.error('Error publishing to MQTT:', err);
@@ -41,4 +47,3 @@ router.post('/send-command', (req, res) => {
 });
 
 module.exports = router;
-

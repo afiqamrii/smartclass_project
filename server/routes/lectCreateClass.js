@@ -16,9 +16,9 @@ router.post("/addclass", async (req, res) => {
         console.log("Received data:", req.body);
 
         // Destructure and validate the request body
-        const { courseCode, className, date, timeStart, timeEnd, location } = req.body;
+        const { courseCode, title, date, timeStart, timeEnd, location } = req.body;
 
-        if (!courseCode || !className || !date || !timeStart || !timeEnd || !classLocation) {
+        if (!courseCode || !title || !date || !timeStart || !timeEnd || !location) {
             return res.status(400).send({
                 "Status_Code": 400,
                 "Message": "Missing required fields"
@@ -36,7 +36,7 @@ router.post("/addclass", async (req, res) => {
             VALUES (?, ?, ?, ?, ?, ?)
         `;
 
-        const values = [courseCode, className, formattedDate, formattedTimeStart, formattedTimeEnd, location];
+        const values = [courseCode, title, formattedDate, formattedTimeStart, formattedTimeEnd, location];
 
         // Use the pool to execute the query
         const [result] = await pool.query(query, values);
@@ -65,7 +65,7 @@ router.get("/viewclass", async (req, res) => {
     try {
         // SQL query to retrieve data
         const query = `
-            SELECT * FROM class
+            SELECT * FROM class order by date desc
         `;
 
         // Use the pool to execute the query
