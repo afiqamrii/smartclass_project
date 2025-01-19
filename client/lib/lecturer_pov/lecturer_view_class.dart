@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
+import 'package:quickalert/models/quickalert_type.dart';
+import 'package:quickalert/widgets/quickalert_dialog.dart';
 import 'package:smartclass_fyp_2024/lecturer_pov/lecturer_show_all_classes.dart';
 import 'package:smartclass_fyp_2024/lecturer_pov/lecturer_update_class.dart';
+import 'package:smartclass_fyp_2024/lecturer_pov/template/lecturer_bottom_navbar.dart';
+import 'package:smartclass_fyp_2024/services/lecturer/favoriotApi.dart';
+import 'package:smartclass_fyp_2024/lecturer_pov/lecturer_viewSummarization.dart';
 import '../models/lecturer/class_models.dart';
 import '../services/lecturer/classApi.dart';
 
@@ -260,7 +265,7 @@ class _LecturerViewClassState extends State<LecturerViewClass> {
                           const Text(
                             "Attendance",
                             style: TextStyle(
-                              fontSize: 18,
+                              fontSize: 16,
                               fontWeight: FontWeight.bold,
                               color: Colors.black87,
                             ),
@@ -269,7 +274,7 @@ class _LecturerViewClassState extends State<LecturerViewClass> {
                             onPressed: () {},
                             icon: Icon(
                               Icons.arrow_forward_ios,
-                              size: 20,
+                              size: 16,
                               color: Colors.black.withOpacity(0.5),
                             ),
                           ),
@@ -286,7 +291,7 @@ class _LecturerViewClassState extends State<LecturerViewClass> {
                           const Text(
                             "Lecture Recording",
                             style: TextStyle(
-                              fontSize: 18,
+                              fontSize: 16,
                               fontWeight: FontWeight.bold,
                               color: Colors.black87,
                             ),
@@ -312,52 +317,62 @@ class _LecturerViewClassState extends State<LecturerViewClass> {
                               ),
 
                               //Toggle Switch for recording
-                              Switch(
-                                value: light,
-                                activeColor: Colors.green,
-                                onChanged: (bool value) async {
-                                  //Switch toogle for lecture recording activation here
-                                  setState(() {
-                                    light = value;
-                                    if (light == true) {
-                                      initialMicIcon = const Icon(
-                                        Icons.mic,
-                                        size: 20,
-                                        color: Colors.white,
+                              Transform.scale(
+                                scale: 0.75,
+                                child: Switch(
+                                  value: light,
+                                  activeColor: Colors.green,
+                                  onChanged: (bool value) async {
+                                    // Perform asynchronous work first
+                                    if (value == true) {
+                                      await FavoriotApi.publishData(
+                                        "start", //Pass command
+                                        widget
+                                            .classItem.classId, //Pass Class ID
                                       );
-                                      //Set initial color of caontainer to green
-                                      initialColor = Colors.green;
-                                      //Set text to "Recording Started"
-                                      initialRecordingText = const Text(
-                                        "Recording Started !",
-                                        style: TextStyle(
-                                          color: Colors.green,
-                                          fontSize: 16,
-                                        ),
+                                    } else {
+                                      await FavoriotApi.publishData(
+                                        "stop", //Pass command
+                                        widget
+                                            .classItem.classId, //Pass Class ID
                                       );
                                     }
-                                    if (light == false) {
-                                      initialMicIcon = const Icon(
-                                        Icons.mic_off,
-                                        size: 20,
-                                        color: Colors.white,
-                                      );
-                                      //Set initial color of container to red back
-                                      initialColor = Colors.red;
-                                      //Set text to "Recording"
 
-                                      initialRecordingText = const Text(
-                                        "Recording",
-                                        style: TextStyle(
-                                          color: Colors.black,
-                                          fontSize: 16,
-                                        ),
-                                      );
-                                    }
-                                  });
-
-                                  // Handle when toggle is tapped here
-                                },
+                                    // Update the state synchronously
+                                    setState(() {
+                                      light = value;
+                                      if (light == true) {
+                                        initialMicIcon = const Icon(
+                                          Icons.mic,
+                                          size: 20,
+                                          color: Colors.white,
+                                        );
+                                        initialColor = Colors.green;
+                                        initialRecordingText = const Text(
+                                          "Recording Started !",
+                                          style: TextStyle(
+                                            color: Colors.green,
+                                            fontSize: 16,
+                                          ),
+                                        );
+                                      } else {
+                                        initialMicIcon = const Icon(
+                                          Icons.mic_off,
+                                          size: 16,
+                                          color: Colors.white,
+                                        );
+                                        initialColor = Colors.red;
+                                        initialRecordingText = const Text(
+                                          "Recording",
+                                          style: TextStyle(
+                                            color: Colors.black,
+                                            fontSize: 16,
+                                          ),
+                                        );
+                                      }
+                                    });
+                                  },
+                                ),
                               ),
                             ],
                           ),
@@ -374,16 +389,26 @@ class _LecturerViewClassState extends State<LecturerViewClass> {
                           const Text(
                             "View Summarization",
                             style: TextStyle(
-                              fontSize: 18,
+                              fontSize: 16,
                               fontWeight: FontWeight.bold,
                               color: Colors.black87,
                             ),
                           ),
                           IconButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      LecturerViewsummarization(
+                                    classId: widget.classItem.classId,
+                                  ),
+                                ),
+                              );
+                            },
                             icon: Icon(
                               Icons.arrow_forward_ios,
-                              size: 20,
+                              size: 16,
                               color: Colors.black.withOpacity(0.5),
                             ),
                           ),
@@ -408,22 +433,38 @@ class _LecturerViewClassState extends State<LecturerViewClass> {
   // Padding _topClassCard(BuildContext context) {
   Widget _deleteButton(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20),
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.black, // Background color
         ),
         onPressed: () async {
-          bool confirm = await _showConfirmationDialog(context);
-          if (confirm) {
-            await Api.deleteClass(Api.baseUrl, widget.classItem.classId);
-            // ignore: use_build_context_synchronously
-            Navigator.pop(context);
-            // ignore: use_build_context_synchronously
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Class deleted successfully')),
-            );
-          }
+          QuickAlert.show(
+            context: context,
+            type: QuickAlertType.confirm,
+            title: 'Delete Class',
+            text:
+                'Are you sure you want to delete this class? This action cannot be undone.',
+            confirmBtnText: 'Delete',
+            cancelBtnText: 'Cancel',
+            onConfirmBtnTap: () async {
+              await Api.deleteClass(Api.baseUrl, widget.classItem.classId);
+              // ignore: use_build_context_synchronously
+              Navigator.push(
+                // ignore: use_build_context_synchronously
+                context,
+                MaterialPageRoute(
+                  builder: (context) {
+                    return const LectViewAllClass();
+                  },
+                ),
+              );
+              // ignore: use_build_context_synchronously
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Class deleted successfully')),
+              );
+            },
+          );
         },
         child: const Text(
           'Delete Class',
@@ -431,29 +472,5 @@ class _LecturerViewClassState extends State<LecturerViewClass> {
         ),
       ),
     );
-  }
-
-  Future<bool> _showConfirmationDialog(BuildContext context) async {
-    return await showDialog<bool>(
-          context: context,
-          builder: (context) {
-            return AlertDialog(
-              title: const Text('Confirm Delete'),
-              content:
-                  const Text('Are you sure you want to delete this class?'),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.of(context).pop(false),
-                  child: const Text('Cancel'),
-                ),
-                TextButton(
-                  onPressed: () => Navigator.of(context).pop(true),
-                  child: const Text('Delete'),
-                ),
-              ],
-            );
-          },
-        ) ??
-        false;
   }
 }

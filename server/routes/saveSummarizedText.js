@@ -15,7 +15,14 @@ router.put("/savesummarizedtext", async (req, res) => {
         console.log("Received data:", req.body);
 
         // Destructure and validate the request body
-        const { summarizedText } = req.body;
+        const { summarizedText , recordingId ,  classId  } = req.body;
+
+        if (!summarizedText || !recordingId || !classId ) {
+            return res.status(400).send({
+                "Status_Code": 400,
+                "Message": "Missing required field: recordingId or classId"
+            });
+        }
 
         if (!summarizedText) {
             return res.status(400).send({
@@ -27,12 +34,12 @@ router.put("/savesummarizedtext", async (req, res) => {
         // SQL query to insert data
         const query = `
             UPDATE ClassRecording
-            SET summaryText = ?
-            WHERE recordingId = 11
+            SET summaryText = ? , recordingStatus = "Summarized"
+            WHERE recordingId = ? and classId = ?
         `;
 
         // Execute the query
-        const [result] = await pool.execute(query, [summarizedText]);
+        const [result] = await pool.execute(query, [summarizedText, recordingId, classId]);
 
         // Send response
         res.status(201).send({

@@ -245,7 +245,7 @@ class LectViewAllClass extends ConsumerWidget {
         ),
       ),
       title: const Text(
-        "Today's Classes",
+        "All Classes",
         style: TextStyle(
           fontSize: 17,
           fontWeight: FontWeight.bold,
