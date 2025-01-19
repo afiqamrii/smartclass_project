@@ -21,7 +21,7 @@ class MyWidget extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final data = ref.watch(classDataProvider);
     return Scaffold(
-      appBar: AppBar(title: const Text('SmartClass')),
+      appBar: AppBar(title: const Text('Notifications')),
       body: data.when(
         data: (data) {
           List<ClassModel> classItem = data;

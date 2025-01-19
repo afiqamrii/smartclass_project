@@ -56,4 +56,52 @@ router.put("/savesummarizedtext", async (req, res) => {
     }
 });
 
+//PUT API to update summarized text to the database
+// Endpoint: /classrecording/savesummarizedtext
+router.put("/editsummarizedtext", async (req, res) => {
+    try {
+        console.log("Received data:", req.body);
+
+        // Destructure and validate the request body
+        const { summarizedText ,  classId  } = req.body;
+
+        if (!summarizedText || !classId ) {
+            return res.status(400).send({
+                "Status_Code": 400,
+                "Message": "Missing required field: recordingId or classId"
+            });
+        }
+
+        if (!summarizedText) {
+            return res.status(400).send({
+                "Status_Code": 400,
+                "Message": "Missing required field: summarizedText"
+            });
+        }
+
+        // SQL query to insert data
+        const query = `
+            UPDATE ClassRecording
+            SET summaryText = ? 
+            WHERE classId = ?
+        `;
+
+        // Execute the query
+        const [result] = await pool.execute(query, [summarizedText, classId]);
+
+        // Send response
+        res.status(201).send({
+            "Status_Code": 201,
+            "Message": "Summarized text saved successfully",
+            "Data": result,
+        });
+    } catch (err) {
+        console.error("Error saving summarized text:", err);
+        res.status(500).send({
+            "Status_Code": 500,
+            "Message": "Internal Server Error",
+        });
+    }
+});
+
 module.exports = router;
