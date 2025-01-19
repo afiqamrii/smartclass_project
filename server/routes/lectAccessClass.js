@@ -87,6 +87,41 @@ router.get("/viewclass", async (req, res) => {
     }
 });
 
+//GET API to retrieve data from table Class and ClassRecording to get recordingStatus on summarization
+router.get("/viewSummarizationStatus", async (req, res) => {
+    try {
+        // SQL query to retrieve data
+        const query = `
+            SELECT
+                c.*,
+                cr.recordingStatus
+            FROM
+                class c
+            LEFT JOIN
+                ClassRecording cr ON c.classId = cr.classId
+            WHERE
+                cr.recordingStatus IS NOT NULL;
+        `;
+
+        // Use the pool to execute the query
+        const [rows] = await pool.query(query);
+
+        res.status(200).send({
+            "Status_Code": 200,
+            "Message": "Class Data Is Fetched Successfully",
+            "Data": rows
+        });
+    } catch (err) {
+        console.error("Error retrieving data:", err.message);
+
+        res.status(500).send({
+            "Status_Code": 500,
+            "Message": "Failed to fetch class data",
+            "Error": err.message
+        });
+    }
+});
+
 // PUT API to update a class in the database
 // Endpoint: /class/updateclass
 router.put("/updateclass/:id", async (req, res) => {

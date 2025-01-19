@@ -131,6 +131,7 @@ class _LectUpdateClassState extends State<LectUpdateClass> {
                       startTime: _timeStartController.text,
                       endTime: _timeEndController.text,
                       location: _classLocationController.text,
+                     
                     );
 
                     final response =
