@@ -9,42 +9,13 @@ import '../../models/lecturer/class_models.dart'; // HTTP package for making API
 
 /// A class to handle API interactions for the application.
 class Api {
-  /// The base URL of the backend server's API.
-  /// Replace the URL with your actual backend server address.
-  // static const baseUrl = "http://10.0.2.2:3000/class/";
-
-  //Use physical phone
+  //Based url for WIFI Rumah
   static const baseUrl = "http://192.168.0.99:3000/class/";
 
-  //GET API
-  /// Sends a GET request to retrieve data from the backend database.
-  ///
-  /// [url] is the URL of the API endpoint to retrieve data from.
-  /// Example: "http://10.0.2.2:3000/class/"
-  // static Future<List<ClassModel>> getClassData(String url) async {
-  //   List<ClassModel> classes = [];
-  //   var uri = Uri.parse("${url}viewclass");
+  // //Based url for HOSTPOT MyPhone
+  // static const baseUrl = "http://172.20.10.2:3000/class/";
 
-  //   try {
-  //     final res = await http.get(uri);
-  //     if (res.statusCode == 200) {
-  //       var data = jsonDecode(res.body); // Parse JSON response
-  //       if (data['Data'] != null) {
-  //         classes = (data['Data'] as List)
-  //             .map((value) => ClassModel.fromJson(value))
-  //             .toList();
-  //       }
-  //     } else {
-  //       print("Failed to fetch data: ${res.statusCode}");
-  //       print("Response: ${res.body}");
-  //     }
-  //   } catch (e) {
-  //     debugPrint("Error: $e");
-  //   }
-
-  //   return classes;
-  // }
-
+  //GET API Using provider
   Future<List<ClassModel>> getClasses() async {
     Response response = await get(Uri.parse("${baseUrl}viewclass"));
 
