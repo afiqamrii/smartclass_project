@@ -5,7 +5,6 @@ import 'package:smartclass_fyp_2024/dataprovider/data_provider.dart';
 import 'package:smartclass_fyp_2024/lecturer_pov/lecturer_viewSummarization.dart';
 import 'package:smartclass_fyp_2024/lecturer_pov/lecturer_view_class.dart';
 import 'package:smartclass_fyp_2024/models/lecturer/classSum_model.dart';
-import 'package:smartclass_fyp_2024/models/lecturer/class_models_test.dart';
 import 'package:smartclass_fyp_2024/test.dart';
 import 'lecturer_show_all_classes.dart';
 import '../models/lecturer/class_models.dart';
@@ -13,32 +12,6 @@ import '../models/lecturer/class_models.dart';
 // ignore: must_be_immutable
 class LectHomepage extends ConsumerWidget {
   const LectHomepage({super.key});
-
-  // @override
-  // ignore: library_private_types_in_public_api
-  // _LectHomepageState createState() => _LectHomepageState();
-// }
-
-// class _LectHomepageState extends State<LectHomepage> {
-//   // late Future<List<ClassModel>> _classesFuture;
-
-  // List<ClasTestModel> classes = [];
-
-//   // @override
-//   // void initState() {
-//   //   super.initState();
-//   //   _classesFuture = fetchClasses();
-//   // }
-
-  // //Get class dari class model
-  // void getClasses() {
-  //   classes = ClasTestModel.getClass();
-  // }
-
-  // Future<List<ClassModel>> fetchClasses() async {
-  //   const String apiUrl = 'http://10.0.2.2:3000/class/';
-  //   return await Api.getClassData(apiUrl);
-  // }
 
   //Handel the refresh and reload the data from provider to update the data
   Future<void> _handleRefresh(WidgetRef ref) async {
@@ -58,26 +31,6 @@ class LectHomepage extends ConsumerWidget {
     final data = ref.watch(classDataProvider);
     final sumData = ref.watch(classDataProviderSummarizationStatus);
     return Scaffold(
-      // backgroundColor: Colors.grey[100],
-      // appBar: AppBar(
-      //   backgroundColor: Colors.grey[100],
-      //   elevation: 0,
-      //   title: const Text(
-      //     'Hello Dr. Afiq!',
-      //     style: TextStyle(color: Colors.black, fontSize: 22),
-      //   ),
-      //   leading: null,
-      //   automaticallyImplyLeading: false,
-      //   actions: [
-      //     IconButton(
-      //       icon: const Icon(Icons.notifications, color: Colors.black),
-      //       onPressed: () {
-      //         Navigator.push(context,
-      //             MaterialPageRoute(builder: (context) => const MyWidget()));
-      //       },
-      //     ),
-      //   ],
-      // ),
       body: data.when(
         data: (data) {
           List<ClassModel> classData = data;
@@ -184,38 +137,39 @@ class LectHomepage extends ConsumerWidget {
     List<ClassSumModel> classes = sumClassData;
     return Column(
       children: [
-        Row(
+        const Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text(
+            Text(
               "Summarization",
               style: TextStyle(
                 fontSize: 17,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            TextButton(
-              onPressed: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const LectViewAllClass()));
-              },
-              child: const Padding(
-                padding: EdgeInsets.only(right: 10.0),
-                child: Text(
-                  "View All >",
-                  style: TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.purple,
-                  ),
-                ),
-              ),
-            ),
+            //SAmbung after this to view all the summariazatiopn
+            // TextButton(
+            //   onPressed: () {
+            //     Navigator.push(
+            //         context,
+            //         MaterialPageRoute(
+            //             builder: (context) => const LectViewAllClass()));
+            //   },
+            //   child: const Padding(
+            //     padding: EdgeInsets.only(right: 10.0),
+            //     child: Text(
+            //       "View All >",
+            //       style: TextStyle(
+            //         fontSize: 11,
+            //         fontWeight: FontWeight.bold,
+            //         color: Colors.purple,
+            //       ),
+            //     ),
+            //   ),
+            // ),
           ],
         ),
-        const SizedBox(height: 2),
+        const SizedBox(height: 10),
         //Start of Card of Class Summarization Status
         Column(
           children: List.generate(classes.length, (index) {
@@ -249,7 +203,7 @@ class LectHomepage extends ConsumerWidget {
                     ),
                     // Card content
                     child: Padding(
-                      padding: const EdgeInsets.all(15.0),
+                      padding: const EdgeInsets.all(18.0),
                       //Start of the content in side each card of class summarization
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,

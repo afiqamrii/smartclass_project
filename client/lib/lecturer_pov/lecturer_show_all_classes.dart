@@ -175,6 +175,7 @@ class LectViewAllClass extends ConsumerWidget {
                     ),
                   );
                 }
+                return null;
               },
             ),
           ),
