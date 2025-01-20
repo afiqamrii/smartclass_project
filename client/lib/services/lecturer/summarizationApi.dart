@@ -7,13 +7,17 @@ import 'package:smartclass_fyp_2024/models/lecturer/summarization_models.dart';
 
 class Summarizationapi {
   //Based url for WIFI Rumah
-  static const baseUrl = "http://192.168.0.99:3000/classSummarization/";
+  // static const baseUrl = "http://192.168.0.99:3000/classSummarization/";
 
   //Based url for update summarization
-  static const updateUrl = "http://192.168.0.99:3000/classrecording/";
+  // static const updateUrl = "http://192.168.0.99:3000/classrecording/";
 
   // //Based url for HOSTPOT MyPhone
-  // static const baseUrl = "http://172.20.10.2:3000/classSummarization/";
+  static const baseUrl = "http://172.20.10.2:3000/classSummarization/";
+
+  //domain for hotspot
+  //Based url for update summarization
+  static const updateUrl = "http://172.20.10.2:3000/classrecording/";
 
   // Get Summarization
   Future<List<SummarizationModels>> getSummarization(int classId) async {
@@ -28,18 +32,6 @@ class Summarizationapi {
       throw Exception('Failed to load summarization');
     }
   }
-  // static Future<List<SummarizationModels>> getSummarization(
-  //     String endpoint) async {
-  //   final url = Uri.parse("${url}viewclass");
-  //   final response = await http.get(url);
-
-  //   if (response.statusCode == 200) {
-  //     final List<dynamic> data = jsonDecode(response.body)['Data'];
-  //     return data.map((json) => SummarizationModels.fromJson(json)).toList();
-  //   } else {
-  //     throw Exception('Failed to load summarization');
-  //   }
-  // }
 
   //PUT API to add summarized text to the database
   // Endpoint: /classrecording/updatesummarization

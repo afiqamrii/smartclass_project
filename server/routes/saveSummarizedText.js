@@ -57,7 +57,7 @@ router.put("/savesummarizedtext", async (req, res) => {
 });
 
 //PUT API to update summarized text to the database
-// Endpoint: /classrecording/savesummarizedtext
+// Endpoint: /classrecording/editsummarizedtext
 router.put("/editsummarizedtext", async (req, res) => {
     try {
         console.log("Received data:", req.body);

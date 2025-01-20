@@ -11,10 +11,10 @@ import '../../models/lecturer/class_models.dart'; // HTTP package for making API
 /// A class to handle API interactions for the application.
 class Api {
   //Based url for WIFI Rumah
-  static const baseUrl = "http://192.168.0.99:3000/class/";
+  // static const baseUrl = "http://192.168.0.99:3000/class/";
 
-  // //Based url for HOSTPOT MyPhone
-  // static const baseUrl = "http://172.20.10.2:3000/class/";
+  //Based url for HOSTPOT MyPhone
+  static const baseUrl = "http://172.20.10.2:3000/class/";
 
   //GET API Using provider to all classes data
   Future<List<ClassModel>> getClasses() async {

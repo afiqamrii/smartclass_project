@@ -17,6 +17,9 @@ router.post("/savetranscriptiontext/:classId", async (req, res) => {
         // Destructure and validate the request body
         const { transcriptionText, summarizedText , recordingStatus } = req.body;
 
+        //Set default value to summarizedText column
+        summarizedTextDefault = "Summary Is Pending";
+
         const { classId } = req.params;
 
         if (!transcriptionText || !classId || !recordingStatus ) {
@@ -35,7 +38,7 @@ router.post("/savetranscriptiontext/:classId", async (req, res) => {
         // Execute the query
         const [result] = await pool.execute(query, [
             transcriptionText,
-            summarizedText || null, // Default summarizedText to null if not provided
+            summarizedTextDefault , // Default summarizedText 
             classId,
             recordingStatus,
         ]);
@@ -118,7 +121,7 @@ router.get("/gettranscriptiontext", async (req, res) => {
     try {
         // SQL query to retrieve data
         const query = `
-            SELECT transcriptionText , classId , recordingId FROM ClassRecording where recordingStatus = "New"
+            SELECT transcriptionText , classId , recordingId FROM ClassRecording where recordingStatus = "Processing"
         `;
 
         // Use the pool to execute the query
