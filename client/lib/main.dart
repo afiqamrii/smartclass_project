@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:smartclass_fyp_2024/lecturer_pov/template/lecturer_bottom_navbar.dart';
+// import 'package:smartclass_fyp_2024/lecturer_pov/template/lecturer_bottom_navbar.dart';
+import 'package:smartclass_fyp_2024/splashscreen/splashScreen.dart';
 
 void main() {
   runApp(const ProviderScope(child: MyApp()));
@@ -13,7 +14,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'SmartClass FYP',
+      title: 'IntelliClass',
       theme: ThemeData(
         fontFamily: 'Figtree',
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
@@ -34,7 +35,7 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
-  final int _currentIndex = 0;
+  // final int _currentIndex = 0;
   // final List<Widget> _screens = [
   //   LectHomepage(), // Lecturer homepage
   //   const LecturerMyclass(), // MyClass screen
@@ -43,8 +44,23 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: LectBottomNavBar(initialIndex: _currentIndex),
+    return const Scaffold(
+      body: SplashScreen(),
     );
   }
+
+  //backup untuk direct the homepage dulu .
+  //  final int _currentIndex = 0;
+  // // final List<Widget> _screens = [
+  // //   LectHomepage(), // Lecturer homepage
+  // //   const LecturerMyclass(), // MyClass screen
+  // //   const LecturerProfilePage(), // Lecturer profile page
+  // // ];
+
+  // @override
+  // Widget build(BuildContext context) {
+  //   return Scaffold(
+  //     body: LectBottomNavBar(initialIndex: _currentIndex),
+  //   );
+  // }
 }

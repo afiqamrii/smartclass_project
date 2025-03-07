@@ -29,21 +29,21 @@ environment:
 # versions available, run `flutter pub outdated`.
 dependencies:
   flutter:
-    sdk: flutter
-
-
+    sdk: flutter 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
-  flutter_svg: ^2.0.16
+  flutter_svg: 
   http: any
   intl: ^0.20.1
   flutter_riverpod: ^2.6.1
   liquid_pull_to_refresh: ^3.0.1
-  lottie: ^3.2.0
+  lottie: 
   custom_refresh_indicator: ^4.0.1
   google_nav_bar: ^5.0.7
   quickalert: ^1.1.0
+  animated_splash_screen: 
+  flutter_native_splash: ^2.4.4
 
 dev_dependencies:
   flutter_test:
@@ -69,10 +69,13 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-    - assets/icons/
-    - assets/pictures/
-    - assets/animations/
-    - assets/background/
+      - assets/animations/animation1.json
+      - assets/background/welcomePageBackground.svg
+      - assets/icons/
+      - assets/pictures/
+      - assets/animations/
+      - assets/background/
+      # - assets/splash_screen/
 
   #   - images/a_dot_ham.jpeg
 
