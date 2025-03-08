@@ -44,6 +44,7 @@ dependencies:
   quickalert: ^1.1.0
   animated_splash_screen: 
   flutter_native_splash: ^2.4.4
+  smooth_page_indicator: ^1.0.0
 
 dev_dependencies:
   flutter_test:
@@ -94,6 +95,10 @@ flutter:
      - family: Figtree
        fonts:
          - asset: fonts/Figtree-Bold.ttf
+    
+     - family: FigtreeExtraBold
+       fonts:
+         - asset: fonts/Figtree-ExtraBold.ttf
     
      - family : FigtreeRegular
        fonts:
