@@ -4,7 +4,7 @@ import 'package:smartclass_fyp_2024/intro_page/introPage1.dart';
 import 'package:smartclass_fyp_2024/intro_page/introPage2.dart';
 import 'package:smartclass_fyp_2024/intro_page/introPage3.dart';
 import 'package:smartclass_fyp_2024/intro_page/introPage4.dart';
-import 'package:smartclass_fyp_2024/lecturer_pov/login/lecturer_login_page.dart';
+import 'package:smartclass_fyp_2024/login/lecturer_login_page.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class WelcomePage extends StatefulWidget {

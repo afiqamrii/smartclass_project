@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
-import 'package:smartclass_fyp_2024/lecturer_pov/login/lecturer_login_page.dart';
+import 'package:smartclass_fyp_2024/login/lecturer_login_page.dart';
+import 'package:smartclass_fyp_2024/login/login_as.dart';
 
 class Intropage4 extends StatelessWidget {
   const Intropage4({super.key});
@@ -79,7 +80,7 @@ class Intropage4 extends StatelessWidget {
 Route _createRoute() {
   return PageRouteBuilder(
     pageBuilder: (context, animation, secondaryAnimation) =>
-        const LecturerLoginPage(),
+        const LoginAsPage(),
     transitionsBuilder: (context, animation, secondaryAnimation, child) {
       const begin = Offset(1.0, 0.0);
       const end = Offset.zero;

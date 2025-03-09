@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
-import 'package:smartclass_fyp_2024/lecturer_pov/login/lecturer_login_page.dart';
+import 'package:smartclass_fyp_2024/login/lecturer_login_page.dart';
 
 class Intropage1 extends StatelessWidget {
   const Intropage1({super.key});
