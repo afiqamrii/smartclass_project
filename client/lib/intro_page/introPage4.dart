@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
-import 'package:smartclass_fyp_2024/login/lecturer_login_page.dart';
 import 'package:smartclass_fyp_2024/login/login_as.dart';
 
 class Intropage4 extends StatelessWidget {

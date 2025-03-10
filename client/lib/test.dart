@@ -24,6 +24,7 @@ class MyWidget extends ConsumerWidget {
       appBar: AppBar(title: const Text('Notifications')),
       body: data.when(
         data: (data) {
+          // ignore: unused_local_variable
           List<ClassModel> classItem = data;
           return LiquidPullToRefresh(
             onRefresh: () => _handleRefresh(ref),
