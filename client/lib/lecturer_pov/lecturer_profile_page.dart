@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:smartclass_fyp_2024/lecturer_pov/lecturer_account_details.dart';
 import 'package:smartclass_fyp_2024/lecturer_pov/lecturer_edit_profile.dart';
-import 'package:smartclass_fyp_2024/login/lecturer_login_page.dart';
+import 'package:smartclass_fyp_2024/lecturer_pov/login_page/lecturer_greets_page.dart';
 
 class LecturerProfilePage extends StatelessWidget {
   const LecturerProfilePage({super.key});
@@ -242,7 +242,7 @@ class LecturerProfilePage extends StatelessWidget {
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) =>
-                                      const LecturerLoginPage(),
+                                      const LecturerGreetsPage(),
                                 ),
                               );
                             },

@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:smartclass_fyp_2024/admin_pov/admin_greets_page.dart';
+import 'package:smartclass_fyp_2024/lecturer_pov/login_page/lecturer_greets_page.dart';
+import 'package:smartclass_fyp_2024/student_pov/student_greets_page.dart';
+import 'package:smartclass_fyp_2024/widget/appbar.dart';
 
 class LoginAsPage extends StatelessWidget {
   const LoginAsPage({super.key});
@@ -7,69 +11,80 @@ class LoginAsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        leadingWidth: 100,
-        leading: GestureDetector(
-          onTap: () {
-            Navigator.pop(context);
-          },
-          child: const Padding(
-            padding: EdgeInsets.only(left: 25.0),
-            child: Row(
-              children: [
-                Icon(
-                  Icons.arrow_back_ios,
-                  color: Colors.black,
-                  size: 20,
-                ),
-                Text(
-                  "Back",
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 15,
-                    fontFamily: 'Figtree',
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
+      appBar: const Appbar(),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 20.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              "Select Your Role",
-              style: TextStyle(
-                fontSize: 32,
-                fontFamily: 'FigtreeExtraBold',
-                fontWeight: FontWeight.bold,
-              ),
+        child: _selectRoleSection(context),
+      ),
+    );
+  }
+
+  Column _selectRoleSection(BuildContext context) {
+    return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            "Select Your Role",
+            style: TextStyle(
+              fontSize: 32,
+              fontFamily: 'FigtreeExtraBold',
+              fontWeight: FontWeight.bold,
             ),
-            const SizedBox(height: 20), // Give spacing between text and buttons
-            //Card for lecturer
-            _lecturerSection(context),
-            const SizedBox(height: 20), // Give spacing between buttons
-            //Card for student
-            _studentSection(context),
-            const SizedBox(height: 20), // Give spacing between buttons
-            //Card for admin
-            _adminSection(context),
-          ],
+          ),
+          const SizedBox(height: 20), // Give spacing between text and buttons
+          //Card for lecturer
+          _lecturerSection(context),
+          const SizedBox(height: 20), // Give spacing between buttons
+          //Card for student
+          _studentSection(context),
+          const SizedBox(height: 20), // Give spacing between buttons
+          //Card for admin
+          _adminSection(context),
+        ],
+      );
+  }
+
+  AppBar _appBar(BuildContext context) {
+    return AppBar(
+      leadingWidth: 100,
+      leading: GestureDetector(
+        onTap: () {
+          Navigator.pop(context);
+        },
+        child: const Padding(
+          padding: EdgeInsets.only(left: 25.0),
+          child: Row(
+            children: [
+              Icon(
+                Icons.arrow_back_ios,
+                color: Colors.black,
+                size: 20,
+              ),
+              Text(
+                "Back",
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 15,
+                  fontFamily: 'Figtree',
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
   // Widgets for each role
-
+  //Lecturer
   GestureDetector _lecturerSection(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.pushNamed(context, '/lecturer_login');
+        Navigator.push(
+          context,
+          _createRoute(const LecturerGreetsPage()),
+        );
       },
       child: Container(
         width: MediaQuery.of(context).size.width * 0.9,
@@ -116,10 +131,16 @@ class LoginAsPage extends StatelessWidget {
     );
   }
 
+  //Student
   GestureDetector _studentSection(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.pushNamed(context, '/student_login');
+        Navigator.push(
+          context,
+          _createRoute(
+            const StudentGreetsPage(),
+          ),
+        );
       },
       child: Container(
         width: MediaQuery.of(context).size.width * 0.9,
@@ -166,10 +187,16 @@ class LoginAsPage extends StatelessWidget {
     );
   }
 
+  //Admin
   GestureDetector _adminSection(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.pushNamed(context, '/admin_login');
+        Navigator.push(
+          context,
+          _createRoute(
+            const AdminGreetsPage(),
+          ),
+        );
       },
       child: Container(
         width: MediaQuery.of(context).size.width * 0.9,
@@ -215,4 +242,20 @@ class LoginAsPage extends StatelessWidget {
       ),
     );
   }
+}
+
+// Transition animation
+Route _createRoute(Widget child) {
+  return PageRouteBuilder(
+    pageBuilder: (context, animation, secondaryAnimation) => child,
+    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+      const begin = Offset(1.0, 0.0);
+      const end = Offset.zero;
+      const curve = Curves.ease;
+
+      var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+
+      return SlideTransition(position: animation.drive(tween), child: child);
+    },
+  );
 }
