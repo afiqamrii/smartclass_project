@@ -17,33 +17,31 @@ class Api {
   static const baseUrl = "http://172.20.10.2:3000/class/";
 
   //GET API Using provider to all classes data
-  Future<List<ClassModel>> getClasses() async {
-    Response response = await get(Uri.parse("${baseUrl}viewclass"));
-
-    //Check whether the response is successful or not.
-    if (response.statusCode == 200) {
-      final List result = jsonDecode(response.body)['Data'];
-      //Use user model to return data as a LIST
-      return result.map(((e) => ClassModel.fromJson(e))).toList();
-      //Show the error message if the response is not successful.
-    } else {
-      throw Exception(response.reasonPhrase);
+  Stream<List<ClassModel>> getClasses() async* {
+    while (true) {
+      Response response = await get(Uri.parse("${baseUrl}viewclass"));
+      if (response.statusCode == 200) {
+        final List result = jsonDecode(response.body)['Data'];
+        yield result.map(((e) => ClassModel.fromJson(e))).toList();
+      } else {
+        throw Exception(response.reasonPhrase);
+      }
+      await Future.delayed(const Duration(seconds: 5)); // Polling interval
     }
   }
 
   //GET API Using provider to the class with summarization status
-  Future<List<ClassSumModel>> getClassesWithSummarization() async {
-    Response response =
-        await get(Uri.parse("${baseUrl}viewSummarizationStatus"));
-
-    //Check whether the response is successful or not.
-    if (response.statusCode == 200) {
-      final List result = jsonDecode(response.body)['Data'];
-      //Use user model to return data as a LIST
-      return result.map(((e) => ClassSumModel.fromJson(e))).toList();
-      //Show the error message if the response is not successful.
-    } else {
-      throw Exception(response.reasonPhrase);
+  Stream<List<ClassSumModel>> getClassesWithSummarization() async* {
+    while (true) {
+      Response response =
+          await get(Uri.parse("${baseUrl}viewSummarizationStatus"));
+      if (response.statusCode == 200) {
+        final List result = jsonDecode(response.body)['Data'];
+        yield result.map(((e) => ClassSumModel.fromJson(e))).toList();
+      } else {
+        throw Exception(response.reasonPhrase);
+      }
+      await Future.delayed(const Duration(seconds: 5)); // Polling interval
     }
   }
 

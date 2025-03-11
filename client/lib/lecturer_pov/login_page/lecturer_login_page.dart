@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:smartclass_fyp_2024/components/login_textfield.dart';
 import 'package:smartclass_fyp_2024/components/custom_buttom.dart';
+import 'package:smartclass_fyp_2024/lecturer_pov/template/lecturer_bottom_navbar.dart';
 import 'package:smartclass_fyp_2024/widget/appbar.dart';
 
 class LecturerLoginPage extends StatelessWidget {
@@ -16,7 +17,9 @@ class LecturerLoginPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const Appbar(),
+      appBar: const Appbar(
+
+      ),
       body: Center(
         child: Column(
           children: [
@@ -76,7 +79,15 @@ class LecturerLoginPage extends StatelessWidget {
             //Login button
             CustomButton(
               text: 'Login',
-              onTap: () {},
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        const LectBottomNavBar(initialIndex: 0),
+                  ),
+                );
+              },
             ),
           ],
         ),

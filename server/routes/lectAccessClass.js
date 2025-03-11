@@ -65,7 +65,7 @@ router.get("/viewclass", async (req, res) => {
     try {
         // SQL query to retrieve data
         const query = `
-            SELECT * FROM class order by date desc
+            SELECT * FROM class ORDER BY date DESC, timeStart DESC;
         `;
 
         // Use the pool to execute the query

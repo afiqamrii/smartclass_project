@@ -11,7 +11,9 @@ class LoginAsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const Appbar(),
+      appBar: const Appbar(
+        
+      ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 20.0),
         child: _selectRoleSection(context),
@@ -21,27 +23,27 @@ class LoginAsPage extends StatelessWidget {
 
   Column _selectRoleSection(BuildContext context) {
     return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            "Select Your Role",
-            style: TextStyle(
-              fontSize: 32,
-              fontFamily: 'FigtreeExtraBold',
-              fontWeight: FontWeight.bold,
-            ),
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          "Select Your Role",
+          style: TextStyle(
+            fontSize: 32,
+            fontFamily: 'FigtreeExtraBold',
+            fontWeight: FontWeight.bold,
           ),
-          const SizedBox(height: 20), // Give spacing between text and buttons
-          //Card for lecturer
-          _lecturerSection(context),
-          const SizedBox(height: 20), // Give spacing between buttons
-          //Card for student
-          _studentSection(context),
-          const SizedBox(height: 20), // Give spacing between buttons
-          //Card for admin
-          _adminSection(context),
-        ],
-      );
+        ),
+        const SizedBox(height: 20), // Give spacing between text and buttons
+        //Card for lecturer
+        _lecturerSection(context),
+        const SizedBox(height: 20), // Give spacing between buttons
+        //Card for student
+        _studentSection(context),
+        const SizedBox(height: 20), // Give spacing between buttons
+        //Card for admin
+        _adminSection(context),
+      ],
+    );
   }
 
   AppBar _appBar(BuildContext context) {
