@@ -16,7 +16,7 @@ class LectViewAllClass extends ConsumerWidget {
   Future<void> _handleRefresh(WidgetRef ref) async {
     //Reload the data in class provider
     // ignore: await_only_futures
-    await ref.refresh(classDataProvider);
+    await ref.refresh(classDataProvider.future);
     //reloading take some time..
     return await Future.delayed(const Duration(seconds: 1));
   }

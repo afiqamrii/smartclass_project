@@ -6,16 +6,16 @@ import 'package:smartclass_fyp_2024/services/lecturer/classApi.dart';
 import 'package:smartclass_fyp_2024/services/lecturer/summarizationApi.dart'; // Import the Api class
 
 // Create a Provider Object for class
-final classDataProvider = FutureProvider<List<ClassModel>>((ref) async {
-  return ref
+final classDataProvider = StreamProvider<List<ClassModel>>((ref) async* {
+  yield* ref
       .watch(classProvider)
       .getClasses(); // Use classProvider from api.dart
 });
 
 // Create a Provider Object for get summarization status for the classes
 final classDataProviderSummarizationStatus =
-    FutureProvider<List<ClassSumModel>>((ref) async {
-  return ref
+    StreamProvider<List<ClassSumModel>>((ref) async* {
+  yield* ref
       .watch(classProvider)
       .getClassesWithSummarization(); // Use classProvider from api.dart
 });

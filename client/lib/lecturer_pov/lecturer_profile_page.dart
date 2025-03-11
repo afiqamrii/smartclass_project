@@ -238,12 +238,13 @@ class LecturerProfilePage extends StatelessWidget {
                         children: [
                           ElevatedButton.icon(
                             onPressed: () {
-                              Navigator.push(
+                              Navigator.pushAndRemoveUntil(
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) =>
                                       const LecturerGreetsPage(),
                                 ),
+                                (route) => false,
                               );
                             },
                             label: const Text(
