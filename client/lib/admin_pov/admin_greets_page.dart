@@ -9,7 +9,8 @@ class AdminGreetsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const Appbar(), //Appbar widget
+      appBar: const Appbar(
+      ), //Appbar widget
       body: Padding(
         padding: const EdgeInsets.all(28.0),
         child: Center(

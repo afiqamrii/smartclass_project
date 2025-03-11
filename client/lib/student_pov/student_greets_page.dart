@@ -9,7 +9,9 @@ class StudentGreetsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const Appbar(),
+      appBar: const Appbar(
+        
+      ),
       body: _greetStudentSection(context),
     );
   }
