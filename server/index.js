@@ -13,8 +13,9 @@
  */
 const express = require("express");
 const cors = require("cors");
-const pool = require("./data/database");
-const lectCreateClassRoutres = require("./routes/lectAccessClass");
+const pool = require("./config/database");
+// const lectCreateClassRoutes = require("./routes/lectAccessClass");
+const classRoutes = require("./routes/classRoutes");
 const generateTranscriptionTextRoutes = require("./routes/saveTranscriptionText");
 const generateSummarizedTextRoutes = require("./routes/saveSummarizedText");
 const lectAccessSummarizationRoutes = require("./routes/lectAccessSummarization");
@@ -30,27 +31,23 @@ app.use(cors());
 // Middleware to parse JSON and URL-encoded data from requests.
 app.use(express.json());
 
+//Routes
+
+//Class Management
+// app.use("/class", lectCreateClassRoutes);
+app.use("/class", classRoutes);
+
+// Class transcription and summarization
+app.use("/classrecording", generateTranscriptionTextRoutes);
+app.use("/classrecording", generateSummarizedTextRoutes);
+app.use("/classSummarization", lectAccessSummarizationRoutes);
+
+//Send to MQTT
+app.use("/mqtt", sendCommandToMQTT);
+
 // Start the server and listen on the specified port.
 const PORT = 3000;
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
-
-//Routes
-
-//Create a new class
-app.use("/class", lectCreateClassRoutres);
-
-//Save transcription text
-app.use("/classrecording", generateTranscriptionTextRoutes);
-
-//Save summarized text
-//Save transcription text
-app.use("/classrecording", generateSummarizedTextRoutes);
-
-//Access summarized text
-app.use("/classSummarization", lectAccessSummarizationRoutes);
-
-//Send to MQTT
-app.use("/mqtt", sendCommandToMQTT);

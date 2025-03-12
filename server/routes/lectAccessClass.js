@@ -5,7 +5,7 @@
 
 const express = require("express");
 const moment = require("moment");
-const pool = require("../data/database"); // Import the MySQL pool
+const pool = require("../config/database"); // Import the MySQL pool
 
 const router = express.Router();
 
