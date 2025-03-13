@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:quickalert/quickalert.dart';
 import 'package:smartclass_fyp_2024/lecturer_pov/lecturer_show_all_classes.dart';
+import 'package:smartclass_fyp_2024/models/lecturer/class_models.dart';
 import '../services/lecturer/classApi.dart';
 
 class LectCreateClass extends StatefulWidget {
@@ -113,16 +115,25 @@ class _LectCreateClassState extends State<LectCreateClass> {
           Center(
             child: ElevatedButton.icon(
               onPressed: () async {
-                var data = {
-                  'courseCode': courseCodeController.text,
-                  'title': titleController.text,
-                  'date': dateController.text,
-                  'timeStart': timeStartController.text,
-                  'timeEnd': timeEndController.text,
-                  'location': locationController.text,
-                };
+                final classData = ClassModel(
+                  classId: 0,
+                  courseCode: courseCodeController.text,
+                  courseName: titleController.text,
+                  date: dateController.text,
+                  startTime: timeStartController.text,
+                  endTime: timeEndController.text,
+                  location: locationController.text,
+                );
+                // var data = {
+                //   'courseCode': courseCodeController.text,
+                //   'className': titleController.text,
+                //   'date': dateController.text,
+                //   'timeStart': timeStartController.text,
+                //   'timeEnd': timeEndController.text,
+                //   'classLocation': locationController.text,
+                // };
 
-                final response = await Api.addClass(data);
+                final response = await Api.addClass(classData);
 
                 if (response != null && response['Status_Code'] == 200) {
                   //Shows a success message using QuickAlert for create class is successfull
@@ -271,8 +282,11 @@ class _LectCreateClassState extends State<LectCreateClass> {
       firstDate: DateTime(2000),
       lastDate: DateTime(2101),
     );
+
     if (picked != null) {
-      controller.text = "${picked.day}/${picked.month}/${picked.year}";
+      // Format the selected date to "14 March 2025"
+      String formattedDate = DateFormat('d MMMM yyyy').format(picked);
+      controller.text = formattedDate;
     }
   }
 

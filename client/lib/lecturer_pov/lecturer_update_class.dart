@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:quickalert/quickalert.dart';
 import 'package:smartclass_fyp_2024/lecturer_pov/lecturer_view_class.dart';
 import '../models/lecturer/class_models.dart';
@@ -50,15 +51,19 @@ class _LectUpdateClassState extends State<LectUpdateClass> {
     super.dispose();
   }
 
-  Future<void> _pickDate(TextEditingController controller) async {
+  Future<void> pickDate(
+      BuildContext context, TextEditingController controller) async {
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
       firstDate: DateTime(2000),
       lastDate: DateTime(2101),
     );
+
     if (picked != null) {
-      controller.text = "${picked.day}/${picked.month}/${picked.year}";
+      // Format the selected date to "14 March 2025"
+      String formattedDate = DateFormat('d MMMM yyyy').format(picked);
+      controller.text = formattedDate;
     }
   }
 
@@ -110,7 +115,7 @@ class _LectUpdateClassState extends State<LectUpdateClass> {
               _buildInputField('Title', _titleController),
               const SizedBox(height: 16),
               _buildInputField('Date', _dateController,
-                  onTap: () => _pickDate(_dateController)),
+                  onTap: () => pickDate(context, _dateController)),
               const SizedBox(height: 16),
               _buildInputField('Time Start', _timeStartController,
                   onTap: () => _pickTime(_timeStartController)),
@@ -131,16 +136,14 @@ class _LectUpdateClassState extends State<LectUpdateClass> {
                       startTime: _timeStartController.text,
                       endTime: _timeEndController.text,
                       location: _classLocationController.text,
-                     
                     );
 
                     final response =
                         await Api.updateClass(Api.baseUrl, updatedClass);
 
                     //Show QuickAlert message for user if the update is error or success
-                    if (response['Status_Code'] == 200) {
+                    if (response != null) {
                       QuickAlert.show(
-                        // ignore: use_build_context_synchronously
                         context: context,
                         type: QuickAlertType.success,
                         text: 'Class updated successfully',
@@ -157,7 +160,6 @@ class _LectUpdateClassState extends State<LectUpdateClass> {
                       );
                     } else {
                       QuickAlert.show(
-                        // ignore: use_build_context_synchronously
                         context: context,
                         type: QuickAlertType.error,
                         text: 'Failed to update class, try again!',

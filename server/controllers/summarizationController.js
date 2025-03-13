@@ -1,0 +1,54 @@
+const summarizationService = require('../services/summarizationService');
+
+// Function to view Summarization Status
+exports.viewSummarizationStatus = async (req, res) => {
+    try {
+        const summarizationData = await summarizationService.viewSummarizationStatus();
+
+        res.status(200).json({
+            message: "Summarization status fetched successfully",
+            Data: summarizationData ?? [] // ✅ Ensure empty array if null
+        });
+    } catch (error) {
+        console.error("Controller Error:", error);
+        res.status(500).json({ message: "Failed to fetch summarization status" });
+    }
+};
+
+// Function to access summarization by class id
+exports.accessSummarizationById = async (req, res) => {
+    try{
+        const {classId} = req.params
+
+        const summarizationByIdResults = await summarizationService.accessSummarizationById(classId);
+
+        // Response
+        res.status(200).json({
+            "Status_Code": 200,
+            "Message": "Class Data Is Fetched Successfully",
+            "Data": summarizationByIdResults
+        });
+    } catch(error){
+        console.error("Controller Error:", error);
+        res.status(500).json({ message: "Failed to fetch summarization by class id" });
+    }
+};
+
+// Function to edit summarization
+exports.editSummarization = async (req, res) => {
+    try{
+
+        //Debugging
+        console.log("Received edit request:", req.body);
+
+        const { summarizedText ,  classId  } = req.body;
+
+        const result = await summarizationService.editSummarization(summarizedText, classId);
+
+        res.status(200).json({ message: "Summarization data updated successfully", Updated_Id: result });
+    } catch(error){
+        console.error("Controller Error:", error);
+        res.status(500).json({ message: "Failed to update summarization data" });
+    }
+
+};

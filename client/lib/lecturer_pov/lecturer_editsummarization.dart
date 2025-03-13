@@ -66,40 +66,40 @@ class _LecturerEditsummarizationState extends State<LecturerEditsummarization> {
               // Save or handle edited text
               final editedText = _controller.text;
 
-              //update the text into the database
-              Summarizationapi()
-                  .updateSummarization(widget.summarizationClassId, editedText);
+              // Update the text into the database
+              final isSuccess = await Summarizationapi.updateSummarization(
+                  widget.summarizationClassId, editedText);
 
-              //Show Quickalert message for user if the update is successful or not
-              // if (response['Status_Code'] == 200) {
-              QuickAlert.show(
-                // ignore: use_build_context_synchronously
-                context: context,
-                type: QuickAlertType.success,
-                text: 'Class updated successfully',
-                confirmBtnText: 'OK',
-                onConfirmBtnTap: () {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => LecturerViewsummarization(
-                          classId: widget.summarizationClassId),
-                    ),
-                  );
-                },
-              );
-              // } else {
-              //   QuickAlert.show(
-              //     // ignore: use_build_context_synchronously
-              //     context: context,
-              //     type: QuickAlertType.error,
-              //     text: 'Failed to update class, try again!',
-              //     confirmBtnText: 'OK',
-              //     onConfirmBtnTap: () {
-              //       Navigator.pop(context);
-              //     },
-              //   );
-              // }
+              // Show Quickalert message for user if the update is successful or not
+              if (isSuccess) {
+                QuickAlert.show(
+                  // ignore: use_build_context_synchronously
+                  context: context,
+                  type: QuickAlertType.success,
+                  text: 'Class updated successfully',
+                  confirmBtnText: 'OK',
+                  onConfirmBtnTap: () {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => LecturerViewsummarization(
+                            classId: widget.summarizationClassId),
+                      ),
+                    );
+                  },
+                );
+              } else {
+                QuickAlert.show(
+                  // ignore: use_build_context_synchronously
+                  context: context,
+                  type: QuickAlertType.error,
+                  text: 'Failed to update class, try again!',
+                  confirmBtnText: 'OK',
+                  onConfirmBtnTap: () {
+                    Navigator.pop(context);
+                  },
+                );
+              }
             },
             icon: const Icon(Icons.save),
           ),
