@@ -20,36 +20,20 @@ class ClassModel {
     required this.date,
   });
 
-  // Convert ClassModel to JSON
-  Map<String, dynamic> toJson() {
-    DateTime parsedDate = DateFormat('dd MMMM yyyy').parse(date);
-    String formattedDate = DateFormat('yyyy-MM-dd').format(parsedDate);
-
-    return {
-      'classId': classId,
-      'courseCode': courseCode,
-      'className': courseName,
-      'classLocation': location,
-      'timeStart': startTime,
-      'timeEnd': endTime,
-      'date': formattedDate,
-    };
-  }
-
   // Convert JSON object to ClassModel
   factory ClassModel.fromJson(Map<String, dynamic> json) {
+    // Fix date parsing
     DateTime parsedDate = DateTime.parse(json['date']);
     String formattedDate = DateFormat('dd MMMM yyyy').format(parsedDate);
 
-    TimeOfDay startTime = _parseTime(json['timeStart']);
-    TimeOfDay endTime = _parseTime(json['timeEnd']);
-    String formattedStartTime = _formatTime(startTime);
-    String formattedEndTime = _formatTime(endTime);
+    // Fix time parsing
+    String formattedStartTime = _formatTime(json['timeStart']);
+    String formattedEndTime = _formatTime(json['timeEnd']);
 
     return ClassModel(
-      classId: json['classId'],
-      courseCode: json['courseCode'],
-      courseName: json['className'],
+      classId: json['classId'] ?? 0,
+      courseCode: json['courseCode'] ?? "Unknown Code",
+      courseName: json['className'] ?? "Unknown Class",
       location: json['classLocation'] ?? "Not Specified",
       startTime: formattedStartTime,
       endTime: formattedEndTime,
@@ -57,17 +41,56 @@ class ClassModel {
     );
   }
 
-  // Change time format
-  static TimeOfDay _parseTime(String time) {
-    final parts = time.split(":");
-    return TimeOfDay(hour: int.parse(parts[0]), minute: int.parse(parts[1]));
+  // Convert ClassModel to JSON
+  Map<String, dynamic> toJson() {
+    return {
+      'classId': classId,
+      'courseCode': courseCode,
+      'className': courseName,
+      'classLocation': location,
+      'timeStart': timeToJSON(startTime),
+      'timeEnd': timeToJSON(endTime),
+      'date': formatDate(date),
+    };
   }
 
-  // Change time format
-  static String _formatTime(TimeOfDay time) {
-    final now = DateTime.now();
-    final dt = DateTime(now.year, now.month, now.day, time.hour, time.minute);
-    final format = DateFormat.jm(); // '6:00 AM'
-    return format.format(dt);
+  // Parse time safely
+
+  static String _formatTime(String time) {
+    try {
+      List<String> parts = time.split(":");
+      if (parts.length < 2) return "Invalid Time";
+      int hour = int.parse(parts[0]);
+      int minute = int.parse(parts[1]);
+      final dt = DateTime(0, 0, 0, hour, minute);
+      return DateFormat.jm().format(dt); // Converts to '6:00 AM'
+    } catch (e) {
+      return "Invalid Time";
+    }
+  }
+
+  //Format Date to save in database
+  static String formatDate(String date) {
+    DateTime parsedDate = DateFormat('dd MMMM yyyy').parse(date);
+    return DateFormat('yyyy-MM-dd').format(parsedDate); // Corrected format
+  }
+
+  //Format Time to save in database
+  static String timeToJSON(String time) {
+    try {
+      // print("Input time: $time"); // Debugging
+
+      // Normalize any irregular spaces and characters
+      String cleanedTime = time.replaceAll(RegExp(r'\s+'), ' ').trim();
+
+      DateTime parsedTime = DateFormat("hh:mm a").parse(cleanedTime);
+      String formattedTime = DateFormat("HH:mm:ss").format(parsedTime);
+
+      // print("Converted time: $formattedTime"); // Debugging
+      return formattedTime;
+    } catch (e) {
+      // print("Error parsing time: $e");
+      return "00:00:00"; // Default invalid time
+    }
   }
 }

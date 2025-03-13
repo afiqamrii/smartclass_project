@@ -25,6 +25,7 @@ class LectViewAllClass extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final data = ref.watch(classDataProvider);
     return Scaffold(
+      backgroundColor: Color(0xffF7F7F7),
       appBar: appBar(context),
       body: data.when(
         data: (data) {
@@ -61,82 +62,54 @@ class LectViewAllClass extends ConsumerWidget {
               itemBuilder: (context, index) {
                 if (index < classes.length) {
                   final classItem = classes[index];
-                  return Padding(
-                    padding: const EdgeInsets.only(
-                      left: 10.0,
-                      bottom: 5.0,
-                      top: 10,
-                    ),
-                    child: IntrinsicHeight(
-                      child: Card(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12.0),
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              LecturerViewClass(classItem: classItem),
                         ),
-                        elevation: 2,
-                        child: Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            //Title of the class
-                            children: [
-                              Text(
-                                "${classItem.courseCode} - ${classItem.courseName}",
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              const SizedBox(height: 8.0),
-                              //Location of the class
-                              SizedBox(
-                                width: 250,
-                                child: Row(
-                                  children: [
-                                    const Icon(Icons.location_on_outlined,
-                                        size: 20),
-                                    const SizedBox(
-                                      width: 8.0,
-                                    ),
-                                    Text(
-                                      classItem.location,
-                                      style: const TextStyle(
-                                        fontFamily: 'FigtreeRegular',
-                                        fontWeight: FontWeight.w500,
-                                        fontSize: 13,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              const SizedBox(height: 8.0),
-                              //Time of the class
-                              Row(
-                                children: [
-                                  const Icon(Icons.access_time_outlined,
-                                      size: 20),
-                                  const SizedBox(width: 8.0),
-                                  Text(
-                                    "${classItem.startTime} - ${classItem.endTime}",
-                                    style: const TextStyle(
-                                      fontFamily: 'FigtreeRegular',
-                                      fontWeight: FontWeight.w500,
-                                      fontSize: 13,
-                                    ),
+                      );
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.only(
+                        left: 10.0,
+                        bottom: 2.0,
+                        top: 10,
+                      ),
+                      child: IntrinsicHeight(
+                        child: Card(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12.0),
+                          ),
+                          elevation: 2,
+                          child: Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              //Title of the class
+                              children: [
+                                Text(
+                                  "${classItem.courseCode} - ${classItem.courseName}",
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
                                   ),
-                                ],
-                              ),
-                              const SizedBox(height: 8.0),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Row(
+                                ),
+                                const SizedBox(height: 8.0),
+                                //Location of the class
+                                SizedBox(
+                                  width: 250,
+                                  child: Row(
                                     children: [
-                                      const Icon(Icons.calendar_today_outlined,
+                                      const Icon(Icons.location_on_outlined,
                                           size: 20),
-                                      const SizedBox(width: 8.0),
+                                      const SizedBox(
+                                        width: 8.0,
+                                      ),
                                       Text(
-                                        classItem.date,
+                                        classItem.location,
                                         style: const TextStyle(
                                           fontFamily: 'FigtreeRegular',
                                           fontWeight: FontWeight.w500,
@@ -145,30 +118,49 @@ class LectViewAllClass extends ConsumerWidget {
                                       ),
                                     ],
                                   ),
-                                  GestureDetector(
-                                    onTap: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) =>
-                                              LecturerViewClass(
-                                                  classItem: classItem),
-                                        ),
-                                      );
-                                    },
-                                    child: const Text(
-                                      "View all >",
-                                      style: TextStyle(
-                                        color: Colors.purple,
+                                ),
+                                const SizedBox(height: 8.0),
+                                //Time of the class
+                                Row(
+                                  children: [
+                                    const Icon(Icons.access_time_outlined,
+                                        size: 20),
+                                    const SizedBox(width: 8.0),
+                                    Text(
+                                      "${classItem.startTime} - ${classItem.endTime}",
+                                      style: const TextStyle(
                                         fontFamily: 'FigtreeRegular',
-                                        fontWeight: FontWeight.w600,
-                                        fontSize: 11,
+                                        fontWeight: FontWeight.w500,
+                                        fontSize: 13,
                                       ),
                                     ),
-                                  ),
-                                ],
-                              ),
-                            ],
+                                  ],
+                                ),
+                                const SizedBox(height: 8.0),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        const Icon(
+                                            Icons.calendar_today_outlined,
+                                            size: 20),
+                                        const SizedBox(width: 8.0),
+                                        Text(
+                                          classItem.date,
+                                          style: const TextStyle(
+                                            fontFamily: 'FigtreeRegular',
+                                            fontWeight: FontWeight.w500,
+                                            fontSize: 13,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ),

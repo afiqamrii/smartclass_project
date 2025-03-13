@@ -16,9 +16,10 @@ const cors = require("cors");
 const pool = require("./config/database");
 // const lectCreateClassRoutes = require("./routes/lectAccessClass");
 const classRoutes = require("./routes/classRoutes");
+const summarizationRoutes = require("./routes/summarizationRoutes");
 const generateTranscriptionTextRoutes = require("./routes/saveTranscriptionText");
-const generateSummarizedTextRoutes = require("./routes/saveSummarizedText");
-const lectAccessSummarizationRoutes = require("./routes/lectAccessSummarization");
+// const generateSummarizedTextRoutes = require("./routes/saveSummarizedText");
+// const lectAccessSummarizationRoutes = require("./routes/lectAccessSummarization");
 const sendCommandToMQTT = require("./routes/sendCommandToMQTT");
 const path = require("path");
 
@@ -37,10 +38,13 @@ app.use(express.json());
 // app.use("/class", lectCreateClassRoutes);
 app.use("/class", classRoutes);
 
+//Summarization Management
+app.use("/summarization", summarizationRoutes);
+
 // Class transcription and summarization
 app.use("/classrecording", generateTranscriptionTextRoutes);
-app.use("/classrecording", generateSummarizedTextRoutes);
-app.use("/classSummarization", lectAccessSummarizationRoutes);
+// app.use("/classrecording", generateSummarizedTextRoutes);
+// app.use("/classSummarization", lectAccessSummarizationRoutes);
 
 //Send to MQTT
 app.use("/mqtt", sendCommandToMQTT);

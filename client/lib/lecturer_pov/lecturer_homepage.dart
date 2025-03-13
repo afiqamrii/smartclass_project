@@ -363,9 +363,11 @@ class LectHomepage extends ConsumerWidget {
     return SizedBox(
       width: MediaQuery.of(context).size.width * 1.0,
       height: 170,
+
       //Show all class in the card
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
+        clipBehavior: Clip.none,
         itemCount: classDataItem.length,
         separatorBuilder: (context, index) => const SizedBox(width: 20),
         itemBuilder: (context, index) {
@@ -396,7 +398,7 @@ class LectHomepage extends ConsumerWidget {
                       //Give the shadow to the card
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.grey.withOpacity(0.25),
+                          color: Colors.grey.withOpacity(0.35),
                           spreadRadius: 0,
                           blurRadius: 6,
                           offset: const Offset(0, 3),

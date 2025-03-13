@@ -14,7 +14,7 @@ class LecturerViewsummarization extends ConsumerWidget {
   Future<void> _handleRefresh(WidgetRef ref) async {
     //Reload the daaata from provider
     // ignore: unused_result, await_only_futures
-    await ref.refresh(classDataProviderSummarization(classId));
+    await ref.refresh(classDataProviderSummarization(classId).future);
     //reloading take some time..
     return await Future.delayed(const Duration(seconds: 1));
   }

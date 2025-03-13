@@ -1,4 +1,4 @@
-/**
+ /**
  * Routes for lecturer to add a class.
  * Exports API endpoint to insert class details into the database.
  */

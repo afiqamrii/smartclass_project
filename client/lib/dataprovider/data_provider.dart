@@ -16,14 +16,15 @@ final classDataProvider = StreamProvider<List<ClassModel>>((ref) async* {
 final classDataProviderSummarizationStatus =
     StreamProvider<List<ClassSumModel>>((ref) async* {
   yield* ref
-      .watch(classProvider)
+      .watch(classProviderSummarization)
       .getClassesWithSummarization(); // Use classProvider from api.dart
 });
 
 // Create a Provider Object for get summarization
 final classDataProviderSummarization =
-    FutureProvider.family<List<SummarizationModels>, int>((ref, classId) async {
-  return ref
+    StreamProvider.family<List<SummarizationModels>, int>(
+        (ref, classId) async* {
+  yield* ref
       .watch(classProviderSummarization)
       .getSummarization(classId); // Use classProvider from api.dart
 });

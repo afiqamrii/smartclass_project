@@ -16,6 +16,8 @@ class Api {
   //Based url for HOSTPOT MyPhone
   static const baseUrl = "http://172.20.10.2:3000/class/";
 
+  // static const summarizationUrl = "http://172.20.10.2:3000/summarization/";
+
   //GET API Using provider to all classes data
   Stream<List<ClassModel>> getClasses() async* {
     while (true) {
@@ -24,22 +26,7 @@ class Api {
         final List result = jsonDecode(response.body)['Data'];
         yield result.map(((e) => ClassModel.fromJson(e))).toList();
       } else {
-        throw Exception(response.reasonPhrase);
-      }
-      await Future.delayed(const Duration(seconds: 5)); // Polling interval
-    }
-  }
-
-  //GET API Using provider to the class with summarization status
-  Stream<List<ClassSumModel>> getClassesWithSummarization() async* {
-    while (true) {
-      Response response =
-          await get(Uri.parse("${baseUrl}viewSummarizationStatus"));
-      if (response.statusCode == 200) {
-        final List result = jsonDecode(response.body)['Data'];
-        yield result.map(((e) => ClassSumModel.fromJson(e))).toList();
-      } else {
-        throw Exception(response.reasonPhrase);
+        throw Exception("Failed to load classes");
       }
       await Future.delayed(const Duration(seconds: 5)); // Polling interval
     }
@@ -60,10 +47,10 @@ class Api {
   ///   'classLocation': 'Room 101'
   /// }
   /// ```
-  static addClass(Map cdata) async {
+  static addClass(ClassModel data) async {
     // Print the input data for debugging purposes.
     // ignore: avoid_print
-    print(cdata);
+    print(data);
 
     // Construct the full URL for the "add_class" API endpoint.
     var url = Uri.parse("${baseUrl}addclass");
@@ -75,7 +62,7 @@ class Api {
         headers: {
           'Content-Type': 'application/json'
         }, // Set the header to indicate JSON data.
-        body: jsonEncode(cdata), // Encode the data as a JSON string.
+        body: jsonEncode(data.toJson()), // Encode the data as a JSON string.
       );
 
       // Check if the server responded with a success status code (200 OK).
@@ -129,6 +116,7 @@ class Api {
         var responseData = jsonDecode(res.body);
         // ignore: avoid_print
         print(responseData);
+        print("Updating class with data: ${jsonEncode(data.toJson())}");
         return responseData;
       } else {
         print("Failed to update class: ${res.statusCode}");
