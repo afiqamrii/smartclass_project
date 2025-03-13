@@ -3,13 +3,13 @@ const moment = require("moment");
 
 const ClassModel = {
     // Add a class to the database
-    async addClass(courseCode, title,date,timeStart,timeEnd,location){
+    async addClass(courseCode, className, date, timeStart, timeEnd, classLocation){
         try {
             const query = `
             INSERT INTO class (courseCode, className, date, timeStart, timeEnd, classLocation)
             VALUES (?, ?, ?, ?, ?, ?)
             `;
-            const values = [courseCode, title, date, timeStart, timeEnd, location];
+            const values = [courseCode, className, date, timeStart, timeEnd, classLocation];
             const [result] = await pool.query(query, values);
             console.log("Class added successfully:", result);
             return result.insertId;
@@ -26,26 +26,13 @@ const ClassModel = {
             const query = `
             SELECT * FROM class ORDER BY date DESC, timeStart DESC;
             `;
-            const [rows] = await pool.query
-            (query);
+            const [rows] = await pool.query(query);
             return rows;
         }
         catch (err) {
             console.error("Error retrieving data:", err.message);
-            return null;
+            return [];
         }
-    },
-
-    // Retrieve Summarization Status
-    async getSummarizationStatus() {
-        const query = `
-            SELECT c.*, cr.recordingStatus
-            FROM class c
-            LEFT JOIN ClassRecording cr ON c.classId = cr.classId
-            WHERE cr.recordingStatus IS NOT NULL;
-        `;
-        const [rows] = await pool.query(query);
-        return rows;
     },
 
     //Update Class
@@ -56,9 +43,14 @@ const ClassModel = {
             WHERE classId = ?
         `;
         const values = [courseCode, className, date, timeStart, timeEnd, classLocation, id];
+    
+        console.log("Executing SQL:", query);
+        console.log("With values:", values);
+    
         await pool.query(query, values);
         return id;
     },
+    
 
     //Delete Class
     async deleteClass(id) {
