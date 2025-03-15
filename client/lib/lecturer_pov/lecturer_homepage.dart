@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:smartclass_fyp_2024/dataprovider/data_provider.dart';
+import 'package:smartclass_fyp_2024/dataprovider/user_provider.dart';
 import 'package:smartclass_fyp_2024/lecturer_pov/lecturer_viewSummarization.dart';
 import 'package:smartclass_fyp_2024/lecturer_pov/lecturer_view_class.dart';
 import 'package:smartclass_fyp_2024/models/lecturer/classSum_model.dart';
@@ -20,6 +21,7 @@ class LectHomepage extends ConsumerWidget {
     await ref.refresh(classDataProvider.future);
     // ignore: unused_result, await_only_futures
     await ref.refresh(classDataProviderSummarizationStatus.future);
+    await ref.refresh(authProvider);
     //reloading take some time..
     return await Future.delayed(const Duration(seconds: 1));
   }
@@ -30,6 +32,7 @@ class LectHomepage extends ConsumerWidget {
     //get data from provider
     final data = ref.watch(classDataProvider);
     final sumData = ref.watch(classDataProviderSummarizationStatus);
+    final user = ref.watch(authProvider);
     return Scaffold(
       body: data.when(
         data: (data) {
@@ -57,18 +60,18 @@ class LectHomepage extends ConsumerWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           //Hello Dr. Afiq top title
-                          const Column(
+                          Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                "Hello Dr. Afiq!",
-                                style: TextStyle(
+                                "Hello ${user.userName}",
+                                style: const TextStyle(
                                   fontSize: 22,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
                               //Welcome to Smart Class top title
-                              Text.rich(
+                              const Text.rich(
                                 TextSpan(
                                   text: "Welcome to ",
                                   style: TextStyle(

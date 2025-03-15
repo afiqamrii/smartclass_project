@@ -45,7 +45,12 @@ exports.signIn = async (req, res) => {
         const result = await authService.signIn(userEmail, userPassword);
 
         //Send response
-        res.status(200).json({ message: "User signed in successfully", userId: result.userId });
+        res.status(200).json({ 
+            message: "User signed in successfully",
+            userId: result.userId,
+            userName: result.userName, 
+            token: result.token  // token is included
+        });
 
     } catch (err) {
         // Check if the error is user-related
@@ -102,5 +107,5 @@ exports.getUserData = async (req, res) => {
     
     const user = await User.findById(req.user);
 
-    res.json({...user._doc, token : req.token});
+    res.json({...user.get({ plain: true }), token : req.token});
 }
