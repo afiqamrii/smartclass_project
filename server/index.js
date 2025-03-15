@@ -14,6 +14,7 @@
 const express = require("express");
 const cors = require("cors");
 const pool = require("./config/database");
+const authRouter = require("./routes/authRoutes");
 // const lectCreateClassRoutes = require("./routes/lectAccessClass");
 const classRoutes = require("./routes/classRoutes");
 const summarizationRoutes = require("./routes/summarizationRoutes");
@@ -21,7 +22,7 @@ const generateTranscriptionTextRoutes = require("./routes/saveTranscriptionText"
 // const generateSummarizedTextRoutes = require("./routes/saveSummarizedText");
 // const lectAccessSummarizationRoutes = require("./routes/lectAccessSummarization");
 const sendCommandToMQTT = require("./routes/sendCommandToMQTT");
-const path = require("path");
+// const path = require("path");
 
 // Initialize the Express application.
 const app = express(); 
@@ -33,6 +34,9 @@ app.use(cors());
 app.use(express.json());
 
 //Routes
+
+//Authentication
+app.use(authRouter);
 
 //Class Management
 // app.use("/class", lectCreateClassRoutes);

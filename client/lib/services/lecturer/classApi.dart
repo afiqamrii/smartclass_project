@@ -1,11 +1,8 @@
-// ignore_for_file: avoid_print, duplicate_ignore
-
 import 'dart:convert'; // Provides JSON encoding and decoding functionality.
 import 'package:flutter/material.dart'; // Flutter framework for UI components.
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
-import 'package:smartclass_fyp_2024/models/lecturer/classSum_model.dart';
 import '../../models/lecturer/class_models.dart'; // HTTP package for making API requests.
 
 /// A class to handle API interactions for the application.
