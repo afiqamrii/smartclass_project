@@ -4,7 +4,7 @@ import 'package:smartclass_fyp_2024/models/lecturer/user.dart';
 class UserProvider extends Notifier<User> {
   @override
   User build() => User(
-        userId: '',
+        userId: 0,
         userName: '',
         userEmail: '',
         userPassword: '',
