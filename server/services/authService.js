@@ -1,5 +1,6 @@
 const bcrypt = require("bcryptjs");
 const User = require("../models/User");
+const jwt = require("jsonwebtoken");
 
 //Sign Up
 exports.signUp = async (userName , userEmail , userPassword , confirmPassword , roleId) => {
@@ -69,5 +70,8 @@ exports.signIn = async (userEmail , userPassword) => {
     //Token generation and storing it in DB
     const token = jwt.sign({ id: user.userId }, "passwordKey");
     
-    return { ...user._doc , token };
+    console.log("Returning:", { ...user._doc , token });
+
+    return { ...user.get({ plain: true }), token };
 }
+

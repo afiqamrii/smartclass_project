@@ -1,4 +1,4 @@
-const pool = require("../config/database");
+const pool = require("../config/database").pool;
 const moment = require("moment");
 
 const ClassModel = {
