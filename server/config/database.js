@@ -14,6 +14,8 @@
  */
 
 const mysql = require("mysql2/promise");
+const {Sequelize} = require("sequelize");
+
 require("dotenv").config();
 
 const pool = mysql.createPool({
@@ -24,4 +26,16 @@ const pool = mysql.createPool({
   database: process.env.DB_DATABASE,
 });
 
-module.exports = pool;
+const sequelize = new Sequelize(process.env.DB_DATABASE, process.env.DB_USER, process.env.DB_PASSWORD, {
+  host: process.env.DB_HOST,
+  dialect: "mysql",
+  port: process.env.DB_PORT,
+  logging: false
+});
+
+sequelize.sync()
+  .then(() => console.log("✅ Database synchronized"))
+  .catch(err => console.error("❌ Database sync error:", err));
+
+
+module.exports = { pool , sequelize};

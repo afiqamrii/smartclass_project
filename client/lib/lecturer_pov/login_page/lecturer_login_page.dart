@@ -1,25 +1,36 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:smartclass_fyp_2024/components/login_textfield.dart';
 import 'package:smartclass_fyp_2024/components/custom_buttom.dart';
 import 'package:smartclass_fyp_2024/lecturer_pov/template/lecturer_bottom_navbar.dart';
 import 'package:smartclass_fyp_2024/widget/appbar.dart';
 
-class LecturerLoginPage extends StatelessWidget {
+import '../../services/lecturer/auth_services.dart';
+
+class LecturerLoginPage extends ConsumerWidget {
   LecturerLoginPage({super.key});
+
+  //Import AuthServices
+  final authService = AuthService();
 
   //Text editing controller
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
 
   //Sign user in method
-  void signUserIn() {}
+  void signUserIn(BuildContext context, WidgetRef ref) {
+    authService.loginUser(
+      context: context,
+      ref: ref,
+      userEmail: emailController.text,
+      userPassword: passwordController.text,
+    );
+  }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
-      appBar: const Appbar(
-
-      ),
+      appBar: const Appbar(),
       body: Center(
         child: Column(
           children: [
@@ -80,13 +91,7 @@ class LecturerLoginPage extends StatelessWidget {
             CustomButton(
               text: 'Login',
               onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) =>
-                        const LectBottomNavBar(initialIndex: 0),
-                  ),
-                );
+                signUserIn(context, ref);
               },
             ),
           ],
