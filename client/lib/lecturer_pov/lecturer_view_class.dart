@@ -1,51 +1,46 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:quickalert/models/quickalert_type.dart';
 import 'package:quickalert/widgets/quickalert_dialog.dart';
+import 'package:smartclass_fyp_2024/dataprovider/recording_state_notifier.dart';
+import 'package:smartclass_fyp_2024/dataprovider/user_provider.dart';
 import 'package:smartclass_fyp_2024/lecturer_pov/lecturer_show_all_classes.dart';
 import 'package:smartclass_fyp_2024/lecturer_pov/lecturer_update_class.dart';
-import 'package:smartclass_fyp_2024/services/lecturer/favoriotApi.dart';
 import 'package:smartclass_fyp_2024/lecturer_pov/lecturer_viewSummarization.dart';
+import 'package:smartclass_fyp_2024/widget/pageTransition.dart';
 import '../models/lecturer/class_models.dart';
 import '../services/lecturer/classApi.dart';
 
-class LecturerViewClass extends StatefulWidget {
+class LecturerViewClass extends ConsumerWidget {
   final ClassModel classItem;
 
   const LecturerViewClass({super.key, required this.classItem});
 
   @override
-  State<LecturerViewClass> createState() => _LecturerViewClassState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final recordingState =
+        ref.watch(recordingStateProvider)[classItem.classId] ??
+            RecordingState(
+              isRecording: false,
+              micIcon: const Icon(
+                Icons.mic_off_rounded,
+                color: Colors.white,
+                size: 20,
+              ),
+              recordingText: const Text(
+                "Not recorded yet",
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
+                ),
+              ),
+              micColor: const Color.fromARGB(255, 255, 61, 61),
+            );
 
-class _LecturerViewClassState extends State<LecturerViewClass> {
-  //Toggle light for lecture recording
-  bool light = false;
-  Icon initialMicIcon = const Icon(
-    Icons.mic_off_rounded,
-    color: Colors.white,
-    size: 20,
-  );
-  // Set initial text for Recording
-  Text initialRecordingText = const Text(
-    "Recording",
-    style: TextStyle(
-      fontSize: 16,
-      fontWeight: FontWeight.bold,
-      color: Colors.black87,
-    ),
-  );
-  //Set initial color for mic container
-  Color initialColor = const Color.fromARGB(255, 255, 61, 61);
+    final userData = ref.watch(userProvider);
 
-  //Refresh function
-  Future<void> _handleRefresh() async {
-    //reloading take some time..
-    return await Future.delayed(const Duration(seconds: 1));
-  }
-
-  @override
-  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[200],
       appBar: AppBar(
@@ -53,8 +48,8 @@ class _LecturerViewClassState extends State<LecturerViewClass> {
           onTap: () {
             Navigator.push(
               context,
-              MaterialPageRoute(
-                builder: (context) => const LectViewAllClass(),
+              toRightTransition(
+                const LectViewAllClass(),
               ),
             );
           },
@@ -72,13 +67,12 @@ class _LecturerViewClassState extends State<LecturerViewClass> {
           ),
         ),
         title: Text(
-          '${widget.classItem.courseCode} - ${widget.classItem.courseName}',
+          '${classItem.courseCode} - ${classItem.courseName}',
           style: const TextStyle(
             fontSize: 15,
             color: Colors.black,
           ),
         ),
-        // Give a border at the bottom
         shape: Border(
           bottom: BorderSide(
             color: Colors.grey[300]!,
@@ -96,7 +90,6 @@ class _LecturerViewClassState extends State<LecturerViewClass> {
             backgroundColor: Colors.deepPurple[200],
             animSpeedFactor: 4,
             showChildOpacityTransition: false,
-            //Sini start part in the body tu
             child: Padding(
               padding:
                   const EdgeInsets.symmetric(vertical: 20.0, horizontal: 20),
@@ -104,19 +97,15 @@ class _LecturerViewClassState extends State<LecturerViewClass> {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(15),
                 ),
-                //Make sure the picture follow the Card shape
                 clipBehavior: Clip.antiAlias,
                 child: IntrinsicHeight(
                   child: Stack(
                     fit: StackFit.expand,
                     children: [
-                      //Image layer
                       Image.asset(
                         'assets/pictures/compPicture.jpg',
                         fit: BoxFit.cover,
                       ),
-                      //Blur black gradient layer
-                      // Partial Blur and Black Overlay Layer
                       Positioned(
                         top: 50,
                         left: 0,
@@ -135,8 +124,6 @@ class _LecturerViewClassState extends State<LecturerViewClass> {
                           ),
                         ),
                       ),
-
-                      //Text layer
                       Padding(
                         padding: const EdgeInsets.all(15.0),
                         child: Column(
@@ -148,9 +135,9 @@ class _LecturerViewClassState extends State<LecturerViewClass> {
                                   onTap: () {
                                     Navigator.push(
                                       context,
-                                      MaterialPageRoute(
-                                        builder: (context) => LectUpdateClass(
-                                          classItem: widget.classItem,
+                                      toLeftTransition(
+                                        LectUpdateClass(
+                                          classItem: classItem,
                                         ),
                                       ),
                                     );
@@ -164,7 +151,6 @@ class _LecturerViewClassState extends State<LecturerViewClass> {
                               ],
                             ),
                             const SizedBox(height: 60),
-                            //Start of details or class in the card.
                             Padding(
                               padding:
                                   const EdgeInsets.only(left: 10.0, right: 10),
@@ -181,7 +167,7 @@ class _LecturerViewClassState extends State<LecturerViewClass> {
                                             MediaQuery.of(context).size.width *
                                                 0.7,
                                         child: Text(
-                                          "${widget.classItem.courseCode} - ${widget.classItem.courseName}",
+                                          "${classItem.courseCode} - ${classItem.courseName}",
                                           style: const TextStyle(
                                             color: Colors.white,
                                             fontSize: 18,
@@ -189,12 +175,9 @@ class _LecturerViewClassState extends State<LecturerViewClass> {
                                           ),
                                         ),
                                       ),
-                                      const SizedBox(
-                                        height: 5,
-                                      ),
-                                      //Time and date and lect name of the class goes hereeeee
+                                      const SizedBox(height: 5),
                                       Text(
-                                        "${widget.classItem.startTime} - ${widget.classItem.endTime}",
+                                        "${classItem.startTime} - ${classItem.endTime}",
                                         style: const TextStyle(
                                           color: Colors.white,
                                           fontSize: 13,
@@ -202,23 +185,20 @@ class _LecturerViewClassState extends State<LecturerViewClass> {
                                         ),
                                       ),
                                       Text(
-                                        widget.classItem.date,
+                                        classItem.date,
                                         style: const TextStyle(
                                           color: Colors.white,
                                           fontSize: 13,
                                           fontFamily: 'FigtreeRegular',
                                         ),
                                       ),
-                                      const SizedBox(
-                                        height: 10,
-                                      ),
+                                      const SizedBox(height: 10),
                                       SizedBox(
                                         width:
                                             MediaQuery.of(context).size.width *
                                                 0.7,
                                         child: Text(
-                                          "Lecturer : Dr Nor | "
-                                          "Location : ${widget.classItem.location}",
+                                          "Lecturer : Dr Nor | Location : ${classItem.location}",
                                           style: const TextStyle(
                                             color: Colors.white,
                                             fontSize: 13,
@@ -240,11 +220,8 @@ class _LecturerViewClassState extends State<LecturerViewClass> {
             ),
           ),
           const SizedBox(height: 5),
-          //List of button section (Attendance , Lecture Recording Activation and See the Summarization)
           Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 22.0,
-            ),
+            padding: const EdgeInsets.symmetric(horizontal: 22.0),
             child: IntrinsicHeight(
               child: Container(
                 decoration: BoxDecoration(
@@ -256,11 +233,9 @@ class _LecturerViewClassState extends State<LecturerViewClass> {
                       left: 20.0, right: 20, top: 10, bottom: 15),
                   child: Column(
                     children: [
-                      //Attendance Button Section
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          //Attendance button
                           const Text(
                             "Attendance",
                             style: TextStyle(
@@ -283,7 +258,6 @@ class _LecturerViewClassState extends State<LecturerViewClass> {
                         thickness: 1,
                         color: Colors.black.withOpacity(0.15),
                       ),
-                      //Lecture Recording Activation button
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -304,72 +278,24 @@ class _LecturerViewClassState extends State<LecturerViewClass> {
                                   Container(
                                     padding: const EdgeInsets.all(5),
                                     decoration: BoxDecoration(
-                                      color: initialColor,
+                                      color: recordingState.micColor,
                                       borderRadius: BorderRadius.circular(5),
                                     ),
-                                    child: initialMicIcon,
+                                    child: recordingState.micIcon,
                                   ),
                                   const SizedBox(width: 5),
-                                  //Set initial recording text
-                                  initialRecordingText,
+                                  recordingState.recordingText,
                                 ],
                               ),
-
-                              //Toggle Switch for recording
                               Transform.scale(
                                 scale: 0.75,
                                 child: Switch(
-                                  value: light,
+                                  value: recordingState.isRecording,
                                   activeColor: Colors.green,
                                   onChanged: (bool value) async {
-                                    // Perform asynchronous work first
-                                    if (value == true) {
-                                      await FavoriotApi.publishData(
-                                        "start", //Pass command
-                                        widget
-                                            .classItem.classId, //Pass Class ID
-                                      );
-                                    } else {
-                                      await FavoriotApi.publishData(
-                                        "stop", //Pass command
-                                        widget
-                                            .classItem.classId, //Pass Class ID
-                                      );
-                                    }
-
-                                    // Update the state synchronously
-                                    setState(() {
-                                      light = value;
-                                      if (light == true) {
-                                        initialMicIcon = const Icon(
-                                          Icons.mic,
-                                          size: 20,
-                                          color: Colors.white,
-                                        );
-                                        initialColor = Colors.green;
-                                        initialRecordingText = const Text(
-                                          "Recording Started !",
-                                          style: TextStyle(
-                                            color: Colors.green,
-                                            fontSize: 16,
-                                          ),
-                                        );
-                                      } else {
-                                        initialMicIcon = const Icon(
-                                          Icons.mic_off,
-                                          size: 16,
-                                          color: Colors.white,
-                                        );
-                                        initialColor = Colors.red;
-                                        initialRecordingText = const Text(
-                                          "Recording",
-                                          style: TextStyle(
-                                            color: Colors.black,
-                                            fontSize: 16,
-                                          ),
-                                        );
-                                      }
-                                    });
+                                    await ref
+                                        .read(recordingStateProvider.notifier)
+                                        .toggleRecording(classItem.classId);
                                   },
                                 ),
                               ),
@@ -381,7 +307,6 @@ class _LecturerViewClassState extends State<LecturerViewClass> {
                         thickness: 1,
                         color: Colors.black.withOpacity(0.15),
                       ),
-                      //Summarization button
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -400,7 +325,7 @@ class _LecturerViewClassState extends State<LecturerViewClass> {
                                 MaterialPageRoute(
                                   builder: (context) =>
                                       LecturerViewsummarization(
-                                    classId: widget.classItem.classId,
+                                    classId: classItem.classId,
                                   ),
                                 ),
                               );
@@ -423,19 +348,22 @@ class _LecturerViewClassState extends State<LecturerViewClass> {
               ),
             ),
           ),
-          _deleteButton(context),
+          _deleteButton(context, classItem),
         ],
       ),
     );
   }
 
-  // Padding _topClassCard(BuildContext context) {
-  Widget _deleteButton(BuildContext context) {
+  Future<void> _handleRefresh() async {
+    return await Future.delayed(const Duration(seconds: 1));
+  }
+
+  Widget _deleteButton(BuildContext context, ClassModel classItem) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20),
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.black, // Background color
+          backgroundColor: Colors.black,
         ),
         onPressed: () async {
           QuickAlert.show(
@@ -447,10 +375,8 @@ class _LecturerViewClassState extends State<LecturerViewClass> {
             confirmBtnText: 'Delete',
             cancelBtnText: 'Cancel',
             onConfirmBtnTap: () async {
-              await Api.deleteClass(Api.baseUrl, widget.classItem.classId);
-              // ignore: use_build_context_synchronously
+              await Api.deleteClass(Api.baseUrl, classItem.classId);
               Navigator.push(
-                // ignore: use_build_context_synchronously
                 context,
                 MaterialPageRoute(
                   builder: (context) {
@@ -458,7 +384,6 @@ class _LecturerViewClassState extends State<LecturerViewClass> {
                   },
                 ),
               );
-              // ignore: use_build_context_synchronously
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(content: Text('Class deleted successfully')),
               );

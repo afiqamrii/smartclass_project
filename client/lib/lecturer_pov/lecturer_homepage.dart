@@ -7,6 +7,7 @@ import 'package:smartclass_fyp_2024/lecturer_pov/lecturer_viewSummarization.dart
 import 'package:smartclass_fyp_2024/lecturer_pov/lecturer_view_class.dart';
 import 'package:smartclass_fyp_2024/models/lecturer/classSum_model.dart';
 import 'package:smartclass_fyp_2024/test.dart';
+import 'package:smartclass_fyp_2024/widget/pageTransition.dart';
 import 'lecturer_show_all_classes.dart';
 import '../models/lecturer/class_models.dart';
 
@@ -21,7 +22,6 @@ class LectHomepage extends ConsumerWidget {
     await ref.refresh(classDataProvider.future);
     // ignore: unused_result, await_only_futures
     await ref.refresh(classDataProviderSummarizationStatus.future);
-    await ref.refresh(authProvider);
     //reloading take some time..
     return await Future.delayed(const Duration(seconds: 1));
   }
@@ -32,7 +32,7 @@ class LectHomepage extends ConsumerWidget {
     //get data from provider
     final data = ref.watch(classDataProvider);
     final sumData = ref.watch(classDataProviderSummarizationStatus);
-    final user = ref.watch(authProvider);
+    final user = ref.watch(userProvider);
     return Scaffold(
       body: data.when(
         data: (data) {
@@ -180,12 +180,11 @@ class LectHomepage extends ConsumerWidget {
             return GestureDetector(
               onTap: () {
                 Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => LecturerViewsummarization(
-                        classId: classes[index].classId),
-                  ),
-                );
+                    context,
+                    toLeftTransition(
+                      LecturerViewsummarization(
+                          classId: classes[index].classId),
+                    ));
               },
               child: Padding(
                 padding: const EdgeInsets.only(bottom: 13.0, right: 20.0),
@@ -341,9 +340,11 @@ class LectHomepage extends ConsumerWidget {
         TextButton(
           onPressed: () {
             Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => const LectViewAllClass()));
+              context,
+              toLeftTransition(
+                const LectViewAllClass(),
+              ),
+            );
           },
           child: const Padding(
             padding: EdgeInsets.only(right: 10.0),
@@ -380,8 +381,8 @@ class LectHomepage extends ConsumerWidget {
               // Navigate to class detail page
               Navigator.push(
                 context,
-                MaterialPageRoute(
-                  builder: (context) => LecturerViewClass(
+                toLeftTransition(
+                  LecturerViewClass(
                     classItem: classData,
                   ),
                 ),

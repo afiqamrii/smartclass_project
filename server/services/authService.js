@@ -68,9 +68,14 @@ exports.signIn = async (userEmail , userPassword) => {
     console.log("User signed in:", user);
 
     //Token generation and storing it in DB
-    const token = jwt.sign({ id: user.userId }, "passwordKey");
+    const token = jwt.sign(
+        { id: user.userId }, 
+        "passwordKey",
+        { expiresIn: "30s" } // Token expires in 1 hour
     
-    console.log("Returning:", { ...user._doc , token });
+    );
+    
+    console.log("Returning:", { ...user.get({ plain: true }) , token });
 
     return { ...user.get({ plain: true }), token };
 }
