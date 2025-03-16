@@ -1,10 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:quickalert/models/quickalert_type.dart';
+import 'package:quickalert/widgets/quickalert_dialog.dart';
 import 'package:smartclass_fyp_2024/lecturer_pov/lecturer_account_details.dart';
 import 'package:smartclass_fyp_2024/lecturer_pov/lecturer_edit_profile.dart';
-import 'package:smartclass_fyp_2024/lecturer_pov/login_page/lecturer_greets_page.dart';
+import 'package:smartclass_fyp_2024/services/lecturer/auth_services.dart';
+
 
 class LecturerProfilePage extends StatelessWidget {
   const LecturerProfilePage({super.key});
+
+  void signOutUser(BuildContext context) {
+    AuthService().signOut(context);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -238,13 +245,14 @@ class LecturerProfilePage extends StatelessWidget {
                         children: [
                           ElevatedButton.icon(
                             onPressed: () {
-                              Navigator.pushAndRemoveUntil(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      const LecturerGreetsPage(),
-                                ),
-                                (route) => false,
+                              QuickAlert.show(
+                                context: context,
+                                type: QuickAlertType.confirm,
+                                title: "Logout",
+                                text: "Are you sure you want to logout?",
+                                confirmBtnText: "Yes",
+                                cancelBtnText: "No",
+                                onConfirmBtnTap: () => signOutUser(context),
                               );
                             },
                             label: const Text(

@@ -6,6 +6,7 @@ import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:smartclass_fyp_2024/dataprovider/data_provider.dart';
 import 'package:smartclass_fyp_2024/lecturer_pov/lecturer_view_class.dart';
 import 'package:smartclass_fyp_2024/lecturer_pov/template/lecturer_bottom_navbar.dart';
+import 'package:smartclass_fyp_2024/widget/pageTransition.dart';
 import '../lecturer_pov/lecturer_create_class.dart';
 import '../models/lecturer/class_models.dart';
 
@@ -66,9 +67,8 @@ class LectViewAllClass extends ConsumerWidget {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              LecturerViewClass(classItem: classItem),
+                        toLeftTransition(
+                          LecturerViewClass(classItem: classItem),
                         ),
                       );
                     },
@@ -184,8 +184,8 @@ class LectViewAllClass extends ConsumerWidget {
         onTap: () {
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(
-              builder: (context) => const LectBottomNavBar(initialIndex: 0),
+            toRightTransition(
+              const LectBottomNavBar(initialIndex: 0),
             ),
           );
         },
@@ -225,11 +225,10 @@ class LectViewAllClass extends ConsumerWidget {
           child: GestureDetector(
             onTap: () {
               Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const LectCreateClass(),
-                ),
-              );
+                  context,
+                  toLeftTransition(
+                    const LectCreateClass(),
+                  ));
             },
             child: Image.asset(
               "assets/icons/add.png",

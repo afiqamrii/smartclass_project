@@ -1,4 +1,6 @@
 const authService = require("../services/authService");
+const jwt = require("jsonwebtoken");
+const User = require("../models/User");
 
 
 //Sign Up
@@ -73,11 +75,11 @@ exports.signIn = async (req, res) => {
 exports.checkToken = async (req, res) => {
     try {
         //Check if token is present
-        const token = req.headers("x-auth-token");
+        const token = req.headers["x-auth-token"];
 
         //If token is not present
         if(!token) {
-            return res.status(401).json(false); //Unauthorized
+            return res.status(401).json({ message: "No auth token, access denied!" }); //Unauthorized
         }
 
         //Verify token
@@ -85,27 +87,44 @@ exports.checkToken = async (req, res) => {
 
         //If token is not valid
         if(!verified) {
-            return res.status(401).json(false); //Unauthorized
+            return res.status(401).json({ message: "Token verification failed, authorization denied!" }); //Unauthorized
         } 
 
         //Check if user exists
-        const user = await User.findById(verified.id);
+        const user = await User.findOne({ _id: verified.id });
 
         //If user does not exist
         if(!user) {
-            return res.status(401).json(false); //Unauthorized
+            return res.status(401).json({ message: "User not found, authorization denied!" }); //Unauthorized
         }
 
+        //Return true if token is valid
+        res.json({ message: "Token is valid", isValid: true });
+
     } catch (err) {
-        res.status(500).json({ message: "Internal Server Error" });
-        console.log(err);
+        if (err.name === "TokenExpiredError") {
+            return res.status(401).json({ message: "Token expired, please log in again." });
+        }
+        res.status(500).json({ message: err.message });
     }
 }
 
 //get user data
 exports.getUserData = async (req, res) => {
-    
-    const user = await User.findById(req.user);
+    try {
+        const user = await User.findOne({ where: { userId: req.user } });
 
-    res.json({...user.get({ plain: true }), token : req.token});
+        if (!user) {
+            return res.status(404).json({ message: "User not found!" });
+        }
+
+        const userData = { ...user.get({ plain: true }), token: req.token };
+        res.json(userData);
+
+        // Print user data
+        console.log("User data:", userData);
+    } catch (err) {
+        console.error("Error retrieving user data:", err);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
 }
