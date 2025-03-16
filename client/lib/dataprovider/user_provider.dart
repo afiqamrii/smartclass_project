@@ -23,6 +23,6 @@ class UserProvider extends Notifier<User> {
   }
 }
 
-final authProvider = NotifierProvider<UserProvider, User>(() {
+final userProvider = NotifierProvider<UserProvider, User>(() {
   return UserProvider();
 });

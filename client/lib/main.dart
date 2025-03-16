@@ -1,17 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-// import 'package:smartclass_fyp_2024/lecturer_pov/template/lecturer_bottom_navbar.dart';
+import 'package:smartclass_fyp_2024/dataprovider/user_provider.dart';
+import 'package:smartclass_fyp_2024/lecturer_pov/lecturer_homepage.dart';
+import 'package:smartclass_fyp_2024/lecturer_pov/template/lecturer_bottom_navbar.dart';
+import 'package:smartclass_fyp_2024/services/lecturer/auth_services.dart';
 import 'package:smartclass_fyp_2024/splashscreen/splashScreen.dart';
 
 void main() {
   runApp(const ProviderScope(child: MyApp()));
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends ConsumerWidget {
   const MyApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    // Access the AuthService provider
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'IntelliClass',
@@ -20,13 +25,14 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home:
-          const MainScreen(), // Navigate to the MainScreen with navigation functionality
+      home: const MainScreen(),
     );
   }
 }
 
-class MainScreen extends StatefulWidget {
+final authServiceProvider = Provider((ref) => AuthService());
+
+class MainScreen extends ConsumerStatefulWidget {
   const MainScreen({super.key});
 
   @override
@@ -34,33 +40,43 @@ class MainScreen extends StatefulWidget {
   _MainScreenState createState() => _MainScreenState();
 }
 
-class _MainScreenState extends State<MainScreen> {
-  // final int _currentIndex = 0;
-  // final List<Widget> _screens = [
-  //   LectHomepage(), // Lecturer homepage
-  //   const LecturerMyclass(), // MyClass screen
-  //   const LecturerProfilePage(), // Lecturer profile page
-  // ];
+class _MainScreenState extends ConsumerState<MainScreen> {
+  // Create a boolean variable to track the loading state
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    loadUserData();
+  }
+
+  Future<void> loadUserData() async {
+    await ref.read(authServiceProvider).getUserData(ref);
+    setState(() {
+      isLoading = false; // Stop the loading animation
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: SplashScreen(),
+    // get data from provider
+    final user = ref.watch(userProvider);
+
+    if (isLoading) {
+      return const MaterialApp(
+        home: Scaffold(
+          body: Center(
+            child: CircularProgressIndicator(),
+          ),
+        ),
+      );
+    }
+
+    return Scaffold(
+      body: user.token.isNotEmpty
+          ? const LectBottomNavBar(
+              initialIndex: 0) // Show Lecturer Homepage if token is present
+          : const SplashScreen(), // Show SplashScreen if token is not present
     );
   }
-
-  //backup untuk direct the homepage dulu .
-  //  final int _currentIndex = 0;
-  // // final List<Widget> _screens = [
-  // //   LectHomepage(), // Lecturer homepage
-  // //   const LecturerMyclass(), // MyClass screen
-  // //   const LecturerProfilePage(), // Lecturer profile page
-  // // ];
-
-  // @override
-  // Widget build(BuildContext context) {
-  //   return Scaffold(
-  //     body: LectBottomNavBar(initialIndex: _currentIndex),
-  //   );
-  // }
 }

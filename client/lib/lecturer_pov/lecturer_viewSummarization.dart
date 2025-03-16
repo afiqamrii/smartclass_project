@@ -4,6 +4,7 @@ import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:smartclass_fyp_2024/dataprovider/data_provider.dart';
 import 'package:smartclass_fyp_2024/lecturer_pov/lecturer_editsummarization.dart';
 import 'package:smartclass_fyp_2024/lecturer_pov/template/lecturer_bottom_navbar.dart';
+import 'package:smartclass_fyp_2024/widget/pageTransition.dart';
 
 class LecturerViewsummarization extends ConsumerWidget {
   final int classId;
@@ -37,10 +38,8 @@ class LecturerViewsummarization extends ConsumerWidget {
           onPressed: () {
             Navigator.push(
               context,
-              MaterialPageRoute(
-                builder: (context) {
-                  return const LectBottomNavBar(initialIndex: 0);
-                },
+              toRightTransition(
+                const LectBottomNavBar(initialIndex: 0),
               ),
             );
           },

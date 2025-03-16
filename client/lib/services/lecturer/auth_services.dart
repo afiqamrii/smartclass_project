@@ -4,15 +4,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'package:smartclass_fyp_2024/dataprovider/user_provider.dart';
-import 'package:smartclass_fyp_2024/lecturer_pov/lecturer_homepage.dart';
-import 'package:smartclass_fyp_2024/login/login_as.dart';
+import 'package:smartclass_fyp_2024/lecturer_pov/login_page/lecturer_greets_page.dart';
+import 'package:smartclass_fyp_2024/lecturer_pov/template/lecturer_bottom_navbar.dart';
 import 'package:smartclass_fyp_2024/models/lecturer/user.dart';
 import 'package:smartclass_fyp_2024/utils/utils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:smartclass_fyp_2024/widget/pageTransition.dart';
 
 class AuthService {
   //BASE URL
   static const baseUrl = "http://172.20.10.2:3000/api";
+
+  //GET USER DATA
+  static const tokenAuthUrl = "http://172.20.10.2:3000";
 
   //SIGNUP
   Future<void> signUpUser({
@@ -83,19 +87,19 @@ class AuthService {
           SharedPreferences prefs = await SharedPreferences.getInstance();
           final userData = jsonDecode(res.body);
 
-          print(userData);
+          // print(userData); //Debugging Purposes
 
           //Set User Provider
           ref
-              .read(authProvider.notifier)
+              .read(userProvider.notifier)
               .setUserFromModel(User.fromJson(res.body));
           await prefs.setString('x-auth-token', userData['token']);
 
           // Debug print to check if token is saved
-          print('Token saved: ${userData['token']}');
+          // print('Token saved: ${userData['token']}'); //Debugging Purposes
 
           navigator.pushAndRemoveUntil(
-            MaterialPageRoute(builder: (context) => const LectHomepage()),
+            toLeftTransition(const LectBottomNavBar(initialIndex: 0)),
             (route) => false,
           );
         },
@@ -112,32 +116,45 @@ class AuthService {
       String? token = prefs.getString('x-auth-token') ?? '';
 
       // Debug print to check if token is retrieved
-      print('Token retrieved: $token');
+      // print('Token retrieved: $token'); //Debugging Purposes
+
+      // if (token == null) {
+      //   prefs.setString('x-auth-token', '');
+      // }
 
       // Check if the token is valid
       var tokenRes = await http.post(
-        Uri.parse('$baseUrl/tokenIsValid'),
-        headers: {
+        Uri.parse('$tokenAuthUrl/tokenIsValid'),
+        headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
           'x-auth-token': token
         },
       );
 
+      // print("Pass here"); //Debugging Purposes
+
       var response = jsonDecode(tokenRes.body);
 
       // If the token is valid, fetch user data
-      if (response == true) {
+      if (response['isValid'] == true) {
+        // print("Token valid!"); //Debugging Purposes
+
         http.Response userRes = await http.get(
-          Uri.parse('$baseUrl/'),
-          headers: {
+          Uri.parse('$tokenAuthUrl/'),
+          headers: <String, String>{
             'Content-Type': 'application/json; charset=UTF-8',
             'x-auth-token': token
           },
         );
 
+        //Set User Data in Provider
         ref
-            .read(authProvider.notifier)
+            .read(userProvider.notifier)
             .setUserFromModel(User.fromJson(userRes.body));
+
+        //Debugging Purposes
+        // print("User set: ${userRes.body}");
+        // print("Provider user: ${ref.read(authProvider)}");
       }
     } catch (e) {
       // ignore: avoid_print
@@ -145,16 +162,20 @@ class AuthService {
     }
   }
 
-  // Future<void> signOut(BuildContext context, WidgetRef ref) async {
-  //   final navigator = Navigator.of(context);
-  //   SharedPreferences prefs = await SharedPreferences.getInstance();
+  Future<void> signOut(BuildContext context) async {
+    final navigator = Navigator.of(context);
+    SharedPreferences prefs = await SharedPreferences.getInstance();
 
-  //   await prefs.setString('x-auth-token', '');
-  //   ref.read(authProvider.notifier).logout(); // Reset user state in Riverpod
+    await prefs.setString('x-auth-token', '');
+    // ref.read(userProvider.notifier).logout(); // Reset user state in Riverpod
 
-  //   navigator.pushAndRemoveUntil(
-  //     MaterialPageRoute(builder: (context) => const LoginAsPage()),
-  //     (route) => false,
-  //   );
-  // }
+    navigator.pushAndRemoveUntil(
+      upTransition(
+        const LecturerGreetsPage(),
+      ),
+      (route) => false,
+    );
+  }
 }
+
+final authServiceProvider = Provider((ref) => AuthService());
