@@ -22,7 +22,7 @@ const generateTranscriptionTextRoutes = require("./routes/saveTranscriptionText"
 // const generateSummarizedTextRoutes = require("./routes/saveSummarizedText");
 // const lectAccessSummarizationRoutes = require("./routes/lectAccessSummarization");
 const sendCommandToMQTT = require("./routes/sendCommandToMQTT");
-// const path = require("path");
+const path = require("path");
 
 // Initialize the Express application.
 const app = express(); 
@@ -32,6 +32,10 @@ app.use(cors());
 
 // Middleware to parse JSON and URL-encoded data from requests.
 app.use(express.json());
+
+
+//Static Files
+app.use(express.static(path.join(__dirname, 'public')));
 
 //Routes
 

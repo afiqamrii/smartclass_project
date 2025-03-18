@@ -21,15 +21,15 @@ class Appbar extends StatelessWidget implements PreferredSizeWidget {
                       color: Colors.black,
                       size: 20,
                     ),
-                    Text(
-                      "Back",
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 15,
-                        fontFamily: 'Figtree',
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
+                    // Text(
+                    //   "Back",
+                    //   style: TextStyle(
+                    //     color: Colors.black,
+                    //     fontSize: 15,
+                    //     fontFamily: 'Figtree',
+                    //     fontWeight: FontWeight.w600,
+                    //   ),
+                    // ),
                   ],
                 ),
               ),

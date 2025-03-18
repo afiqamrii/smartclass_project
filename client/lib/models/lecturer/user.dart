@@ -1,31 +1,34 @@
 import 'dart:convert';
 
 class User {
-  final int userId;
+  final int? userId;
   final String userName;
   final String userEmail;
   final String userPassword;
+  final String? confirmPassword;
   final String token;
-  final int userRole;
+  final int roleId;
 
   User({
-    required this.userId,
+    this.userId,
     required this.userName,
     required this.userEmail,
     required this.userPassword,
+    this.confirmPassword,
     required this.token,
-    required this.userRole,
+    required this.roleId,
   });
 
   // Convert a User object to a Map
   Map<String, dynamic> toMap() {
     return {
-      'userId': userId,
+      if (userId != null) 'userId': userId, // Include userId only if it's not null
       'userName': userName,
       'userEmail': userEmail,
       'userPassword': userPassword,
+      if (confirmPassword != null) 'confirmPassword': confirmPassword, // Include confirmPassword only if it's not null
+      'roleId': roleId,
       'token': token,
-      'userRole': userRole,
     };
   }
 
@@ -36,8 +39,8 @@ class User {
       userName: map['userName'] ?? '',
       userEmail: map['userEmail'] ?? '',
       userPassword: map['userPassword'] ?? '',
+      roleId: map['roleId'] ?? 0,
       token: map['token'] ?? '',
-      userRole: map['userRole'] ?? 0,
     );
   }
 

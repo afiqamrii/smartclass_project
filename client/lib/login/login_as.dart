@@ -11,9 +11,7 @@ class LoginAsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const Appbar(
-        
-      ),
+      appBar: const Appbar(),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 20.0),
         child: _selectRoleSection(context),
