@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:smartclass_fyp_2024/admin_pov/staff_signin.dart';
+import 'package:smartclass_fyp_2024/admin_pov/staff_signup.dart';
 import 'package:smartclass_fyp_2024/splashscreen/welcomePage.dart';
 import 'package:smartclass_fyp_2024/widget/appbar.dart';
+import 'package:smartclass_fyp_2024/widget/pageTransition.dart';
 
 class AdminGreetsPage extends StatelessWidget {
   const AdminGreetsPage({super.key});
@@ -9,8 +12,7 @@ class AdminGreetsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const Appbar(
-      ), //Appbar widget
+      appBar: const Appbar(), //Appbar widget
       body: Padding(
         padding: const EdgeInsets.all(28.0),
         child: Center(
@@ -55,8 +57,8 @@ class AdminGreetsPage extends StatelessWidget {
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(
-                        builder: (context) => const WelcomePage(),
+                      upTransition(
+                        PPHStaffLoginPage(),
                       ),
                     );
                   },
@@ -79,8 +81,8 @@ class AdminGreetsPage extends StatelessWidget {
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(
-                        builder: (context) => const WelcomePage(),
+                      toLeftTransition(
+                        StaffSignUpPage(),
                       ),
                     );
                   },

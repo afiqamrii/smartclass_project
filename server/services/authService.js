@@ -2,8 +2,40 @@ const bcrypt = require("bcryptjs");
 const User = require("../models/User");
 const jwt = require("jsonwebtoken");
 
+const UserVerification = require("../models/UserVerification");
+
+//Email handler
+const nodemailer = require("nodemailer");
+
+//Unique string
+const {v4: uuidv4} = require("uuid");
+
+//Env var
+require("dotenv").config();
+
+//nodemailer stuff
+let transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+        user: process.env.AUTH_EMAIL,
+        pass: process.env.AUTH_PASSWORD
+    }
+})
+
+//Testing success
+transporter.verify(function(error, success) {
+    if (error) {
+        console.log(error);
+    } else {
+        console.log("Server is ready to take our messages");
+        console.log(success);
+    }
+})
+
 //Sign Up
-exports.signUp = async (userName , userEmail , userPassword , confirmPassword , roleId) => {
+exports.signUp = async ({userName , userEmail , userPassword , confirmPassword , roleId}, res) => {
+
+        console.log("Received data:", {userName , userEmail , userPassword , confirmPassword , roleId}); //Debugging Purposes
 
         //Check if all required fields are present
         if(!userName || !userEmail || !userPassword || !confirmPassword || !roleId){
@@ -41,8 +73,20 @@ exports.signUp = async (userName , userEmail , userPassword , confirmPassword , 
             userName, 
             userEmail,
             userPassword: hashedPassword, 
-            roleId 
+            roleId,
+            verified: false
         });
+
+        //Send verification email
+
+        //extract user id and email to send verification email
+        result = {userId: user.userId, userEmail: user.userEmail};
+
+        //Send verification email
+        sendVerificationEmail(result,res);
+
+        //Send response
+        console.log("Sending Verification Email to:", user.userEmail);
 
         // Debugging log
         console.log("User created:", user);
@@ -50,17 +94,144 @@ exports.signUp = async (userName , userEmail , userPassword , confirmPassword , 
         return user;
 }
 
+//Send verification email
+const sendVerificationEmail = async ({userId, userEmail} , res) => {
+    //Url to be sent in email
+    const url = `http://172.20.10.2:3000`;
+
+    //Generate unique string
+    const uniqueString = uuidv4() + userId;
+
+    //Mail option
+    const mailOptions = {
+        from: process.env.AUTH_EMAIL,
+        to: userEmail,
+        subject: "Verify Your Email - IntelliClass",
+        html: `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 10px;">
+
+            <!-- Logo Section -->
+            <div style="text-align: center; margin-bottom: 20px;">
+                <img src="https://i.imgur.com/LndAkqq.png
+                " alt="IntelliClass Logo" style="max-width: 150px; height: auto;">
+            </div>
+
+            <!-- Welcome Heading -->
+            <h2 style="color: #4CAF50; text-align: center;">Welcome to IntelliClass!</h2>
+
+            <!-- Body Content -->
+            <p style="font-size: 16px; color: #333;">Hi there,</p>
+            <p style="font-size: 16px; color: #333;">Thank you for signing up! Please verify your email address to activate your account.</p>
+            
+            <!-- Verify Button -->
+            <div style="text-align: center; margin: 30px 0;">
+                <a href="${url}/verify/${userId}/${uniqueString}" 
+                style="background-color: #4CAF50; color: white; padding: 12px 25px; text-decoration: none; border-radius: 5px; font-size: 16px;">
+                Verify Email
+                </a>
+            </div>
+            
+            <!-- Additional Info -->
+            <p style="font-size: 14px; color: #555;">This verification link will expire in <strong>6 hours</strong>.</p>
+            <p style="font-size: 14px; color: #555;">If you did not request this, please ignore this email.</p>
+            
+            <!-- Footer -->
+            <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
+            <p style="font-size: 12px; color: #999; text-align: center;">&copy; ${new Date().getFullYear()} IntelliClass. All rights reserved.</p>
+            </div>
+        `
+    };
+
+    //hash the uniqueString
+    const saltRound = 10;
+
+    try {
+        //Hash the uniqueString
+        const hashedUniqueString = await bcrypt.hash(uniqueString, saltRound);
+        
+        //Save UserVerification
+        await UserVerification.create({
+            userId,
+            uniqueString: hashedUniqueString,
+            createdAt: new Date(),
+            expiresAt: new Date(Date.now() + 21600000)
+        });
+
+        //Debug
+        console.log("UserVerification created successfully!");
+        console.log("Verification email sent successfully!");
+        
+        //Send email
+        await transporter.sendMail(mailOptions);
+    
+    //Catch error
+    } catch (err) {
+        console.log(err);
+        console.log(err);
+        // Throw error back to service/controller
+        throw new Error("An error occurred during verification process!");
+    }
+}    
+
+//Verify Email
+exports.verifyEmail = async (userId, uniqueString) => {
+    try {
+      const userVerification = await UserVerification.findOne({ where: { userId } });
+      if (!userVerification) {
+        return { error: true, message: "No verification record found!" };
+      }
+  
+      // Check if expired
+      if (userVerification.expiresAt < Date.now()) {
+        await UserVerification.destroy({ where: { userId } });
+        return { error: true, message: "Verification link has expired." };
+      }
+  
+      // Compare hashed unique string
+      const match = await bcrypt.compare(uniqueString, userVerification.uniqueString);
+      if (!match) {
+        return { error: true, message: "Invalid verification details." };
+      }
+  
+      // Update user's verified status
+      await User.update({ verified: true }, { where: { userId: userId } });
+      await UserVerification.destroy({ where: { userId } });
+  
+      return { error: false, message: "Email has been successfully verified!" };
+    } catch (err) {
+      console.log(err);
+      return { error: true, message: "Error occurred during verification." };
+    }
+};
+
+
 //Sign In
 exports.signIn = async (userEmail , userPassword) => {
+
+    //Validate email format
+    const emailRegex = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\\.,;:\s@\"]+\.)+[^<>()[\]\\.,;:\s@\"]{2,})$/i;
+    if (!emailRegex.test(userEmail)) {
+        throw new Error("Please Enter Valid Email!");
+    }
 
     //Check if user exists
     const user = await User.findOne({ where : {userEmail}});
 
+    //Throw error if user does not exist
+    if(!user){
+        throw new Error("Invalid Email or Password!");
+    }
+
+    // Check email verification
+    if (!user.verified) {
+        throw new Error("Email is not verified yet! Check your email to verify your account.");
+    }
+
     //Check if password is correct
     const isMatch = await bcrypt.compare(userPassword , user.userPassword);
 
-    //Throw error if user email or password is incorrect
-    if(!user || !isMatch){
+    //Throw error if password is incorrect
+    if(!isMatch){
         throw new Error("Invalid Email or Password!");
     }
 

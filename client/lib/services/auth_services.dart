@@ -3,10 +3,12 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
+import 'package:smartclass_fyp_2024/admin_pov/admin_greets_page.dart';
 import 'package:smartclass_fyp_2024/dataprovider/user_provider.dart';
 import 'package:smartclass_fyp_2024/lecturer_pov/login_page/lecturer_greets_page.dart';
 import 'package:smartclass_fyp_2024/lecturer_pov/template/lecturer_bottom_navbar.dart';
 import 'package:smartclass_fyp_2024/models/lecturer/user.dart';
+import 'package:smartclass_fyp_2024/student_pov/student_greets_page.dart';
 import 'package:smartclass_fyp_2024/utils/utils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smartclass_fyp_2024/widget/pageTransition.dart';
@@ -22,7 +24,7 @@ class AuthService {
   Future<void> signUpUser({
     required BuildContext context,
     required WidgetRef ref,
-    required int userId,
+    // required int userId,
     required String userName,
     required String userEmail,
     required String userPassword,
@@ -32,12 +34,13 @@ class AuthService {
     try {
       // ignore: no_leading_underscores_for_local_identifiers
       User _user = User(
-        userId: userId,
+        // userId: userId,
         userName: userName,
         userEmail: userEmail,
         userPassword: userPassword,
+        confirmPassword: confirmPassword,
         token: '',
-        userRole: roleId,
+        roleId: roleId,
       );
 
       http.Response res = await http.post(
@@ -52,7 +55,39 @@ class AuthService {
         context: context,
         onSuccess: () {
           showSnackBar(
-              context, 'Account created! Login with the same credentials!');
+              context, 'Account created! Check your email for verification!');
+
+          //Direct to Greet page back
+          //Student
+          if (roleId == 1) {
+            Navigator.pushAndRemoveUntil(
+              context,
+              toRightTransition(
+                const StudentGreetsPage(),
+              ),
+              (route) => false,
+            );
+
+            //Lecturer
+          } else if (roleId == 2) {
+            Navigator.pushAndRemoveUntil(
+              context,
+              toRightTransition(
+                const LecturerGreetsPage(),
+              ),
+              (route) => false,
+            );
+
+            //Staff
+          } else if (roleId == 3) {
+            Navigator.pushAndRemoveUntil(
+              context,
+              toRightTransition(
+                const AdminGreetsPage(),
+              ),
+              (route) => false,
+            );
+          }
         },
       );
     } catch (e) {
@@ -98,10 +133,35 @@ class AuthService {
           // Debug print to check if token is saved
           // print('Token saved: ${userData['token']}'); //Debugging Purposes
 
-          navigator.pushAndRemoveUntil(
-            toLeftTransition(const LectBottomNavBar(initialIndex: 0)),
-            (route) => false,
-          );
+          //Navigate to Lecturer Page if user is lecturer
+          if (userData['roleId'] == 1) {
+            navigator.pushAndRemoveUntil(
+              toLeftTransition(
+                const LectBottomNavBar(initialIndex: 0),
+              ),
+              (route) => false,
+            );
+
+            //Navigate to Student Page if user is student
+          } else if (userData['roleId'] == 2) {
+            navigator.pushAndRemoveUntil(
+              toLeftTransition(
+                const LectBottomNavBar(initialIndex: 1),
+              ),
+              (route) => false,
+            );
+
+            //Navigate to Admin Page if user is admin
+          } else if (userData['roleId'] == 3) {
+            navigator.pushAndRemoveUntil(
+              toLeftTransition(
+                const LectBottomNavBar(initialIndex: 2),
+              ),
+              (route) => false,
+            );
+          }
+
+          // print(userData['roleId']); //Debugging Purposes
         },
       );
     } catch (e) {

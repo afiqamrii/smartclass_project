@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:smartclass_fyp_2024/components/custom_buttom.dart';
-import 'package:smartclass_fyp_2024/lecturer_pov/login_page/lecturer_login_page.dart';
+import 'package:smartclass_fyp_2024/lecturer_pov/login_page/lecturer_signin.dart';
 import 'package:smartclass_fyp_2024/lecturer_pov/login_page/lecturer_signup_page.dart';
 import 'package:smartclass_fyp_2024/widget/appbar.dart';
 
@@ -77,7 +77,7 @@ class LecturerGreetsPage extends StatelessWidget {
                   Navigator.push(
                     context,
                     _createRoute(
-                      const LecturerSignupPage(), //Direct to Sign Up page
+                      LecturerSignupPage(), //Direct to Sign Up page
                     ),
                   );
                 },

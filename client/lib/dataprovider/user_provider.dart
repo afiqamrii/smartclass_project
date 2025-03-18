@@ -9,7 +9,7 @@ class UserProvider extends Notifier<User> {
         userEmail: '',
         userPassword: '',
         token: '',
-        userRole: 0,
+        roleId: 0,
       );
 
   // Set user data
@@ -26,3 +26,6 @@ class UserProvider extends Notifier<User> {
 final userProvider = NotifierProvider<UserProvider, User>(() {
   return UserProvider();
 });
+
+final loadingProvider = StateProvider<bool>((ref) => false);
+
