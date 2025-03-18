@@ -3,7 +3,7 @@ import 'package:quickalert/models/quickalert_type.dart';
 import 'package:quickalert/widgets/quickalert_dialog.dart';
 import 'package:smartclass_fyp_2024/lecturer_pov/lecturer_account_details.dart';
 import 'package:smartclass_fyp_2024/lecturer_pov/lecturer_edit_profile.dart';
-import 'package:smartclass_fyp_2024/services/lecturer/auth_services.dart';
+import 'package:smartclass_fyp_2024/services/auth_services.dart';
 
 
 class LecturerProfilePage extends StatelessWidget {

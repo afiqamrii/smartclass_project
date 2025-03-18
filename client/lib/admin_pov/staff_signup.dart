@@ -7,8 +7,8 @@ import 'package:smartclass_fyp_2024/widget/appbar.dart';
 
 import '../../services/auth_services.dart';
 
-class LecturerSignupPage extends ConsumerWidget {
-  LecturerSignupPage({super.key});
+class StaffSignUpPage extends ConsumerWidget {
+  StaffSignUpPage({super.key});
 
   //Import AuthServices
   final authService = AuthService();
@@ -20,7 +20,7 @@ class LecturerSignupPage extends ConsumerWidget {
   final confirmPasswordController = TextEditingController();
 
   //Sign user in method
-  void signUserIn(BuildContext context, WidgetRef ref) async {
+  void signUserIn(BuildContext context, WidgetRef ref) async{
     ref.read(loadingProvider.notifier).state = true; //Start loading
 
     await authService.signUpUser(
@@ -30,10 +30,11 @@ class LecturerSignupPage extends ConsumerWidget {
       userEmail: emailController.text,
       userPassword: passwordController.text,
       confirmPassword: confirmPasswordController.text,
-      roleId: 2, //Set roleId to 2 (Lecturer)
+      roleId: 3, //Set roleId to 3 (Staff)
     );
 
-    ref.read(loadingProvider.notifier).state = false; //Stop loading after done
+    ref.read(loadingProvider.notifier).state = false; //Stop loading
+
   }
 
   @override
@@ -52,7 +53,7 @@ class LecturerSignupPage extends ConsumerWidget {
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   Text(
-                    "Hey, Lecturer. \nLet's sign you in.",
+                    "Hey, PPH Staff. \nLet's sign you in.",
                     style: TextStyle(
                       fontSize: 27,
                       fontFamily: 'FigtreeExtraBold',
@@ -194,7 +195,7 @@ class LecturerSignupPage extends ConsumerWidget {
             //Login button
             CustomButton(
               text: 'Create Account',
-              isLoading: ref.watch(loadingProvider), //Pass the loading state
+              isLoading: ref.watch(loadingProvider),
               onTap: () {
                 signUserIn(context, ref);
               },

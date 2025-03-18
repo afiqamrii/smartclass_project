@@ -12,14 +12,14 @@ exports.signUp = async (req, res) => {
         //Debug
         console.log("Received data:", req.body);
 
-        const result = await authService.signUp(userName, userEmail, userPassword, confirmPassword,  roleId);
+        const result = await authService.signUp({userName, userEmail, userPassword, confirmPassword,  roleId}, res);
 
         //Send response
-        res.status(200).json({ message: "User registered successfully", userId: result.userId });
+        res.status(200).json({ message: "User registered successfully . Please check your email to verify your account", userId: result.userId });
 
     } catch (err) {
         // Check if the error is user-related
-        const userErrors = ["Username or Email is already exists!", "Please Enter Valid Email!", "Passwords do not match!" , "All fields are required!"];
+        const userErrors = ["Username or Email is already exists!", "Please Enter Valid Email!", "Passwords do not match!" , "All fields are required!", "An error occurred during verification process!"];
         
         // Handle different types of errors
         //User error - 400
@@ -33,6 +33,23 @@ exports.signUp = async (req, res) => {
         console.log(err);
     }
 }
+
+//Verify Email
+exports.verifyEmail = async (req, res) => {
+    const { userId, uniqueString } = req.params;
+  
+    try {
+      const { error, message } = await authService.verifyEmail(userId, uniqueString);
+      if (error) {
+        res.redirect(`/verified?error=true&message=${message}`);
+      } else {
+        res.redirect(`/verified?error=false&message=${message}`);
+      }
+    } catch (err) {
+      console.log(err);
+      res.redirect(`/verified?error=true&message=Verification failed`);
+    }
+};
 
 //Sign In
 exports.signIn = async (req, res) => {
@@ -51,12 +68,13 @@ exports.signIn = async (req, res) => {
             message: "User signed in successfully",
             userId: result.userId,
             userName: result.userName, 
+            roleId: result.roleId,
             token: result.token  // token is included
         });
 
     } catch (err) {
         // Check if the error is user-related
-        const userErrors = ["Invalid Email or Password!"];
+        const userErrors = ["Invalid Email or Password!","Please Enter Valid Email!","Email is not verified yet! Check your email to verify your account."];
         
         // Handle different types of errors
         //User error - 400

@@ -46,6 +46,8 @@ dependencies:
   flutter_native_splash: ^2.4.4
   smooth_page_indicator: ^1.0.0
   shared_preferences: ^2.2.2
+  loading_animation_widget:
+  
 
 dev_dependencies:
   flutter_test:

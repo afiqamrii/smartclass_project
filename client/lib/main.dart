@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:smartclass_fyp_2024/dataprovider/user_provider.dart';
-import 'package:smartclass_fyp_2024/lecturer_pov/lecturer_homepage.dart';
 import 'package:smartclass_fyp_2024/lecturer_pov/template/lecturer_bottom_navbar.dart';
-import 'package:smartclass_fyp_2024/services/lecturer/auth_services.dart';
+import 'package:smartclass_fyp_2024/services/auth_services.dart';
 import 'package:smartclass_fyp_2024/splashscreen/splashScreen.dart';
 
 void main() {
@@ -15,8 +14,6 @@ class MyApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // Access the AuthService provider
-
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'IntelliClass',
@@ -36,13 +33,12 @@ class MainScreen extends ConsumerStatefulWidget {
   const MainScreen({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
   _MainScreenState createState() => _MainScreenState();
 }
 
 class _MainScreenState extends ConsumerState<MainScreen> {
-  // Create a boolean variable to track the loading state
   bool isLoading = true;
+  bool tokenExpired = false; // Track token expiry
 
   @override
   void initState() {
@@ -52,18 +48,27 @@ class _MainScreenState extends ConsumerState<MainScreen> {
 
   Future<void> loadUserData() async {
     await ref.read(authServiceProvider).getUserData(ref);
+    final user = ref.read(userProvider);
+
+    // Check token after loading
+    if (user.token.isEmpty) {
+      setState(() {
+        tokenExpired = true;
+      });
+    }
+
     setState(() {
-      isLoading = false; // Stop the loading animation
+      isLoading = false;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    // get data from provider
     final user = ref.watch(userProvider);
 
     if (isLoading) {
       return const MaterialApp(
+        debugShowCheckedModeBanner: false,
         home: Scaffold(
           body: Center(
             child: CircularProgressIndicator(),
@@ -72,11 +77,22 @@ class _MainScreenState extends ConsumerState<MainScreen> {
       );
     }
 
+    // Show SnackBar if token expired
+    if (tokenExpired) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Token expired. Please log in again."),
+            duration: Duration(seconds: 3),
+          ),
+        );
+      });
+    }
+
     return Scaffold(
       body: user.token.isNotEmpty
-          ? const LectBottomNavBar(
-              initialIndex: 0) // Show Lecturer Homepage if token is present
-          : const SplashScreen(), // Show SplashScreen if token is not present
+          ? const LectBottomNavBar(initialIndex: 0) // Direct to Lecturer Home
+          : const SplashScreen(), // Show SplashScreen if token is empty
     );
   }
 }
