@@ -19,6 +19,22 @@ authRouter.get('/verified', (req, res) => {
 //Sign In Route
 authRouter.post("/api/signin" , authController.signIn);
 
+//Forget Password Route
+authRouter.post("/requestPasswordReset" , authController.requestPasswordReset);
+
+authRouter.post("/resetPassword" , authController.resetPassword);
+
+//Reset Password Redirect to html page to reset password
+authRouter.get('/resetPassword/:userId/:resetString', (req, res) => {
+  res.sendFile(path.join(__dirname, "../views/resetPassword.html"));
+});
+
+//Reset Password Success Page
+authRouter.get('/resetSuccess', (req, res) => {
+  res.sendFile(path.join(__dirname, "../views/resetSuccess.html"));
+});
+
+
 //Check Token Validity Route
 authRouter.post("/tokenIsValid" , authController.checkToken);
 

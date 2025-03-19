@@ -146,3 +146,40 @@ exports.getUserData = async (req, res) => {
         res.status(500).json({ message: "Internal Server Error" });
     }
 }
+
+//Password Reset Request
+exports.requestPasswordReset = async (req, res) => {
+    try {
+        const { userEmail } = req.body;
+
+        const result = await authService.requestPasswordReset(userEmail);
+
+        // Send consistent JSON response
+        res.status(result.status).json(result.json);
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+};
+
+//Reset Password
+exports.resetPassword = async (req, res) => {
+    
+    try{
+
+        const { userId, resetString , newPassword , confirmPassword} = req.body;
+
+        const result = await authService.resetPassword(userId, resetString, newPassword, confirmPassword );
+
+        // Send consistent JSON response
+        res.status(result.status).json(result.json);
+
+        
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+}
+

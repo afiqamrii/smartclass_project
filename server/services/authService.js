@@ -3,12 +3,14 @@ const User = require("../models/User");
 const jwt = require("jsonwebtoken");
 
 const UserVerification = require("../models/UserVerification");
+const PasswordReset = require("../models/PasswordReset");
 
 //Email handler
 const nodemailer = require("nodemailer");
 
 //Unique string
 const {v4: uuidv4} = require("uuid");
+const { reset } = require("nodemon");
 
 //Env var
 require("dotenv").config();
@@ -250,4 +252,173 @@ exports.signIn = async (userEmail , userPassword) => {
 
     return { ...user.get({ plain: true }), token };
 }
+
+//Reset Password Request
+exports.requestPasswordReset = async (userEmail) => {
+    try {
+        console.log("Received data:", { userEmail });
+
+        // Check if user exists
+        const user = await User.findOne({ where: { userEmail } });
+
+        if (!user) {
+            return { status: 400, json: { message: "User does not exist." } };
+        }
+
+        // Check if user is verified
+        if (!user.verified) {
+            return { status: 400, json: { message: "Email is not verified yet! Check your email to verify your account." } };
+        }
+
+        // Proceed with email to reset password
+        const emailResult = await sendResetEmail(user.userId, user.userEmail);
+
+        if (emailResult.success) {
+            return { status: 200, json: { message: emailResult.message } };
+        } else {
+            return { status: 500, json: { message: "Failed to send password reset email." } };
+        }
+
+    } catch (err) {
+        console.error("Error in requestPasswordReset:", err.message);
+        return { status: 500, json: { message: "Internal Server Error" } };
+    }
+};
+
+//send password reset email
+const sendResetEmail = async (userId, userEmail) => {
+
+    //Redirect url to reset password
+    const redirectUrl = `http://172.20.10.2:3000`;
+
+    try {
+        const resetString = uuidv4() + userId;
+
+        // Clear existing records
+        await PasswordReset.destroy({ where: { userId } });
+
+        // Hash reset string
+        const hashedUniqueString = await bcrypt.hash(resetString, 10);
+
+        // Save reset record
+        await PasswordReset.create({
+            userId,
+            uniqueString: hashedUniqueString,
+            createdAt: new Date(),
+            expiresAt: new Date(Date.now() + 3600000),
+        });
+
+        // Email options
+        const mailOptions = {
+            from: process.env.AUTH_EMAIL,
+            to: userEmail,
+            subject: "Reset Your Password - IntelliClass",
+            html: `<div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 10px;">
+            <div style="text-align: center; margin-bottom: 20px;">
+               <img src="https://res.cloudinary.com/dw0bht7lt/image/upload/v1742396515/logo_miwem8.png" 
+            alt="IntelliClass Logo" style="max-width: 150px; height: auto;">
+            </div>
+            <h2 style="color: #4CAF50; text-align: center;">Reset Your Password</h2>
+            <p style="font-size: 16px; color: #333;">Hi there,</p>
+            <p style="font-size: 16px; color: #333;">We received a request to reset your password for your IntelliClass account.</p>
+            <p style="font-size: 16px; color: #333;">Click the button below to reset your password:</p>
+            <div style="text-align: center; margin: 30px 0;">
+                <a href="${redirectUrl}/resetPassword/${userId}/${resetString}" 
+                style="background-color: #4CAF50; color: white; padding: 12px 25px; text-decoration: none; border-radius: 5px; font-size: 16px;">
+                Reset Password
+                </a>
+            </div>
+            <p style="font-size: 14px; color: #555;">This password reset link will expire in <strong>1 hour</strong>.</p>
+            <p style="font-size: 14px; color: #555;">If you did not request this, you can safely ignore this email.</p>
+            <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
+            <p style="font-size: 12px; color: #999; text-align: center;">&copy; ${new Date().getFullYear()} IntelliClass. All rights reserved.</p>
+        </div>`
+        };
+
+        const emailResult = await transporter.sendMail(mailOptions);
+
+        if (emailResult.accepted.length === 0) {
+            return { success: false };
+        }
+
+        console.log("Password reset email sent successfully!");
+        return {
+            success: true,
+            message: "Password reset link sent successfully. Please check your email."
+        };
+
+    } catch (err) {
+        console.error("Error in sendResetEmail:", err.message);
+        return { success: false };
+    }
+};
+
+//Reset password
+exports.resetPassword = async (userId, resetString, newPassword, confirmPassword) => {
+    try{
+
+        //Check if all required fields are present
+        if(!newPassword || !confirmPassword){
+            throw new Error("All fields are required!");
+        }
+
+        //Check if passwords match
+        if(newPassword !== confirmPassword){
+            throw new Error("Passwords do not match!");
+        }
+
+        //Check is there any password reset record request
+        const passwordResetRecord = await PasswordReset.findOne({ where: { userId } });
+
+        if(passwordResetRecord === null){
+            return { status: 400, json: { message: "Password reset record not found!" } };
+        } else{
+
+            //Debug
+            console.log("Password reset record found:", passwordResetRecord);
+            
+            //If password reset record is found
+            // Check if expired
+            if (passwordResetRecord.expiresAt < new Date()) {
+                return { status: 400, json: { message: "Password reset link has expired!" } };
+            }
+
+            // Verify reset string
+            const isVerified = await bcrypt.compare(resetString, passwordResetRecord.uniqueString);
+
+            if (!isVerified) {
+                return { status: 400, json: { message: "Invalid password reset link!" } };
+            }
+
+            const saltRound = 10;
+
+            // Hash new password
+            const hashedPassword = await bcrypt.hash(newPassword, saltRound);
+
+            // Update password
+            await User.update({ userPassword: hashedPassword }, { where: { userId } });
+
+            // Delete password reset record
+            await PasswordReset.destroy({ where: { userId } });
+
+        }
+
+        console.log("Password reset successfully!");
+        return {
+            status: 200,
+            json: {
+                success: true,
+                message: "Password reset successfully. You can now sign in with your new password."
+            }
+        };
+        
+
+    } catch(err){
+
+        //Return error
+        console.error("Error in resetPassword:", err.message);
+        return { status: 500, json: { message: "Internal Server Error" } };
+    }
+}
+
 
