@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'package:smartclass_fyp_2024/admin_pov/admin_greets_page.dart';
 import 'package:smartclass_fyp_2024/dataprovider/user_provider.dart';
+import 'package:smartclass_fyp_2024/lecturer_pov/login_page/checkEmail_page.dart';
 import 'package:smartclass_fyp_2024/lecturer_pov/login_page/lecturer_greets_page.dart';
 import 'package:smartclass_fyp_2024/lecturer_pov/template/lecturer_bottom_navbar.dart';
 import 'package:smartclass_fyp_2024/models/lecturer/user.dart';
@@ -16,6 +17,9 @@ import 'package:smartclass_fyp_2024/widget/pageTransition.dart';
 class AuthService {
   //BASE URL
   static const baseUrl = "http://172.20.10.2:3000/api";
+
+  //Reset Password
+  static const url = "http://172.20.10.2:3000";
 
   //GET USER DATA
   static const tokenAuthUrl = "http://172.20.10.2:3000";
@@ -235,6 +239,42 @@ class AuthService {
       ),
       (route) => false,
     );
+  }
+
+  Future<void> requestPasswordReset({
+    required BuildContext context,
+    required String userEmail,
+  }) async {
+    final navigator = Navigator.of(context);
+
+    try {
+      http.Response res = await http.post(
+        Uri.parse('$url/requestPasswordReset'),
+        body: jsonEncode({'userEmail': userEmail}),
+        headers: {'Content-Type': 'application/json; charset=UTF-8'},
+      );
+
+      httpErrorHandle(
+        response: res,
+        context: context,
+        onSuccess: () {
+          showSnackBar(context, res.body);
+        },
+      );
+
+      if (res.statusCode == 200) {
+        //Pass email to check email page
+        //Redirect to check email page
+        navigator.pushAndRemoveUntil(
+          toLeftTransition(
+            CheckEmailPage(userEmail),
+          ),
+          (route) => false,
+        );
+      }
+    } catch (e) {
+      showSnackBar(context, e.toString());
+    }
   }
 }
 
