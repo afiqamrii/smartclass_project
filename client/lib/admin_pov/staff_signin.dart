@@ -3,7 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:smartclass_fyp_2024/components/login_textfield.dart';
 import 'package:smartclass_fyp_2024/components/custom_buttom.dart';
 import 'package:smartclass_fyp_2024/dataprovider/user_provider.dart';
+import 'package:smartclass_fyp_2024/lecturer_pov/login_page/resetPassword_page.dart';
 import 'package:smartclass_fyp_2024/widget/appbar.dart';
+import 'package:smartclass_fyp_2024/widget/pageTransition.dart';
 
 import '../../../services/auth_services.dart';
 
@@ -122,19 +124,29 @@ class _PPHStaffLoginPageState extends ConsumerState<PPHStaffLoginPage> {
               const SizedBox(height: 15),
 
               //Forgot password
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Text(
-                      'Forgot password?',
-                      style: TextStyle(
-                        color: Colors.grey[600],
-                        fontFamily: 'Figtree',
-                      ),
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    toLeftTransition(
+                      ResetPasswordPage(),
                     ),
-                  ],
+                  );
+                },
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Text(
+                        'Forgot password?',
+                        style: TextStyle(
+                          color: Colors.grey[600],
+                          fontFamily: 'Figtree',
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
 

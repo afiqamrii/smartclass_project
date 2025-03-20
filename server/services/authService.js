@@ -258,6 +258,17 @@ exports.requestPasswordReset = async (userEmail) => {
     try {
         console.log("Received data:", { userEmail });
 
+        //Check if form is has value or not
+        if (userEmail === "") {
+            return { status: 400, json: { message: "The email field is required." } };
+        }
+
+        //Validate email format
+        const emailRegex = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\\.,;:\s@\"]+\.)+[^<>()[\]\\.,;:\s@\"]{2,})$/i;
+        if (!emailRegex.test(userEmail)) {
+            return { status: 400, json: { message: "Please Enter Valid Email!" } };
+        }
+
         // Check if user exists
         const user = await User.findOne({ where: { userEmail } });
 

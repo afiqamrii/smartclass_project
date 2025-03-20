@@ -47,6 +47,7 @@ dependencies:
   smooth_page_indicator: ^1.0.0
   shared_preferences: ^2.2.2
   loading_animation_widget:
+  url_launcher: 
   
 
 dev_dependencies:
