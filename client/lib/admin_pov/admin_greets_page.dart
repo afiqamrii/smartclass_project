@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:smartclass_fyp_2024/admin_pov/staff_signin.dart';
 import 'package:smartclass_fyp_2024/admin_pov/staff_signup.dart';
-import 'package:smartclass_fyp_2024/splashscreen/welcomePage.dart';
 import 'package:smartclass_fyp_2024/widget/appbar.dart';
 import 'package:smartclass_fyp_2024/widget/pageTransition.dart';
 
