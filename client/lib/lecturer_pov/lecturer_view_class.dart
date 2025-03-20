@@ -39,6 +39,7 @@ class LecturerViewClass extends ConsumerWidget {
               micColor: const Color.fromARGB(255, 255, 61, 61),
             );
 
+    // ignore: unused_local_variable
     final userData = ref.watch(userProvider);
 
     return Scaffold(
