@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:smartclass_fyp_2024/splashscreen/welcomePage.dart';
 import 'package:smartclass_fyp_2024/student_pov/student_signin.dart';
 import 'package:smartclass_fyp_2024/student_pov/student_signup.dart';
 import 'package:smartclass_fyp_2024/widget/appbar.dart';
