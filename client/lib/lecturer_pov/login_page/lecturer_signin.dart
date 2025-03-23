@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:smartclass_fyp_2024/components/login_textfield.dart';
 import 'package:smartclass_fyp_2024/components/custom_buttom.dart';
+import 'package:smartclass_fyp_2024/components/password_textfield.dart';
 import 'package:smartclass_fyp_2024/dataprovider/user_provider.dart';
 import 'package:smartclass_fyp_2024/lecturer_pov/login_page/resetPassword_page.dart';
 import 'package:smartclass_fyp_2024/widget/appbar.dart';
@@ -142,10 +143,13 @@ class _LecturerLoginPageState extends ConsumerState<LecturerLoginPage> {
               const SizedBox(height: 5),
 
               // Password textfield
-              MyLoginTextField(
+              PasswordTextfield(
                 controller: passwordController,
                 hintText: 'Password',
+                isPasswordForm: true,
+                isSignUpForm: false,
                 obscureText: true,
+                password : passwordController.text,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter your password';
