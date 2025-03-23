@@ -80,6 +80,7 @@ flutter:
       - assets/pictures/
       - assets/animations/
       - assets/background/
+      - assets/
       # - assets/splash_screen/
 
   #   - images/a_dot_ham.jpeg
