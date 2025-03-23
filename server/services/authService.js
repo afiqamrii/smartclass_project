@@ -249,7 +249,7 @@ exports.signIn = async (userEmail , userPassword) => {
     );
     
     console.log("Returning:", { ...user.get({ plain: true }) , token });
-
+12
     return { ...user.get({ plain: true }), token };
 }
 
