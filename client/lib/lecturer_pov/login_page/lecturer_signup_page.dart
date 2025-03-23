@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:smartclass_fyp_2024/components/confirmPassword_textfield.dart';
 import 'package:smartclass_fyp_2024/components/login_textfield.dart';
 import 'package:smartclass_fyp_2024/components/custom_buttom.dart';
+import 'package:smartclass_fyp_2024/components/password_textfield.dart';
 import 'package:smartclass_fyp_2024/dataprovider/user_provider.dart';
 import 'package:smartclass_fyp_2024/widget/appbar.dart';
 
@@ -42,146 +44,155 @@ class LecturerSignupPage extends ConsumerWidget {
 
     return Scaffold(
       appBar: const Appbar(),
-      body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.01),
-        child: Column(
-          children: [
-            Padding(
-              padding: EdgeInsets.only(left: screenWidth * 0.05),
-              child: const Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Text(
-                    "Hey, Lecturer. \nLet's sign you in.",
-                    style: TextStyle(
-                      fontSize: 27,
-                      fontFamily: 'FigtreeExtraBold',
-                      fontWeight: FontWeight.bold,
-                    ),
+      body: ListView(
+        children: [
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.01),
+            child: Column(
+              children: [
+                Padding(
+                  padding: EdgeInsets.only(left: screenWidth * 0.05),
+                  child: const Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Hey, Lecturer. \nLet's sign you in.",
+                        style: TextStyle(
+                          fontSize: 27,
+                          fontFamily: 'FigtreeExtraBold',
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 20),
+                ),
+                const SizedBox(height: 20),
 
-            //Username textfield
-            Padding(
-              padding: EdgeInsets.only(left: screenWidth * 0.05),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Text(
-                    'Username',
-                    style: TextStyle(
-                      color: Colors.grey[600],
-                      fontFamily: 'Figtree',
-                    ),
+                //Username textfield
+                Padding(
+                  padding: EdgeInsets.only(left: screenWidth * 0.05),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Username',
+                        style: TextStyle(
+                          color: Colors.grey[600],
+                          fontFamily: 'Figtree',
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 5),
+                ),
+                const SizedBox(height: 5),
 
-            //Email textfield
-            MyLoginTextField(
-              controller: userNameController,
-              hintText: 'alibinabu123',
-              obscureText: false,
-            ),
+                //Email textfield
+                MyLoginTextField(
+                  controller: userNameController,
+                  hintText: 'alibinabu123',
+                  obscureText: false,
+                ),
 
-            const SizedBox(height: 20),
+                const SizedBox(height: 20),
 
-            //Email title
-            Padding(
-              padding: EdgeInsets.only(left: screenWidth * 0.05),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Text(
-                    'Email',
-                    style: TextStyle(
-                      color: Colors.grey[600],
-                      fontFamily: 'Figtree',
-                    ),
+                //Email title
+                Padding(
+                  padding: EdgeInsets.only(left: screenWidth * 0.05),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Email',
+                        style: TextStyle(
+                          color: Colors.grey[600],
+                          fontFamily: 'Figtree',
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 5),
+                ),
+                const SizedBox(height: 5),
 
-            //Email textfield
-            MyLoginTextField(
-              controller: emailController,
-              hintText: 'alibinabu@gmail.com',
-              obscureText: false,
-            ),
+                //Email textfield
+                MyLoginTextField(
+                  controller: emailController,
+                  hintText: 'alibinabu@gmail.com',
+                  obscureText: false,
+                ),
 
-            const SizedBox(height: 20),
+                const SizedBox(height: 20),
 
-            //Password title
-            Padding(
-              padding: EdgeInsets.only(left: screenWidth * 0.05),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Text(
-                    'Password',
-                    style: TextStyle(
-                      color: Colors.grey[600],
-                      fontFamily: 'Figtree',
-                    ),
+                //Password title
+                Padding(
+                  padding: EdgeInsets.only(left: screenWidth * 0.05),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Password',
+                        style: TextStyle(
+                          color: Colors.grey[600],
+                          fontFamily: 'Figtree',
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 5),
+                ),
+                const SizedBox(height: 5),
 
-            //Email textfield
-            MyLoginTextField(
-              controller: passwordController,
-              hintText: 'Password',
-              obscureText: true,
-            ),
+                //Password textfield
+                PasswordTextfield(
+                  controller: passwordController,
+                  isPasswordForm: true,
+                  isSignUpForm: true,
+                  hintText: 'Password',
+                  obscureText: true,
+                  password: passwordController.text,
+                ),
 
-            const SizedBox(height: 20),
+                const SizedBox(height: 20),
 
-            //Confirm Password title
-            Padding(
-              padding: EdgeInsets.only(left: screenWidth * 0.05),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Text(
-                    'Confirm Password',
-                    style: TextStyle(
-                      color: Colors.grey[600],
-                      fontFamily: 'Figtree',
-                    ),
+                //Confirm Password title
+                Padding(
+                  padding: EdgeInsets.only(left: screenWidth * 0.05),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Confirm Password',
+                        style: TextStyle(
+                          color: Colors.grey[600],
+                          fontFamily: 'Figtree',
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 5),
+                ),
+                const SizedBox(height: 5),
 
-            //Email textfield
-            MyLoginTextField(
-              controller: confirmPasswordController,
-              hintText: 'Confirm Password',
-              obscureText: true,
-            ),
+                //Confirm password textfield
+                ConfirmPasswordTextfield(
+                  controller: confirmPasswordController,
+                  passwordController: passwordController, 
+                  hintText: 'Confirm Password',
+                  obscureText: true,
+                ),
 
-            const SizedBox(height: 30),
+                const SizedBox(height: 30),
 
-            //Login button
-            CustomButton(
-              text: 'Create Account',
-              isLoading: ref.watch(loadingProvider), //Pass the loading state
-              onTap: () {
-                signUserIn(context, ref);
-              },
+                //Login button
+                CustomButton(
+                  text: 'Create Account',
+                  isLoading:
+                      ref.watch(loadingProvider), //Pass the loading state
+                  onTap: () {
+                    signUserIn(context, ref);
+                  },
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
