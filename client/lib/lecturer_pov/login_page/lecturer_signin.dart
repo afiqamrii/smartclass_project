@@ -76,11 +76,30 @@ class _LecturerLoginPageState extends ConsumerState<LecturerLoginPage> {
           child: Column(
             children: [
               // Logo
-              const Image(
-                image: AssetImage('assets/pictures/logo.png'),
-                height: 120,
-                width: 150,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center, // Important
+                children: [
+                  const Image(
+                    image: AssetImage('assets/pictures/logo.png'),
+                    height: 100, // Reduced to match balance
+                  ),
+                  SizedBox(width: screenWidth * 0.05),
+                  SizedBox(
+                    height: 70, // Match height with logos
+                    child: VerticalDivider(
+                      color: Colors.grey.withOpacity(0.5),
+                      thickness: 1,
+                    ),
+                  ),
+                  SizedBox(width: screenWidth * 0.05),
+                  const Image(
+                    image: AssetImage('assets/umtLogo.png'),
+                    height: 50,
+                  ),
+                ],
               ),
+              const SizedBox(height: 20),
               const Text(
                 'Log In As Lecturer',
                 style: TextStyle(
@@ -149,7 +168,7 @@ class _LecturerLoginPageState extends ConsumerState<LecturerLoginPage> {
                 isPasswordForm: true,
                 isSignUpForm: false,
                 obscureText: true,
-                password : passwordController.text,
+                password: passwordController.text,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter your password';
