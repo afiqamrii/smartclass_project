@@ -70,6 +70,8 @@ class _PPHStaffLoginPageState extends ConsumerState<PPHStaffLoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
+
     return Scaffold(
       appBar: const Appbar(),
       body: Center(
@@ -93,6 +95,24 @@ class _PPHStaffLoginPageState extends ConsumerState<PPHStaffLoginPage> {
               ),
               const SizedBox(height: 20),
 
+              //Email title
+              Padding(
+                padding: EdgeInsets.only(left: screenWidth * 0.05),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Email',
+                      style: TextStyle(
+                        color: Colors.grey[600],
+                        fontFamily: 'Figtree',
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 5),
+
               //Email textfield
               MyLoginTextField(
                 controller: emailController,
@@ -107,6 +127,24 @@ class _PPHStaffLoginPageState extends ConsumerState<PPHStaffLoginPage> {
               ),
 
               const SizedBox(height: 20),
+
+              //Password title
+              Padding(
+                padding: EdgeInsets.only(left: screenWidth * 0.05),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Password',
+                      style: TextStyle(
+                        color: Colors.grey[600],
+                        fontFamily: 'Figtree',
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 5),
 
               //Password textfield
               MyLoginTextField(
