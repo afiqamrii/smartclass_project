@@ -20,7 +20,7 @@ class StaffSignUpPage extends ConsumerWidget {
   final confirmPasswordController = TextEditingController();
 
   //Sign user in method
-  void signUserIn(BuildContext context, WidgetRef ref) async{
+  void signUserIn(BuildContext context, WidgetRef ref) async {
     ref.read(loadingProvider.notifier).state = true; //Start loading
 
     await authService.signUpUser(
@@ -34,7 +34,6 @@ class StaffSignUpPage extends ConsumerWidget {
     );
 
     ref.read(loadingProvider.notifier).state = false; //Stop loading
-
   }
 
   @override
@@ -171,26 +170,7 @@ class StaffSignUpPage extends ConsumerWidget {
               obscureText: true,
             ),
 
-            const SizedBox(height: 20),
-
-            //Forgot password
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Text(
-                    'Forgot password?',
-                    style: TextStyle(
-                      color: Colors.grey[600],
-                      fontFamily: 'Figtree',
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            const SizedBox(height: 20),
+            const SizedBox(height: 30),
 
             //Login button
             CustomButton(

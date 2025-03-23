@@ -29,7 +29,7 @@ class LecturerViewClass extends ConsumerWidget {
                 size: 20,
               ),
               recordingText: const Text(
-                "Not recorded yet",
+              "Not recorded yet",
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
