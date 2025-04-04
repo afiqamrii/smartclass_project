@@ -52,3 +52,19 @@ exports.editSummarization = async (req, res) => {
     }
 
 };
+
+exports.updatePublishStatus = async (req, res) => {
+    try{
+        //Debugging
+        console.log("Received publish status update request:", req.body);
+
+        const { publishStatus , classId} = req.body;
+
+        const result = await summarizationService.updatePublishStatus(publishStatus, classId);
+        res.status(200).json({ message: "Publish status updated successfully", Updated_Id: result });
+
+    } catch(error){
+        console.error("Controller Error:", error);
+        res.status(500).json({ message: "Failed to update publish status" });
+    }
+}

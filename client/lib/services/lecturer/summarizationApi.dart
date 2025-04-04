@@ -20,7 +20,7 @@ class Summarizationapi {
   //Based url for update summarization
   // static const updateUrl = "http://172.20.10.2:3000/classrecording/";
 
-    //GET API Using provider to the class with summarization status
+  //GET API Using provider to the class with summarization status
   Stream<List<ClassSumModel>> getClassesWithSummarization() async* {
     while (true) {
       Response response =
@@ -78,6 +78,33 @@ class Summarizationapi {
       }
     } catch (e) {
       print("Exception in updateSummarization: $e");
+      return false;
+    }
+  }
+
+  //PUT API to update publish status
+  // Endpoint: /classrecording/updatepublishstatus
+  /// Update Publish Status (PUT API)
+  static Future<bool> updatePublishStatus(
+      int classId, String publishStatus) async {
+    try {
+      final uri = Uri.parse("${baseUrl}updatepublishstatus");
+      final response = await http.put(
+        uri,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({"publishStatus": publishStatus, "classId": classId}),
+      );
+
+      if (response.statusCode == 200) {
+        print("Update successful: ${jsonDecode(response.body)}");
+        return true;
+      } else {
+        print(
+            "Failed to update publish status: ${response.statusCode} - ${response.body}");
+        return false;
+      }
+    } catch (e) {
+      print("Exception in updatePublishStatus: $e");
       return false;
     }
   }

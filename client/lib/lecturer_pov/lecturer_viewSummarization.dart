@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
+import 'package:quickalert/models/quickalert_type.dart';
+import 'package:quickalert/widgets/quickalert_dialog.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:smartclass_fyp_2024/components/custom_buttom.dart';
 import 'package:smartclass_fyp_2024/dataprovider/data_provider.dart';
 import 'package:smartclass_fyp_2024/lecturer_pov/lecturer_editsummarization.dart';
 import 'package:smartclass_fyp_2024/lecturer_pov/template/lecturer_bottom_navbar.dart';
+import 'package:smartclass_fyp_2024/services/lecturer/summarizationApi.dart';
 import 'package:smartclass_fyp_2024/widget/pageTransition.dart';
 
 class LecturerViewsummarization extends ConsumerStatefulWidget {
@@ -202,10 +205,54 @@ class _LecturerViewsummarizationState
                       vertical: 20,
                     ),
                     child: CustomButton(
-                      onTap: () {}, //Buat function sini untuk publish
+                      onTap: () async {
+                        QuickAlert.show(
+                          context: context,
+                          type: QuickAlertType.confirm,
+                          title: 'Publish Class ?',
+                          text:
+                              'Are you sure you want to publish this summarization ? The student can access right after this.',
+                          confirmBtnText: 'Publish',
+                          cancelBtnText: 'Cancel',
+                          onConfirmBtnTap: () async {
+                            Navigator.pop(context);
+                            // Call the publish function from the provider
+                            final result =
+                                await Summarizationapi.updatePublishStatus(
+                                    summarizationData[0].classId, "Published");
+
+                            if (result) {
+                              QuickAlert.show(
+                                context: context,
+                                type: QuickAlertType.success,
+                                text: 'Class published successfully',
+                                confirmBtnText: 'OK',
+                                onConfirmBtnTap: () {
+                                  Navigator.pop(
+                                      context); // Closes the dialog and stays on the same page
+                                },
+                              );
+                            } else {
+                              QuickAlert.show(
+                                context: context,
+                                type: QuickAlertType.error,
+                                text: 'Failed to publish class, try again!',
+                                confirmBtnText: 'OK',
+                                onConfirmBtnTap: () {
+                                  Navigator.pop(
+                                      context); // Closes the dialog and stays on the same page
+                                },
+                              );
+                            }
+                          },
+                        );
+                      }, //Buat function sini untuk publish
                       isLoading: _isRefreshing,
                       icon: Icons.upload_rounded,
-                      text: "Publish", // Pass a String for the text parameter
+                      text: summarizationData[0].publishStatus == "Published"
+                          // Check the publish status and set the text accordingly
+                          ? "Re-Publish"
+                          : "Publish", // Pass a String for the text parameter
                     ),
                   ),
                 ],
