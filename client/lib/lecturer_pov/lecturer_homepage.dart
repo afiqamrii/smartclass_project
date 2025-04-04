@@ -1,137 +1,172 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 import 'package:smartclass_fyp_2024/dataprovider/data_provider.dart';
 import 'package:smartclass_fyp_2024/dataprovider/user_provider.dart';
 import 'package:smartclass_fyp_2024/lecturer_pov/lecturer_viewSummarization.dart';
 import 'package:smartclass_fyp_2024/lecturer_pov/lecturer_view_class.dart';
 import 'package:smartclass_fyp_2024/models/lecturer/classSum_model.dart';
+import 'package:smartclass_fyp_2024/models/lecturer/user.dart';
 import 'package:smartclass_fyp_2024/test.dart';
 import 'package:smartclass_fyp_2024/widget/pageTransition.dart';
 import 'lecturer_show_all_classes.dart';
 import '../models/lecturer/class_models.dart';
 
 // ignore: must_be_immutable
-class LectHomepage extends ConsumerWidget {
+class LectHomepage extends ConsumerStatefulWidget {
   const LectHomepage({super.key});
 
-  //Handel the refresh and reload the data from provider to update the data
+  @override
+  ConsumerState<LectHomepage> createState() => _LectHomepageState();
+}
+
+class _LectHomepageState extends ConsumerState<LectHomepage> {
+  bool _isRefreshing = false; // Add loading state
+
+// Handle the refresh and reload data from provider
   Future<void> _handleRefresh(WidgetRef ref) async {
-    //Reload the data in class provider
-    // ignore: await_only_futures, unused_result
-    await ref.refresh(classDataProvider.future);
-    // ignore: unused_result, await_only_futures
-    await ref.refresh(classDataProviderSummarizationStatus.future);
-    //reloading take some time..
-    return await Future.delayed(const Duration(seconds: 1));
+    setState(() {
+      _isRefreshing = true; // Set loading state to true
+    });
+
+    // Invalidate the provider to trigger loading state
+    ref.invalidate(classDataProvider);
+    ref.invalidate(classDataProviderSummarizationStatus);
+
+    // Wait for new data to load
+    await Future.delayed(
+      const Duration(seconds: 3),
+    );
+
+    setState(() {
+      _isRefreshing = false; // Set loading state to false
+    });
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    // getClasses();
-    //get data from provider
+  Widget build(BuildContext context) {
+    // Get data from provider
     final data = ref.watch(classDataProvider);
     final sumData = ref.watch(classDataProviderSummarizationStatus);
     final user = ref.watch(userProvider);
+
     return Scaffold(
       body: data.when(
-        data: (data) {
-          List<ClassModel> classData = data;
+        data: (classData) {
           return sumData.when(
-            data: (sumData) {
-              List<ClassSumModel> sumClassData = sumData;
+            data: (sumClassData) {
               return LiquidPullToRefresh(
                 onRefresh: () => _handleRefresh(ref),
                 color: Colors.deepPurple,
-                height: 100,
-                backgroundColor: Colors.deepPurple[200],
+                height: 120,
+                backgroundColor: Colors.deepPurple,
                 animSpeedFactor: 4,
                 showChildOpacityTransition: false,
                 child: Padding(
-                  padding: const EdgeInsets.only(
-                    left: 18.0,
-                    top: 10,
-                  ),
-                  child: ListView(
-                    children: [
-                      //Top title section
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                    padding: const EdgeInsets.only(left: 18.0, top: 10),
+                    child: Skeletonizer(
+                      enabled:
+                          _isRefreshing, // Use _isRefreshing to control skeleton display
+                      effect: const ShimmerEffect(),
+                      child: ListView(
                         children: [
-                          //Hello Dr. Afiq top title
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                "Hello ${user.userName}",
-                                style: const TextStyle(
-                                  fontSize: 22,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              //Welcome to Smart Class top title
-                              const Text.rich(
-                                TextSpan(
-                                  text: "Welcome to ",
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                  ),
-                                  children: [
-                                    TextSpan(
-                                      text: "Smart Class",
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.purple,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                          //Right Side for notification icon
-                          Padding(
-                            padding: const EdgeInsets.only(right: 10.0),
-                            child: IconButton(
-                              icon: const Icon(Icons.notifications,
-                                  color: Colors.black),
-                              onPressed: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            const MyWidget()));
-                              },
-                            ),
-                          ),
+                          _headerSection(user, context),
+                          const SizedBox(height: 20),
+                          _todayClass(context),
+                          const SizedBox(height: 2),
+                          _classListCard(
+                              context, classData), // Real card widgets
+                          const SizedBox(height: 20),
+                          _summarizationSection(context, sumClassData),
                         ],
                       ),
-                      const SizedBox(height: 20),
-                      // Today's Classes Header
-                      _todayClass(context),
-                      const SizedBox(height: 2),
-                      // Horizontal scrollable cards
-                      _classListCard(context, classData),
-                      const SizedBox(height: 20),
-                      _summarizationSection(context, sumClassData),
-                    ],
-                  ),
-                ),
+                    )),
               );
             },
             error: (err, s) => Text(err.toString()),
-            loading: () => const Center(
-              child: CircularProgressIndicator(),
-            ),
+            loading: () => _buildSkeletonLoader(
+              count: classData.length,
+            ), // Dynamic count
           );
         },
         error: (err, s) => Text(err.toString()),
-        loading: () => const Center(
-          child: CircularProgressIndicator(),
+        loading: () => _buildSkeletonLoader(
+          count: 5, // Show 5 skeleton loaders while loading
+        ), // Estimated count during initial loading
+      ),
+    );
+  }
+
+// Function to dynamically generate skeleton loaders
+  Widget _buildSkeletonLoader({int count = 5}) {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Skeletonizer(
+        enabled: _isRefreshing,
+        // Show skeleton effect while loading
+        child: Column(
+          children: List.generate(
+            count, // Dynamically set count based on DB data
+            (index) => Container(
+              margin: const EdgeInsets.symmetric(vertical: 10),
+              height: 80,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: Colors.grey[300],
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+          ),
         ),
       ),
+    );
+  }
+
+  Row _headerSection(User user, BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              "Hello ${user.userName}",
+              style: const TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const Text.rich(
+              TextSpan(
+                text: "Welcome to ",
+                style: TextStyle(fontSize: 16),
+                children: [
+                  TextSpan(
+                    text: "Smart Class",
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.purple,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        Padding(
+          padding: const EdgeInsets.only(right: 10.0),
+          child: IconButton(
+            icon: const Icon(Icons.notifications, color: Colors.black),
+            onPressed: () {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => const MyWidget()));
+            },
+          ),
+        ),
+      ],
     );
   }
 

@@ -38,6 +38,7 @@ dependencies:
   intl: ^0.20.1
   flutter_riverpod: ^2.6.1
   liquid_pull_to_refresh: ^3.0.1
+  pull_to_refresh: ^2.0.0
   lottie: 
   custom_refresh_indicator: ^4.0.1
   google_nav_bar: ^5.0.7
@@ -48,6 +49,9 @@ dependencies:
   shared_preferences: ^2.2.2
   loading_animation_widget:
   url_launcher: 
+  skeletonizer: ^1.4.3
+  flutter_markdown: ^0.7.7
+  
   
 
 dev_dependencies:
