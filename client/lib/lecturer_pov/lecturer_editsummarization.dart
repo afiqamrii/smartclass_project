@@ -25,8 +25,8 @@ class _LecturerEditsummarizationState extends State<LecturerEditsummarization> {
   @override
   void initState() {
     super.initState();
-    _controller =
-        TextEditingController(text: widget.summarizationData.join('\n'));
+    _controller = TextEditingController(
+        text: _buildSummaryText(widget.summarizationData[0]));
   }
 
   @override
@@ -132,6 +132,33 @@ class _LecturerEditsummarizationState extends State<LecturerEditsummarization> {
       ),
     );
   }
+}
+
+String _buildSummaryText(String text) {
+  final regex = RegExp(r'\*\*(.*?)\*\*'); // Matches text between ** **
+  StringBuffer buffer = StringBuffer();
+  int lastIndex = 0;
+
+  // Process all regex matches
+  for (final match in regex.allMatches(text)) {
+    // Add plain text before the match
+    if (match.start > lastIndex) {
+      buffer.write(text.substring(lastIndex, match.start));
+    }
+
+    // Add bolded text for the match
+    buffer.write("\n${match.group(1)}"); // The text inside ** **
+
+    // Update the last processed index
+    lastIndex = match.end;
+  }
+
+  // Add any remaining plain text after the last match
+  if (lastIndex < text.length) {
+    buffer.write(text.substring(lastIndex));
+  }
+
+  return buffer.toString();
 }
 
 class EditableTextWidget extends StatelessWidget {
