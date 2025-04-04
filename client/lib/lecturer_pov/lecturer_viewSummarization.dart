@@ -1,29 +1,48 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
+import 'package:skeletonizer/skeletonizer.dart';
+import 'package:smartclass_fyp_2024/components/custom_buttom.dart';
 import 'package:smartclass_fyp_2024/dataprovider/data_provider.dart';
 import 'package:smartclass_fyp_2024/lecturer_pov/lecturer_editsummarization.dart';
 import 'package:smartclass_fyp_2024/lecturer_pov/template/lecturer_bottom_navbar.dart';
 import 'package:smartclass_fyp_2024/widget/pageTransition.dart';
 
-class LecturerViewsummarization extends ConsumerWidget {
-  final int classId;
-
+class LecturerViewsummarization extends ConsumerStatefulWidget {
   const LecturerViewsummarization({super.key, required this.classId});
+  final int classId; //ClassId to get the data from the previous page
+
+  //Constructor to get the classId from the previous page
+  @override
+  ConsumerState<LecturerViewsummarization> createState() =>
+      _LecturerViewsummarizationState();
+}
+
+class _LecturerViewsummarizationState
+    extends ConsumerState<LecturerViewsummarization> {
+  bool _isRefreshing = false; // Flag to track refresh state
 
   //Handle refresh and reload the data from data providero
   Future<void> _handleRefresh(WidgetRef ref) async {
+    setState(() {
+      _isRefreshing = true; // Set the refreshing state to true
+    });
+    // Perform the refresh operation
     //Reload the daaata from provider
     // ignore: unused_result, await_only_futures
-    await ref.refresh(classDataProviderSummarization(classId).future);
+    await ref.read(classDataProviderSummarization(widget.classId).future);
     //reloading take some time..
-    return await Future.delayed(const Duration(seconds: 1));
+    await Future.delayed(const Duration(seconds: 3));
+
+    setState(() {
+      _isRefreshing = false; // Set the refreshing state to false
+    });
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     //get data from provider
-    final data = ref.watch(classDataProviderSummarization(classId));
+    final data = ref.watch(classDataProviderSummarization(widget.classId));
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -75,75 +94,122 @@ class LecturerViewsummarization extends ConsumerWidget {
             animSpeedFactor: 2,
             backgroundColor: Colors.deepPurple[200],
             showChildOpacityTransition: false,
-            child: ListView(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Padding(
-                      padding: EdgeInsets.only(left: 20.0, top: 13.0),
-                      child: Text(
-                        "Summarization Result",
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
+            child: Skeletonizer(
+              enabled: _isRefreshing,
+              effect: ShimmerEffect(),
+              child: ListView(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Padding(
+                        padding: EdgeInsets.only(left: 20.0, top: 5.0),
+                        child: Text(
+                          "Summarization Result",
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 10.0, right: 10),
+                        child: IconButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => LecturerEditsummarization(
+                                  summarizationData: summarizationData[0]
+                                      .summaryText
+                                      .split(
+                                          '\n'), // Split the string into a list of strings
+                                  summarizationClassId: widget.classId,
+                                ),
+                              ),
+                            );
+                          },
+                          icon: const Icon(Icons.edit_note),
+                          iconSize: 28,
+                          color: Colors.black,
+                        ),
+                      ),
+                    ],
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        // Displaying a nice status indicator
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 9, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: summarizationData[0].publishStatus ==
+                                    "Published"
+                                ? Colors.green
+                                : Colors.red,
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Text(
+                            summarizationData[0].publishStatus,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 13,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 15),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 20.0, right: 20.0),
+                    child: IntrinsicHeight(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12.0),
+                          color: Colors.white,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.5),
+                              spreadRadius: 7,
+                              blurRadius: 10,
+                              offset: const Offset(0, 5),
+                            ),
+                          ],
+                        ),
+                        child: Column(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 20.0, vertical: 15),
+                              child: _buildSummaryText(
+                                  summarizationData[0].summaryText),
+                            ),
+                          ],
                         ),
                       ),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 10.0, right: 10),
-                      child: IconButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => LecturerEditsummarization(
-                                summarizationData: summarizationData[0]
-                                    .summaryText
-                                    .split(
-                                        '\n'), // Split the string into a list of strings,
-                                summarizationClassId: classId,
-                              ),
-                            ),
-                          );
-                        },
-                        icon: const Icon(Icons.edit_note),
-                        iconSize: 28,
-                      ),
-                    )
-                  ],
-                ),
-                const SizedBox(height: 5),
-                Padding(
-                  padding: const EdgeInsets.only(left: 20.0, right: 20.0),
-                  child: IntrinsicHeight(
-                    child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12.0),
-                        color: Colors.white,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withOpacity(0.5),
-                            spreadRadius: 7,
-                            blurRadius: 10,
-                            offset: const Offset(0, 5),
-                          ),
-                        ],
-                      ),
-                      child: Column(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 20.0, vertical: 15),
-                            child: _buildSummaryText(
-                                summarizationData[0].summaryText),
-                          ),
-                        ],
-                      ),
+                  ),
+                  const SizedBox(height: 20),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 100.0,
+                      vertical: 20,
+                    ),
+                    child: CustomButton(
+                      onTap: () {}, //Buat function sini untuk publish
+                      isLoading: _isRefreshing,
+                      icon: Icons.upload_rounded,
+                      text: "Publish", // Pass a String for the text parameter
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           );
         },

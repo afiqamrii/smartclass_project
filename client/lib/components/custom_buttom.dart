@@ -5,12 +5,14 @@ class CustomButton extends StatelessWidget {
   final String text;
   final VoidCallback onTap;
   final bool isLoading;
+  final IconData? icon; // Optional icon parameter
 
   const CustomButton({
     super.key,
     required this.onTap,
     required this.text,
     this.isLoading = false,
+    this.icon, // Initialize icon to null by default
   });
 
   @override
@@ -40,9 +42,20 @@ class CustomButton extends StatelessWidget {
                       ),
                     ],
                   )
-                : Text(
-                    text,
-                    style: const TextStyle(color: Colors.white),
+                : Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      if (icon != null) Icon(icon, color: Colors.white),
+                      if (icon != null) const SizedBox(width: 8),
+                      Text(
+                        text,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontFamily: 'Figtree',
+                        ),
+                      ),
+                    ],
                   ),
           ),
         ),

@@ -2,11 +2,13 @@ class SummarizationModels {
   final int recordingId;
   final int classId;
   final String summaryText;
+  final String publishStatus;
 
   SummarizationModels({
     required this.recordingId,
     required this.classId,
     required this.summaryText,
+    required this.publishStatus,
   });
 
   Map<String, dynamic> toJson() {
@@ -23,6 +25,7 @@ class SummarizationModels {
       recordingId: json['recordingId'],
       classId: json['classId'],
       summaryText: json['summaryText'],
+      publishStatus: json['publishStatus'],
     );
   }
 }
