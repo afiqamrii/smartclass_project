@@ -30,5 +30,17 @@ const editSummarization = async (summarizedText, classId) => {
     }
 };
 
+const updatePublishStatus = async (publishStatus , classId) => {
+    try{
+        
+
+        const result = await summarizationModel.updatePublishStatus(publishStatus, classId);
+        return result || []; // To ensure not return as null
+    
+    } catch(error){
+        throw new Error("Error in service while updating publish status: " + error.message);
+    }
+}
+
 //Export module
-module.exports = { viewSummarizationStatus  , accessSummarizationById , editSummarization };
+module.exports = { viewSummarizationStatus  , accessSummarizationById , editSummarization , updatePublishStatus };

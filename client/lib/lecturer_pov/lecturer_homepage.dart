@@ -46,54 +46,97 @@ class _LectHomepageState extends ConsumerState<LectHomepage> {
 
   @override
   Widget build(BuildContext context) {
-    // Get data from provider
     final data = ref.watch(classDataProvider);
     final sumData = ref.watch(classDataProviderSummarizationStatus);
     final user = ref.watch(userProvider);
 
     return Scaffold(
-      body: data.when(
-        data: (classData) {
-          return sumData.when(
-            data: (sumClassData) {
-              return LiquidPullToRefresh(
-                onRefresh: () => _handleRefresh(ref),
-                color: Colors.deepPurple,
-                height: 120,
-                backgroundColor: Colors.deepPurple,
-                animSpeedFactor: 4,
-                showChildOpacityTransition: false,
-                child: Padding(
-                    padding: const EdgeInsets.only(left: 18.0, top: 10),
-                    child: Skeletonizer(
-                      enabled:
-                          _isRefreshing, // Use _isRefreshing to control skeleton display
-                      effect: const ShimmerEffect(),
-                      child: ListView(
-                        children: [
-                          _headerSection(user, context),
-                          const SizedBox(height: 20),
-                          _todayClass(context),
-                          const SizedBox(height: 2),
-                          _classListCard(
-                              context, classData), // Real card widgets
-                          const SizedBox(height: 20),
-                          _summarizationSection(context, sumClassData),
-                        ],
-                      ),
-                    )),
-              );
-            },
-            error: (err, s) => Text(err.toString()),
-            loading: () => _buildSkeletonLoader(
-              count: classData.length,
-            ), // Dynamic count
-          );
-        },
-        error: (err, s) => Text(err.toString()),
-        loading: () => _buildSkeletonLoader(
-          count: 5, // Show 5 skeleton loaders while loading
-        ), // Estimated count during initial loading
+      body: LiquidPullToRefresh(
+        onRefresh: () => _handleRefresh(ref),
+        color: Colors.deepPurple,
+        backgroundColor: Colors.deepPurple,
+        animSpeedFactor: 3,
+        showChildOpacityTransition: false,
+        height: 50,
+        child: CustomScrollView(
+          slivers: [
+            SliverAppBar(
+              pinned: false,
+              expandedHeight: 110,
+              backgroundColor: Colors.deepPurple,
+              shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(20),
+                  bottomRight: Radius.circular(20),
+                ),
+              ),
+              flexibleSpace: FlexibleSpaceBar(
+                background: ClipRRect(
+                  borderRadius: const BorderRadius.only(
+                    bottomLeft: Radius.circular(30),
+                    bottomRight: Radius.circular(30),
+                  ),
+                  child: Container(
+                    color: Colors.deepPurple,
+                    padding:
+                        const EdgeInsets.only(top: 60, left: 20, right: 20),
+                    child: _headerSection(user, context),
+                  ),
+                ),
+              ),
+            ),
+            SliverList(
+              delegate: SliverChildListDelegate(
+                [
+                  data.when(
+                    data: (classData) {
+                      return sumData.when(
+                        data: (sumClassData) => Skeletonizer(
+                          enabled: _isRefreshing,
+                          effect: const ShimmerEffect(),
+                          child: Column(
+                            children: [
+                              Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 18),
+                                child: _todayClass(context),
+                              ),
+                              const SizedBox(height: 8),
+                              Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 18),
+                                child: _classListCard(context, classData),
+                              ),
+                              const SizedBox(height: 25),
+                              Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 20),
+                                child: _summarizationSection(
+                                    context, sumClassData),
+                              ),
+                              const SizedBox(height: 40),
+                            ],
+                          ),
+                        ),
+                        error: (err, s) => Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Text(err.toString()),
+                        ),
+                        loading: () =>
+                            _buildSkeletonLoader(count: classData.length),
+                      );
+                    },
+                    error: (err, s) => Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Text(err.toString()),
+                    ),
+                    loading: () => _buildSkeletonLoader(count: 5),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -134,21 +177,28 @@ class _LectHomepageState extends ConsumerState<LectHomepage> {
             Text(
               "Hello ${user.userName}",
               style: const TextStyle(
-                fontSize: 22,
+                fontSize: 26,
+                color: Color.fromARGB(255, 238, 238, 238),
+                fontFamily: 'Figtree',
                 fontWeight: FontWeight.bold,
               ),
             ),
+            const SizedBox(height: 5),
             const Text.rich(
               TextSpan(
                 text: "Welcome to ",
-                style: TextStyle(fontSize: 16),
+                style: TextStyle(
+                  fontSize: 18,
+                  color: Color.fromARGB(255, 238, 238, 238),
+                  fontFamily: 'Figtree',
+                ),
                 children: [
                   TextSpan(
                     text: "Smart Class",
                     style: TextStyle(
-                      fontSize: 16,
+                      fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: Colors.purple,
+                      color: Color.fromARGB(255, 232, 103, 255),
                     ),
                   ),
                 ],
@@ -159,7 +209,10 @@ class _LectHomepageState extends ConsumerState<LectHomepage> {
         Padding(
           padding: const EdgeInsets.only(right: 10.0),
           child: IconButton(
-            icon: const Icon(Icons.notifications, color: Colors.black),
+            icon: const Icon(
+              Icons.notifications,
+              color: Color.fromARGB(255, 238, 238, 238),
+            ),
             onPressed: () {
               Navigator.push(context,
                   MaterialPageRoute(builder: (context) => const MyWidget()));
@@ -222,7 +275,7 @@ class _LectHomepageState extends ConsumerState<LectHomepage> {
                     ));
               },
               child: Padding(
-                padding: const EdgeInsets.only(bottom: 13.0, right: 20.0),
+                padding: const EdgeInsets.only(bottom: 13.0),
                 child: IntrinsicHeight(
                   child: Container(
                     decoration: BoxDecoration(
