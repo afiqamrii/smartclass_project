@@ -48,6 +48,21 @@ const SummarizationModel = {
             console.error("Error updating data:", err.message);
             return [];
         }
+    },
+
+    // Update Publish Status
+    async updatePublishStatus(publishStatus, classId) {
+        try{
+            const query = `
+            update ClassRecording SET publishStatus = ? WHERE classId = ?
+        `;
+            const [result] = await pool.execute(query, [publishStatus, classId]);
+            return result;
+        }
+    catch (err) {
+        console.error("Error updating data:", err.message);
+        return [];
+    }
     }
 };
 

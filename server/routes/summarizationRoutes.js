@@ -12,4 +12,7 @@ router.get("/accesssummarization/:classId", summarizationController.accessSummar
 //Route to save summarization
 router.put("/editsummarizedtext", summarizationController.editSummarization);
 
+//Route to update publish status
+router.put("/updatepublishstatus", summarizationController.updatePublishStatus);
+
 module.exports = router;
