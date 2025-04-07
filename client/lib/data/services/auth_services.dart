@@ -14,7 +14,7 @@ import 'package:smartclass_fyp_2024/features/student/registration/signin_page/st
 import 'package:smartclass_fyp_2024/core/utils/utils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smartclass_fyp_2024/core/widget/pageTransition.dart';
-import 'package:smartclass_fyp_2024/features/student/template/bottom_navbar.dart';
+import 'package:smartclass_fyp_2024/features/student/template/student_bottom_navbar.dart';
 
 class AuthService {
   //BASE URL
