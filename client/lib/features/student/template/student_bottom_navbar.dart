@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
-import 'package:smartclass_fyp_2024/features/lecturer/lecturer_homepage.dart';
-import 'package:smartclass_fyp_2024/features/lecturer/manage_class/lecturer_myclass.dart';
-import 'package:smartclass_fyp_2024/features/lecturer/manage_profile/lecturer_profile_page.dart';
 import 'package:smartclass_fyp_2024/features/student/class_session/student_myclass.dart';
-import 'package:smartclass_fyp_2024/features/student/homepage.dart';
+import 'package:smartclass_fyp_2024/features/student/student_homepage.dart';
 import 'package:smartclass_fyp_2024/features/student/manage_profile/student_profilepage.dart';
 
 class StudentBottomNavbar extends StatefulWidget {
