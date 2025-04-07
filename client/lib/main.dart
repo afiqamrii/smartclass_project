@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:smartclass_fyp_2024/dataprovider/user_provider.dart';
-import 'package:smartclass_fyp_2024/lecturer_pov/template/lecturer_bottom_navbar.dart';
-import 'package:smartclass_fyp_2024/services/auth_services.dart';
-import 'package:smartclass_fyp_2024/splashscreen/splashScreen.dart';
+import 'package:smartclass_fyp_2024/data/dataprovider/user_provider.dart';
+import 'package:smartclass_fyp_2024/features/lecturer/template/lecturer_bottom_navbar.dart';
+import 'package:smartclass_fyp_2024/data/services/auth_services.dart';
+import 'package:smartclass_fyp_2024/features/onboarding/splashscreen/splashScreen.dart';
 
 void main() {
   runApp(const ProviderScope(child: MyApp()));
