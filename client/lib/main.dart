@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:smartclass_fyp_2024/data/dataprovider/user_provider.dart';
-import 'package:smartclass_fyp_2024/features/lecturer/template/lecturer_bottom_navbar.dart';
 import 'package:smartclass_fyp_2024/data/services/auth_services.dart';
 import 'package:smartclass_fyp_2024/features/onboarding/splashscreen/splashScreen.dart';
+import 'package:smartclass_fyp_2024/navigator_validToken.dart';
 
 void main() {
   runApp(const ProviderScope(child: MyApp()));
@@ -91,7 +91,8 @@ class _MainScreenState extends ConsumerState<MainScreen> {
 
     return Scaffold(
       body: user.token.isNotEmpty
-          ? const LectBottomNavBar(initialIndex: 0) // Direct to Lecturer Home
+          ? NavigatorValidToken.navigateAfterLogin(
+              context, user.roleId) // Direct to page based on roleId
           : const SplashScreen(), // Show SplashScreen if token is empty
     );
   }
