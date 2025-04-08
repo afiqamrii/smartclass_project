@@ -1,5 +1,4 @@
-<<<<<<< HEAD
-# smartclass_fyp_2024
+# Intelli Classroom
 
 A new Flutter project.
 
@@ -17,4 +16,5 @@ For help getting started with Flutter development, view the
 samples, guidance on mobile development, and a full API reference.
 =======
 # smartclass_project
->>>>>>> c052c25383e480145e56357981535f1843adacbd
+
+By : Afiq Amri
