@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+import 'package:smartclass_fyp_2024/constants/color_constants.dart';
 import 'package:smartclass_fyp_2024/test.dart';
 
 class StudentHomePage extends StatefulWidget {
@@ -37,7 +38,8 @@ class _StudentHomePageState extends State<StudentHomePage> {
           SliverAppBar(
             pinned: false,
             expandedHeight: 90,
-            backgroundColor: const Color(0xFF0d1116), // Set background color
+            backgroundColor:
+                ColorConstants.backgroundColor, // Set background color
             elevation: 0, // No shadow
             flexibleSpace: FlexibleSpaceBar(
               collapseMode: CollapseMode.pin, // Avoid stretching/mismatch
@@ -113,23 +115,136 @@ class _StudentHomePageState extends State<StudentHomePage> {
             child: Skeletonizer(
               enabled: _isRefreshing,
               effect: const ShimmerEffect(),
-              child: Container(
-                width: double.infinity,
-                height: MediaQuery.of(context).size.height * 1,
-                decoration: const BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.vertical(
-                    top: Radius.circular(20),
+              child: Padding(
+                padding: const EdgeInsets.only(top: 15),
+                child: Container(
+                  width: double.infinity,
+                  height: MediaQuery.of(context).size.height * 1,
+                  decoration: const BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.vertical(
+                      top: Radius.circular(20),
+                    ),
                   ),
-                ),
-                child: const Padding(
-                  padding: EdgeInsets.all(25.0),
-                  child: Column(),
+                  child: Padding(
+                    padding: const EdgeInsets.all(25.0),
+                    child: Column(
+                      children: [
+                        //Add search bar
+                        _searchBarSection(),
+                        const SizedBox(height: 20),
+                        //Add card section
+                        _cardSection(context),
+                        const SizedBox(height: 20),
+                        //Featured courses section
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'Featured Courses',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontFamily: 'Figtree',
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black,
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            SizedBox(
+                              height:
+                                  150, // Set a fixed height for the ListView
+                              child: ListView(
+                                scrollDirection: Axis.horizontal,
+                                clipBehavior: Clip.none, // Make it horizontal
+                                children: [
+                                  Container(
+                                    width:
+                                        MediaQuery.of(context).size.width * 0.5,
+                                    height: 150,
+                                    decoration: BoxDecoration(
+                                      color: Colors.grey[300],
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                  ),
+                                  const SizedBox(
+                                      width: 10), // Add spacing between items
+                                  Container(
+                                    width:
+                                        MediaQuery.of(context).size.width * 0.5,
+                                    height: 150,
+                                    decoration: BoxDecoration(
+                                      color: Colors.grey[300],
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
               ),
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Row _cardSection(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Container(
+          width: MediaQuery.of(context).size.width * 0.41,
+          height: 50,
+          decoration: BoxDecoration(
+            color: Colors.grey[300],
+            borderRadius: BorderRadius.circular(8),
+          ),
+        ),
+        Container(
+          width: MediaQuery.of(context).size.width * 0.41,
+          height: 50,
+          decoration: BoxDecoration(
+            color: Colors.grey[300],
+            borderRadius: BorderRadius.circular(8),
+          ),
+        )
+      ],
+    );
+  }
+
+  SearchBar _searchBarSection() {
+    return SearchBar(
+      backgroundColor: WidgetStatePropertyAll(
+        Colors.grey[100], // Set background color
+      ), // Set background color
+      leading: const Icon(
+        Icons.search,
+        color: Colors.grey,
+      ),
+      hintText: 'Search here...',
+      shadowColor: WidgetStatePropertyAll(
+        Colors.grey[300], // Set shadow color
+      ),
+      hintStyle: const WidgetStatePropertyAll(
+        TextStyle(
+          color: Colors.grey,
+          fontSize: 14,
+          fontFamily: 'FigtreeRegular',
+        ),
+      ),
+      shape: WidgetStatePropertyAll(
+        RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+      ),
+      padding: const WidgetStatePropertyAll(
+        EdgeInsets.all(8),
       ),
     );
   }

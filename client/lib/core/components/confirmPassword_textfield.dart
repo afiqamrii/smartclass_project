@@ -90,6 +90,7 @@ class _ConfirmPasswordTextFieldState extends State<ConfirmPasswordTextfield> {
               ),
               enabledBorder: const OutlineInputBorder(
                 borderSide: BorderSide(color: Colors.grey),
+                borderRadius: BorderRadius.all(Radius.circular(5)),
               ),
               focusedBorder: const OutlineInputBorder(
                 borderSide: BorderSide(color: Colors.black),

@@ -244,7 +244,7 @@ exports.signIn = async (userEmail , userPassword) => {
     const token = jwt.sign(
         { id: user.userId }, 
         "passwordKey",
-        { expiresIn: "1h" } // Token expires in 1 hour
+        { expiresIn: "24h" } // Token expires in 1 day
     
     );
     

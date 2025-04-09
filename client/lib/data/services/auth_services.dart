@@ -3,7 +3,9 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
+import 'package:smartclass_fyp_2024/constants/api_constants.dart';
 import 'package:smartclass_fyp_2024/data/models/role.dart';
+import 'package:smartclass_fyp_2024/features/admin/bottom_nav/admin_bottom_navbar.dart';
 import 'package:smartclass_fyp_2024/features/admin/registeration/signup_page/admin_greets_page.dart';
 import 'package:smartclass_fyp_2024/data/dataprovider/user_provider.dart';
 import 'package:smartclass_fyp_2024/features/lecturer/registration/signin_page/checkEmail_page.dart';
@@ -17,14 +19,25 @@ import 'package:smartclass_fyp_2024/core/widget/pageTransition.dart';
 import 'package:smartclass_fyp_2024/features/student/template/student_bottom_navbar.dart';
 
 class AuthService {
+  //for WIFI Rumah
   //BASE URL
-  static const baseUrl = "http://172.20.10.2:3000/api";
+  // static const baseUrl = "http://192.168.0.99:3000/api";
 
-  //Reset Password
-  static const url = "http://172.20.10.2:3000";
+  // //Reset Password
+  // static const url = "http://192.168.0.99:3000";
 
-  //GET USER DATA
-  static const tokenAuthUrl = "http://172.20.10.2:3000";
+  // //GET USER DATA
+  // static const tokenAuthUrl = "http://192.168.0.99:3000";
+
+  //Hotspot
+  //BASE URL
+  // static const baseUrl = "http://172.20.10.2:3000/api";
+
+  // //Reset Password
+  // static const url = "http://172.20.10.2:3000";
+
+  // //GET USER DATA
+  // static const tokenAuthUrl = "http://172.20.10.2:3000";
 
   //SIGNUP
   Future<void> signUpUser({
@@ -50,7 +63,7 @@ class AuthService {
       );
 
       http.Response res = await http.post(
-        Uri.parse('$baseUrl/signup'),
+        Uri.parse('${ApiConstants.baseUrl}/api/signup'),
         body: _user.toJson(),
         headers: {'Content-Type': 'application/json; charset=UTF-8'},
       );
@@ -113,7 +126,7 @@ class AuthService {
       final navigator = Navigator.of(context);
 
       http.Response res = await http.post(
-        Uri.parse('$baseUrl/signin'),
+        Uri.parse('${ApiConstants.baseUrl}/api/signin'),
         body:
             jsonEncode({'userEmail': userEmail, 'userPassword': userPassword}),
         headers: {'Content-Type': 'application/json; charset=UTF-8'},
@@ -163,7 +176,7 @@ class AuthService {
           } else if (userData['roleId'] == Role.staff) {
             navigator.pushAndRemoveUntil(
               toLeftTransition(
-                const LectBottomNavBar(initialIndex: 2),
+                const AdminBottomNavbar(initialIndex: 0),
               ),
               (route) => false,
             );
@@ -178,71 +191,92 @@ class AuthService {
   }
 
   //Get User Data
-  Future<void> getUserData(WidgetRef ref) async {
+  // In auth_service.dart
+  Future<User?> getUserData() async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String? token = prefs.getString('x-auth-token') ?? '';
 
-      // Debug print to check if token is retrieved
-      // print('Token retrieved: $token'); //Debugging Purposes
+      if (token.isEmpty) {
+        print("Token is empty");
+        return null;
+      }
 
-      // if (token == null) {
-      //   prefs.setString('x-auth-token', '');
-      // }
-
-      // Check if the token is valid
+      // Validate Token
       var tokenRes = await http.post(
-        Uri.parse('$tokenAuthUrl/tokenIsValid'),
-        headers: <String, String>{
+        Uri.parse('${ApiConstants.baseUrl}/tokenIsValid'),
+        headers: {
           'Content-Type': 'application/json; charset=UTF-8',
-          'x-auth-token': token
+          'x-auth-token': token,
         },
       );
 
-      // print("Pass here"); //Debugging Purposes
+      var tokenValidationResponse = jsonDecode(tokenRes.body);
+      print('Token validation response: $tokenValidationResponse');
 
-      var response = jsonDecode(tokenRes.body);
-
-      // If the token is valid, fetch user data
-      if (response['isValid'] == true) {
-        // print("Token valid!"); //Debugging Purposes
-
+      if (tokenValidationResponse['isValid'] == true) {
+        // Fetch User Data
         http.Response userRes = await http.get(
-          Uri.parse('$tokenAuthUrl/'),
-          headers: <String, String>{
+          Uri.parse('${ApiConstants.baseUrl}/'),
+          headers: {
             'Content-Type': 'application/json; charset=UTF-8',
-            'x-auth-token': token
+            'x-auth-token': token,
           },
         );
 
-        //Set User Data in Provider
-        ref
-            .read(userProvider.notifier)
-            .setUserFromModel(User.fromJson(userRes.body));
+        print('User data response: ${userRes.body}'); // Log user response
 
-        //Debugging Purposes
-        // print("User set: ${userRes.body}");
-        // print("Provider user: ${ref.read(authProvider)}");
+        // Handle User Data Parsing
+        try {
+          return User.fromJson(userRes.body);
+        } catch (e) {
+          print('Error parsing user data: $e');
+          return null;
+        }
+      } else {
+        print("Token is not valid");
+        return null;
       }
     } catch (e) {
-      // ignore: avoid_print
       print("Error fetching user data: $e");
+      return null;
     }
   }
 
-  Future<void> signOut(BuildContext context) async {
+  Future<void> signOut(BuildContext context, int roleId) async {
     final navigator = Navigator.of(context);
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
     await prefs.setString('x-auth-token', '');
     // ref.read(userProvider.notifier).logout(); // Reset user state in Riverpod
 
-    navigator.pushAndRemoveUntil(
-      upTransition(
-        const LecturerGreetsPage(),
-      ),
-      (route) => false,
-    );
+    //Navigate to Lecturer Page if user is lecturer
+    if (roleId == Role.lecturer) {
+      navigator.pushAndRemoveUntil(
+        toLeftTransition(
+          const LecturerGreetsPage(),
+        ),
+        (route) => false,
+      );
+
+      //Navigate to Student Page if user is student
+    } else if (roleId == Role.student) {
+      navigator.pushAndRemoveUntil(
+        toLeftTransition(
+          const StudentGreetsPage(),
+        ),
+        (route) => false,
+      );
+
+      //Navigate to Admin Page if user is admin
+    } else if (roleId == Role.staff) {
+      navigator.pushAndRemoveUntil(
+        toLeftTransition(
+          const AdminGreetsPage(),
+        ),
+        (route) => false,
+      );
+    }
   }
 
   Future<void> requestPasswordReset({
@@ -253,7 +287,7 @@ class AuthService {
 
     try {
       http.Response res = await http.post(
-        Uri.parse('$url/requestPasswordReset'),
+        Uri.parse('${ApiConstants.baseUrl}/requestPasswordReset'),
         body: jsonEncode({'userEmail': userEmail}),
         headers: {'Content-Type': 'application/json; charset=UTF-8'},
       );

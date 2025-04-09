@@ -47,13 +47,14 @@ class _MainScreenState extends ConsumerState<MainScreen> {
   }
 
   Future<void> loadUserData() async {
-    await ref.read(authServiceProvider).getUserData(ref);
-    final user = ref.read(userProvider);
+    final user = await ref.read(authServiceProvider).getUserData();
 
-    // Check token after loading
-    if (user.token.isEmpty) {
+    // Check if user data is null or token is invalid
+    if (user != null) {
+      ref.read(userProvider.notifier).setUserFromModel(user);
+    } else {
       setState(() {
-        tokenExpired = true;
+        tokenExpired = true; // Mark token as expired
       });
     }
 
@@ -62,6 +63,7 @@ class _MainScreenState extends ConsumerState<MainScreen> {
     });
   }
 
+  @override
   @override
   Widget build(BuildContext context) {
     final user = ref.watch(userProvider);
