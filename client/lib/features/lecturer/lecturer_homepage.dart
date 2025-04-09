@@ -33,6 +33,7 @@ class _LectHomepageState extends ConsumerState<LectHomepage> {
     // Invalidate the provider to trigger loading state
     ref.invalidate(classDataProvider);
     ref.invalidate(classDataProviderSummarizationStatus);
+    ref.invalidate(userProvider);
 
     // Wait for new data to load
     await Future.delayed(
@@ -62,7 +63,10 @@ class _LectHomepageState extends ConsumerState<LectHomepage> {
           slivers: [
             SliverAppBar(
               pinned: false,
-              expandedHeight: 110,
+              expandedHeight: MediaQuery.of(context).size.height * 0.14,
+              toolbarHeight: 0,
+              leading: null,
+              automaticallyImplyLeading: false,
               backgroundColor: Colors.deepPurple,
               shape: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
@@ -78,8 +82,11 @@ class _LectHomepageState extends ConsumerState<LectHomepage> {
                   ),
                   child: Container(
                     color: Colors.deepPurple,
-                    padding:
-                        const EdgeInsets.only(top: 60, left: 20, right: 20),
+                    padding: EdgeInsets.only(
+                      top: MediaQuery.of(context).size.height * 0.05,
+                      left: 20,
+                      right: 20,
+                    ),
                     child: Skeletonizer(
                       enabled: _isRefreshing,
                       effect: const ShimmerEffect(),
@@ -181,7 +188,7 @@ class _LectHomepageState extends ConsumerState<LectHomepage> {
             Text(
               "Hello ${user.userName}",
               style: const TextStyle(
-                fontSize: 26,
+                fontSize: 22,
                 color: Color.fromARGB(255, 238, 238, 238),
                 fontFamily: 'Figtree',
                 fontWeight: FontWeight.bold,
@@ -194,7 +201,7 @@ class _LectHomepageState extends ConsumerState<LectHomepage> {
                 style: TextStyle(
                   fontSize: 18,
                   color: Color.fromARGB(255, 238, 238, 238),
-                  fontFamily: 'Figtree',
+                  fontFamily: 'FigtreeRegular',
                 ),
                 children: [
                   TextSpan(
@@ -211,7 +218,7 @@ class _LectHomepageState extends ConsumerState<LectHomepage> {
           ],
         ),
         Padding(
-          padding: const EdgeInsets.only(right: 10.0),
+          padding: const EdgeInsets.only(right: 5.0),
           child: IconButton(
             icon: const Icon(
               Icons.notifications,

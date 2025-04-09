@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:quickalert/quickalert.dart';
+import 'package:smartclass_fyp_2024/constants/api_constants.dart';
 import 'package:smartclass_fyp_2024/features/lecturer/manage_class/lecturer_view_class.dart';
 import '../../../data/models/lecturer/class_models.dart';
 import '../../../data/services/lecturer/classApi.dart';
@@ -139,7 +140,7 @@ class _LectUpdateClassState extends State<LectUpdateClass> {
                     );
 
                     final response =
-                        await Api.updateClass(Api.baseUrl, updatedClass);
+                        await Api.updateClass(ApiConstants.baseUrl, updatedClass);
 
                     //Show QuickAlert message for user if the update is error or success
                     if (response != null) {

@@ -5,12 +5,11 @@ import 'package:smartclass_fyp_2024/features/lecturer/manage_profile/lecturer_ac
 import 'package:smartclass_fyp_2024/features/lecturer/manage_profile/lecturer_edit_profile.dart';
 import 'package:smartclass_fyp_2024/data/services/auth_services.dart';
 
-
 class LecturerProfilePage extends StatelessWidget {
   const LecturerProfilePage({super.key});
 
   void signOutUser(BuildContext context) {
-    AuthService().signOut(context);
+    AuthService().signOut(context, 2);
   }
 
   @override

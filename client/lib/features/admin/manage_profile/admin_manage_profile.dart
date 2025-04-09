@@ -8,14 +8,14 @@ import 'package:smartclass_fyp_2024/features/lecturer/manage_profile/lecturer_ac
 import 'package:smartclass_fyp_2024/features/lecturer/manage_profile/lecturer_edit_profile.dart';
 import 'package:smartclass_fyp_2024/data/services/auth_services.dart';
 
-class StudentProfilepage extends ConsumerStatefulWidget {
-  const StudentProfilepage({super.key});
+class AdminManageProfile extends ConsumerStatefulWidget {
+  const AdminManageProfile({super.key});
 
   @override
-  ConsumerState<StudentProfilepage> createState() => _StudentProfilepageState();
+  ConsumerState<AdminManageProfile> createState() => _AdminManageProfileState();
 }
 
-class _StudentProfilepageState extends ConsumerState<StudentProfilepage> {
+class _AdminManageProfileState extends ConsumerState<AdminManageProfile> {
   // ignore: unused_field
   bool _isRefreshing = false; // Add loading state
 

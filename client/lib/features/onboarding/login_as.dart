@@ -86,45 +86,50 @@ class LoginAsPage extends StatelessWidget {
           _createRoute(const LecturerGreetsPage()),
         );
       },
-      child: Container(
-        width: MediaQuery.of(context).size.width * 0.9,
-        height: MediaQuery.of(context).size.height * 0.18,
-        decoration: BoxDecoration(
-          color: const Color.fromARGB(255, 253, 240, 255),
-          borderRadius: BorderRadius.circular(15.0),
-          border: Border.all(
-            color: Colors.black.withOpacity(0.8),
-            width: 1,
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.2),
-              spreadRadius: 1,
-              blurRadius: 9,
-              offset: const Offset(0, 3), // changes position of shadow
-            ),
-          ],
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            children: [
-              SvgPicture.asset(
-                'assets/icons/lecturer.svg',
-                height: 90,
-                width: 150,
+      child: IntrinsicHeight(
+        child: SizedBox(
+          width: MediaQuery.of(context).size.width,
+          child: Container(
+            decoration: BoxDecoration(
+              color: const Color.fromARGB(255, 253, 240, 255),
+              borderRadius: BorderRadius.circular(15.0),
+              border: Border.all(
+                color: Colors.black.withOpacity(0.8),
+                width: 1,
               ),
-              const SizedBox(width: 20),
-              const Text(
-                "Lecturer",
-                style: TextStyle(
-                  fontSize: 18,
-                  fontFamily: 'Figtree',
-                  fontWeight: FontWeight.w600,
-                  color: Color(0xFF37474F),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.2),
+                  spreadRadius: 1,
+                  blurRadius: 9,
+                  offset: const Offset(0, 3),
                 ),
+              ],
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SvgPicture.asset(
+                    'assets/icons/lecturer.svg',
+                    height: 90,
+                    width: 150,
+                    fit: BoxFit.contain,
+                  ),
+                  const SizedBox(height: 12),
+                  const Text(
+                    "Lecturer",
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontFamily: 'Figtree',
+                      fontWeight: FontWeight.w600,
+                      color: Color(0xFF37474F),
+                    ),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
         ),
       ),
@@ -142,45 +147,48 @@ class LoginAsPage extends StatelessWidget {
           ),
         );
       },
-      child: Container(
-        width: MediaQuery.of(context).size.width * 0.9,
-        height: MediaQuery.of(context).size.height * 0.18,
-        decoration: BoxDecoration(
-          color: const Color.fromARGB(255, 253, 240, 255),
-          borderRadius: BorderRadius.circular(15.0),
-          border: Border.all(
-            color: Colors.black.withOpacity(0.8),
-            width: 1,
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.2),
-              spreadRadius: 1,
-              blurRadius: 9,
-              offset: const Offset(0, 3),
-            ),
-          ],
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            children: [
-              SvgPicture.asset(
-                'assets/icons/student.svg',
-                height: 90,
-                width: 150,
+      child: IntrinsicHeight(
+        child: SizedBox(
+          width: MediaQuery.of(context).size.width,
+          child: Container(
+            decoration: BoxDecoration(
+              color: const Color.fromARGB(255, 253, 240, 255),
+              borderRadius: BorderRadius.circular(15.0),
+              border: Border.all(
+                color: Colors.black.withOpacity(0.8),
+                width: 1,
               ),
-              const SizedBox(width: 20),
-              const Text(
-                "Student",
-                style: TextStyle(
-                  fontSize: 18,
-                  fontFamily: 'Figtree',
-                  fontWeight: FontWeight.w600,
-                  color: Color(0xFF37474F),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.2),
+                  spreadRadius: 1,
+                  blurRadius: 9,
+                  offset: const Offset(0, 3),
                 ),
+              ],
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Column(
+                children: [
+                  SvgPicture.asset(
+                    'assets/icons/student.svg',
+                    height: 90,
+                    width: 150,
+                  ),
+                  const SizedBox(width: 20),
+                  const Text(
+                    "Student",
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontFamily: 'Figtree',
+                      fontWeight: FontWeight.w600,
+                      color: Color(0xFF37474F),
+                    ),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
         ),
       ),
@@ -198,45 +206,48 @@ class LoginAsPage extends StatelessWidget {
           ),
         );
       },
-      child: Container(
-        width: MediaQuery.of(context).size.width * 0.9,
-        height: MediaQuery.of(context).size.height * 0.18,
-        decoration: BoxDecoration(
-          color: const Color.fromARGB(255, 253, 240, 255),
-          borderRadius: BorderRadius.circular(15.0),
-          border: Border.all(
-            color: Colors.black.withOpacity(0.8),
-            width: 1,
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.2),
-              spreadRadius: 1,
-              blurRadius: 9,
-              offset: const Offset(0, 3),
-            ),
-          ],
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            children: [
-              SvgPicture.asset(
-                'assets/icons/admin.svg',
-                height: 90,
-                width: 150,
+      child: IntrinsicHeight(
+        child: SizedBox(
+          width: MediaQuery.of(context).size.width,
+          child: Container(
+            decoration: BoxDecoration(
+              color: const Color.fromARGB(255, 253, 240, 255),
+              borderRadius: BorderRadius.circular(15.0),
+              border: Border.all(
+                color: Colors.black.withOpacity(0.8),
+                width: 1,
               ),
-              const SizedBox(width: 20),
-              const Text(
-                "PPH Staff",
-                style: TextStyle(
-                  fontSize: 18,
-                  fontFamily: 'Figtree',
-                  fontWeight: FontWeight.w600,
-                  color: Color(0xFF37474F),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.2),
+                  spreadRadius: 1,
+                  blurRadius: 9,
+                  offset: const Offset(0, 3),
                 ),
+              ],
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Column(
+                children: [
+                  SvgPicture.asset(
+                    'assets/icons/admin.svg',
+                    height: 90,
+                    width: 150,
+                  ),
+                  const SizedBox(width: 20),
+                  const Text(
+                    "PPH Staff",
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontFamily: 'Figtree',
+                      fontWeight: FontWeight.w600,
+                      color: Color(0xFF37474F),
+                    ),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
         ),
       ),

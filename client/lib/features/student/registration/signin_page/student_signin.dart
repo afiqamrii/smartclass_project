@@ -74,139 +74,162 @@ class _StudentLoginPageState extends ConsumerState<StudentLoginPage> {
     double screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      appBar: const Appbar(),
-      body: Center(
-        child: Form(
-          key: _formKey,
-          child: Column(
-            children: [
-              //Logo
-              const Image(
-                image: AssetImage('assets/pictures/logo.png'),
-                height: 120,
-                width: 150,
-              ),
-              const Text(
-                'Log In As Student',
-                style: TextStyle(
-                  fontSize: 25,
-                  fontFamily: 'FigtreeExtraBold',
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 20),
-
-              //Email title
-              Padding(
-                padding: EdgeInsets.only(left: screenWidth * 0.05),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
+        appBar: const Appbar(),
+        body: ListView(
+          children: [
+            Center(
+              child: Form(
+                key: _formKey,
+                child: Column(
                   children: [
-                    Text(
-                      'Email',
+                    // Logo
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment:
+                          CrossAxisAlignment.center, // Important
+                      children: [
+                        const Image(
+                          image: AssetImage('assets/pictures/logo.png'),
+                          height: 100, // Reduced to match balance
+                        ),
+                        SizedBox(width: screenWidth * 0.05),
+                        SizedBox(
+                          height: 70, // Match height with logos
+                          child: VerticalDivider(
+                            color: Colors.grey.withOpacity(0.5),
+                            thickness: 1,
+                          ),
+                        ),
+                        SizedBox(width: screenWidth * 0.05),
+                        const Image(
+                          image: AssetImage('assets/umtLogo.png'),
+                          height: 50,
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+                    const Text(
+                      'Log In As Student',
                       style: TextStyle(
-                        color: Colors.grey[600],
-                        fontFamily: 'Figtree',
+                        fontSize: 25,
+                        fontFamily: 'FigtreeExtraBold',
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 5),
+                    const SizedBox(height: 20),
 
-              //Email textfield
-              MyLoginTextField(
-                controller: emailController,
-                hintText: 'Email',
-                obscureText: false,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your email';
-                  }
-                  return null;
-                },
-              ),
-
-              const SizedBox(height: 20),
-
-              //Password title
-              Padding(
-                padding: EdgeInsets.only(left: screenWidth * 0.05),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Password',
-                      style: TextStyle(
-                        color: Colors.grey[600],
-                        fontFamily: 'Figtree',
+                    //Email title
+                    Padding(
+                      padding: EdgeInsets.only(left: screenWidth * 0.05),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Email',
+                            style: TextStyle(
+                              color: Colors.grey[600],
+                              fontFamily: 'Figtree',
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 5),
+                    const SizedBox(height: 5),
 
-              //Password textfield
-              PasswordTextfield(
-                controller: passwordController,
-                hintText: 'Password',
-                isPasswordForm: true,
-                isSignUpForm: false,
-                obscureText: true,
-                password : passwordController.text,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your password';
-                  }
-                  return null;
-                },
-              ),
-
-              const SizedBox(height: 15),
-
-              //Forgot password
-              GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    toLeftTransition(
-                      ResetPasswordPage(),
+                    //Email textfield
+                    MyLoginTextField(
+                      controller: emailController,
+                      hintText: 'Email',
+                      obscureText: false,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter your email';
+                        }
+                        return null;
+                      },
                     ),
-                  );
-                },
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      Text(
-                        'Forgot password?',
-                        style: TextStyle(
-                          color: Colors.grey[600],
-                          fontFamily: 'Figtree',
+
+                    const SizedBox(height: 20),
+
+                    //Password title
+                    Padding(
+                      padding: EdgeInsets.only(left: screenWidth * 0.05),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Password',
+                            style: TextStyle(
+                              color: Colors.grey[600],
+                              fontFamily: 'Figtree',
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 5),
+
+                    //Password textfield
+                    PasswordTextfield(
+                      controller: passwordController,
+                      hintText: 'Password',
+                      isPasswordForm: true,
+                      isSignUpForm: false,
+                      obscureText: true,
+                      password: passwordController.text,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter your password';
+                        }
+                        return null;
+                      },
+                    ),
+
+                    const SizedBox(height: 15),
+
+                    //Forgot password
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          toLeftTransition(
+                            ResetPasswordPage(),
+                          ),
+                        );
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            Text(
+                              'Forgot password?',
+                              style: TextStyle(
+                                color: Colors.grey[600],
+                                fontFamily: 'Figtree',
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+
+                    const SizedBox(height: 20),
+
+                    //Login button
+                    CustomButton(
+                      text: 'Login',
+                      isLoading: ref.watch(loadingProvider),
+                      onTap: () {
+                        signUserIn(context, ref);
+                      },
+                    ),
+                  ],
                 ),
               ),
-
-              const SizedBox(height: 20),
-
-              //Login button
-              CustomButton(
-                text: 'Login',
-                isLoading: ref.watch(loadingProvider),
-                onTap: () {
-                  signUserIn(context, ref);
-                },
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
+            ),
+          ],
+        ));
   }
 
   AppBar _appBar(BuildContext context) {

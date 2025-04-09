@@ -3,18 +3,19 @@ import 'dart:convert'; // Provides JSON encoding and decoding functionality.
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart';
 import 'package:http/http.dart' as http;
+import 'package:smartclass_fyp_2024/constants/api_constants.dart';
 import 'package:smartclass_fyp_2024/data/models/lecturer/classSum_model.dart';
 import 'package:smartclass_fyp_2024/data/models/summarization_models.dart';
 
 class Summarizationapi {
   //Based url for WIFI Rumah
-  // static const baseUrl = "http://192.168.0.99:3000/classSummarization/";
+  static const baseUrl = "http://192.168.0.99:3000/summarization/";
 
   //Based url for update summarization
   // static const updateUrl = "http://192.168.0.99:3000/classrecording/";
 
   // //Based url for HOSTPOT MyPhone
-  static const baseUrl = "http://172.20.10.2:3000/summarization/";
+  // static const baseUrl = "http://172.20.10.2:3000/summarization/";
 
   //domain for hotspot
   //Based url for update summarization
@@ -23,8 +24,8 @@ class Summarizationapi {
   //GET API Using provider to the class with summarization status
   Stream<List<ClassSumModel>> getClassesWithSummarization() async* {
     while (true) {
-      Response response =
-          await get(Uri.parse("${baseUrl}viewSummarizationStatus"));
+      Response response = await get(Uri.parse(
+          "${ApiConstants.baseUrl}/summarization/viewSummarizationStatus"));
       if (response.statusCode == 200) {
         final List result = jsonDecode(response.body)['Data'];
         yield result.map(((e) => ClassSumModel.fromJson(e))).toList();
@@ -38,8 +39,8 @@ class Summarizationapi {
   // Get Summarization with id
   Stream<List<SummarizationModels>> getSummarization(int classId) async* {
     while (true) {
-      Response response =
-          await get(Uri.parse("${baseUrl}accesssummarization/$classId"));
+      Response response = await get(Uri.parse(
+          "${ApiConstants.baseUrl}/summarization/accesssummarization/$classId"));
 
       //Check whether the response is successful or not.
       if (response.statusCode == 200) {
@@ -58,7 +59,8 @@ class Summarizationapi {
   static Future<bool> updateSummarization(
       int classId, String summarizedText) async {
     try {
-      final uri = Uri.parse("${baseUrl}editsummarizedtext");
+      final uri =
+          Uri.parse("${ApiConstants.baseUrl}/summarization/editsummarizedtext");
       final response = await http.put(
         uri,
         headers: {'Content-Type': 'application/json'},
@@ -88,7 +90,8 @@ class Summarizationapi {
   static Future<bool> updatePublishStatus(
       int classId, String publishStatus) async {
     try {
-      final uri = Uri.parse("${baseUrl}updatepublishstatus");
+      final uri = Uri.parse(
+          "${ApiConstants.baseUrl}/summarization/updatepublishstatus");
       final response = await http.put(
         uri,
         headers: {'Content-Type': 'application/json'},

@@ -16,14 +16,15 @@ class Intropage4 extends StatelessWidget {
             Center(
               child: LottieBuilder.asset(
                 "assets/animations/introPage4.json",
-                width: 450,
+                frameRate: FrameRate.max,
+                width: 250,
                 fit: BoxFit.contain,
               ),
             ),
             const SizedBox(height: 40), // Adjust spacing
             const Center(
               child: Text(
-                "IoT-Powered Classroom Control",
+                "IoT Classroom Control",
                 style: TextStyle(
                   fontSize: 20,
                   fontFamily: 'Figtree',

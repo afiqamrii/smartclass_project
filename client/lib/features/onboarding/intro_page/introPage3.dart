@@ -13,7 +13,8 @@ class Intropage3 extends StatelessWidget {
           Center(
             child: LottieBuilder.asset(
               "assets/animations/introPage3.json",
-              width: 290,
+              frameRate: FrameRate.max,
+              width: 250,
               fit: BoxFit.contain,
             ),
           ),
@@ -47,4 +48,3 @@ class Intropage3 extends StatelessWidget {
     );
   }
 }
-
