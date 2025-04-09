@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:quickalert/models/quickalert_type.dart';
 import 'package:quickalert/widgets/quickalert_dialog.dart';
+import 'package:smartclass_fyp_2024/constants/api_constants.dart';
 import 'package:smartclass_fyp_2024/data/dataprovider/recording_state_notifier.dart';
 import 'package:smartclass_fyp_2024/data/dataprovider/user_provider.dart';
 import 'package:smartclass_fyp_2024/features/lecturer/manage_class/lecturer_show_all_classes.dart';
@@ -376,7 +377,7 @@ class LecturerViewClass extends ConsumerWidget {
             confirmBtnText: 'Delete',
             cancelBtnText: 'Cancel',
             onConfirmBtnTap: () async {
-              await Api.deleteClass(Api.baseUrl, classItem.classId);
+              await Api.deleteClass(ApiConstants.baseUrl, classItem.classId);
               Navigator.push(
                 context,
                 MaterialPageRoute(

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart'; // Flutter framework for UI components.
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
+import 'package:smartclass_fyp_2024/constants/api_constants.dart';
 import '../../models/lecturer/class_models.dart'; // HTTP package for making API requests.
 
 /// A class to handle API interactions for the application.
@@ -11,14 +12,15 @@ class Api {
   // static const baseUrl = "http://192.168.0.99:3000/class/";
 
   //Based url for HOSTPOT MyPhone
-  static const baseUrl = "http://172.20.10.2:3000/class/";
+  // static const baseUrl = "http://172.20.10.2:3000/class/";
 
   // static const summarizationUrl = "http://172.20.10.2:3000/summarization/";
 
   //GET API Using provider to all classes data
   Stream<List<ClassModel>> getClasses() async* {
     while (true) {
-      Response response = await get(Uri.parse("${baseUrl}viewclass"));
+      Response response =
+          await get(Uri.parse("${ApiConstants.baseUrl}/class/viewclass"));
       if (response.statusCode == 200) {
         final List result = jsonDecode(response.body)['Data'];
         yield result.map(((e) => ClassModel.fromJson(e))).toList();
@@ -50,7 +52,7 @@ class Api {
     print(data);
 
     // Construct the full URL for the "add_class" API endpoint.
-    var url = Uri.parse("${baseUrl}addclass");
+    var url = Uri.parse("${ApiConstants.baseUrl}/class/addclass");
 
     try {
       // Send a POST request to the backend with JSON-encoded class data.
@@ -100,7 +102,8 @@ class Api {
   /// ```
   static updateClass(String url, ClassModel data) async {
     try {
-      var uri = Uri.parse("${url}updateclass/${data.classId}");
+      var uri = Uri.parse(
+          "${ApiConstants.baseUrl}/class/updateclass/${data.classId}");
       final res = await http.put(
         uri,
         headers: {
@@ -132,7 +135,7 @@ class Api {
   /// [id] is the ID of the class to be deleted.
   static deleteClass(String url, int id) async {
     try {
-      var uri = Uri.parse("${url}deleteclass/$id");
+      var uri = Uri.parse("${ApiConstants.baseUrl}/class/deleteclass/$id");
       final res = await http.delete(uri);
 
       if (res.statusCode == 200) {

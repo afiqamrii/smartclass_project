@@ -100,6 +100,7 @@ class _PasswordTextFieldState extends State<PasswordTextfield> {
                   : null,
               enabledBorder: const OutlineInputBorder(
                 borderSide: BorderSide(color: Colors.grey),
+                borderRadius: BorderRadius.all(Radius.circular(5)),
               ),
               focusedBorder: const OutlineInputBorder(
                 borderSide: BorderSide(color: Colors.black),

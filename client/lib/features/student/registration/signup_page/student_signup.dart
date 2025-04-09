@@ -47,7 +47,11 @@ class StudentSignupPage extends ConsumerWidget {
       body: ListView(
         children: [
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.01),
+            padding: EdgeInsets.only(
+              left: screenWidth * 0.01,
+              right: screenWidth * 0.01,
+              bottom: screenWidth * 0.15,
+            ),
             child: Column(
               children: [
                 Padding(

@@ -13,14 +13,15 @@ class Intropage2 extends StatelessWidget {
           Center(
             child: LottieBuilder.asset(
               "assets/animations/introPage2.json",
-              width: 290,
+              width: 250,
+              frameRate: FrameRate.max,
               fit: BoxFit.contain,
             ),
           ),
           const SizedBox(height: 40), // Adjust spacing
           const Center(
             child: Text(
-              "AI-Powered Lecture Summarization",
+              "AI-Powered Summarization",
               style: TextStyle(
                 fontSize: 20,
                 fontFamily: 'Figtree',
@@ -71,4 +72,3 @@ class Intropage2 extends StatelessWidget {
     );
   }
 }
-

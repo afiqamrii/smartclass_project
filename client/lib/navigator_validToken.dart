@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:smartclass_fyp_2024/data/models/role.dart';
+import 'package:smartclass_fyp_2024/features/admin/bottom_nav/admin_bottom_navbar.dart';
 import 'package:smartclass_fyp_2024/features/student/template/student_bottom_navbar.dart';
 import 'package:smartclass_fyp_2024/features/lecturer/template/lecturer_bottom_navbar.dart';
 
@@ -11,7 +12,7 @@ class NavigatorValidToken {
       case Role.lecturer:
         return const LectBottomNavBar(initialIndex: 0);
       case Role.staff:
-        return const StudentBottomNavbar(initialIndex: 0);
+        return const AdminBottomNavbar(initialIndex: 0);
       default:
         return const Scaffold(
           body: Center(child: Text("Invalid role")),

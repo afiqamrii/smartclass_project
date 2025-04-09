@@ -148,7 +148,9 @@ class _LecturerViewsummarizationState
                         // Displaying a nice status indicator
                         Container(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 9, vertical: 6),
+                            horizontal: 9,
+                            vertical: 6,
+                          ),
                           decoration: BoxDecoration(
                             color: summarizationData[0].publishStatus ==
                                     "Published"

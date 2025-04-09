@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:smartclass_fyp_2024/features/admin/registeration/signin_page/staff_signin.dart';
+import 'package:smartclass_fyp_2024/features/admin/login_page/staff_signin.dart';
 import 'package:smartclass_fyp_2024/features/admin/registeration/signup_page/staff_signup.dart';
 import 'package:smartclass_fyp_2024/core/widget/appbar.dart';
 import 'package:smartclass_fyp_2024/core/widget/pageTransition.dart';
+import 'package:smartclass_fyp_2024/features/onboarding/login_as.dart';
 
 class AdminGreetsPage extends StatelessWidget {
   const AdminGreetsPage({super.key});
@@ -57,7 +58,7 @@ class AdminGreetsPage extends StatelessWidget {
                     Navigator.push(
                       context,
                       upTransition(
-                        PPHStaffLoginPage(),
+                        PPHStaffSignInPage(),
                       ),
                     );
                   },
@@ -93,6 +94,47 @@ class AdminGreetsPage extends StatelessWidget {
                   ),
                 ),
               ),
+              SizedBox(
+                height: MediaQuery.of(context).size.height * 0.05,
+              ),
+              if (!Navigator.canPop(context))
+                //Back to choose role button
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text(
+                      "Choose another role?",
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Colors.black54,
+                        fontFamily: 'Figtree',
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                    const SizedBox(
+                      width: 5,
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          toRightTransition(
+                            const LoginAsPage(), //Direct to choose role page
+                          ),
+                        );
+                      },
+                      child: const Text(
+                        "Click here",
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: Color.fromARGB(255, 192, 28, 113),
+                          fontFamily: 'Figtree',
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
             ],
           ),
         ),

@@ -42,7 +42,7 @@ class _WelcomePageState extends State<WelcomePage> {
                 child: Text(
                   "Let's Getting\nStarted",
                   style: TextStyle(
-                    fontSize: 35,
+                    fontSize: 30,
                     fontFamily: 'FigtreeExtraBold',
                     fontWeight: FontWeight.bold,
                   ),
@@ -72,7 +72,7 @@ class _WelcomePageState extends State<WelcomePage> {
 
         // Dot indicator
         Container(
-          alignment: const Alignment(0, 0.65),
+          alignment: const Alignment(0, 0.85),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
@@ -124,9 +124,7 @@ class _WelcomePageState extends State<WelcomePage> {
               // Next button or done
               onLastPage
                   ? GestureDetector(
-                      onTap: () {
-                        
-                      },
+                      onTap: () {},
                       child: const Text(
                         'Done',
                         style: TextStyle(

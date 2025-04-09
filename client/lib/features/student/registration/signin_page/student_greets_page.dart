@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:smartclass_fyp_2024/features/onboarding/login_as.dart';
 import 'package:smartclass_fyp_2024/features/student/registration/signin_page/student_signin.dart';
 import 'package:smartclass_fyp_2024/features/student/registration/signup_page/student_signup.dart';
 import 'package:smartclass_fyp_2024/core/widget/appbar.dart';
@@ -31,7 +32,7 @@ class StudentGreetsPage extends StatelessWidget {
             const SizedBox(height: 20),
             //Greetings
             const Text(
-              "Hi, Students!",
+              "Hi, Student!",
               style: TextStyle(
                 fontSize: 28,
                 fontFamily: 'FigtreeExtraBold',
@@ -98,6 +99,47 @@ class StudentGreetsPage extends StatelessWidget {
                 ),
               ),
             ),
+            SizedBox(
+              height: MediaQuery.of(context).size.height * 0.05,
+            ),
+            if (!Navigator.canPop(context))
+              //Back to choose role button
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text(
+                    "Choose another role?",
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: Colors.black54,
+                      fontFamily: 'Figtree',
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                  const SizedBox(
+                    width: 5,
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        toRightTransition(
+                          const LoginAsPage(), //Direct to choose role page
+                        ),
+                      );
+                    },
+                    child: const Text(
+                      "Click here",
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Color.fromARGB(255, 192, 28, 113),
+                        fontFamily: 'Figtree',
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
           ],
         ),
       ),
