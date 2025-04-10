@@ -38,7 +38,7 @@ class _StudentHomePageState extends ConsumerState<StudentHomePage> {
     // Get the user data from provider
     final user = ref.watch(userProvider);
     final classData = ref.watch(classDataProvider);
-    final sumData = ref.watch(classDataProviderSummarizationStatus);
+    // final sumData = ref.watch(classDataProviderSummarizationStatus);
 
     return Scaffold(
       backgroundColor: const Color(0xFF0d1116),
