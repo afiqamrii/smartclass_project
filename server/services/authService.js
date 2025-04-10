@@ -99,7 +99,7 @@ exports.signUp = async ({userName , userEmail , userPassword , confirmPassword ,
 //Send verification email
 const sendVerificationEmail = async ({userId, userEmail} , res) => {
     //Url to be sent in email
-    const url = `http://172.20.10.2:3000`;
+    const url = process.env.BASE_URL;
 
     //Generate unique string
     const uniqueString = uuidv4() + userId;
@@ -299,8 +299,11 @@ exports.requestPasswordReset = async (userEmail) => {
 //send password reset email
 const sendResetEmail = async (userId, userEmail) => {
 
-    //Redirect url to reset password
-    const redirectUrl = `http://172.20.10.2:3000`;
+    // //Redirect url to reset password
+    // const redirectUrl = `http://172.20.10.2:3000`;
+
+    //Url wifi rumah
+    const redirectUrl = process.env.BASE_URL;
 
     try {
         const resetString = uuidv4() + userId;

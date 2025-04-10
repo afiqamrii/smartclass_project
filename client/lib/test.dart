@@ -2,8 +2,8 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:smartclass_fyp_2024/data/dataprovider/data_provider.dart';
-import 'package:smartclass_fyp_2024/data/models/lecturer/class_models.dart';
+import 'package:smartclass_fyp_2024/shared/data/dataprovider/data_provider.dart';
+import 'package:smartclass_fyp_2024/shared/data/models/class_models.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 
 class MyWidget extends ConsumerWidget {
