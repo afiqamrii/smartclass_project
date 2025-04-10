@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:smartclass_fyp_2024/features/admin/registeration/signup_page/admin_greets_page.dart';
-import 'package:smartclass_fyp_2024/features/lecturer/registration/signup_page/lecturer_greets_page.dart';
-import 'package:smartclass_fyp_2024/features/student/registration/signin_page/student_greets_page.dart';
-import 'package:smartclass_fyp_2024/core/widget/appbar.dart';
+import 'package:smartclass_fyp_2024/features/admin/view/registeration/signup_page/admin_greets_page.dart';
+import 'package:smartclass_fyp_2024/features/lecturer/views/registration/signup_page/lecturer_greets_page.dart';
+import 'package:smartclass_fyp_2024/features/student/views/registration/signin_page/student_greets_page.dart';
+import 'package:smartclass_fyp_2024/shared/widgets/appbar.dart';
 
 class LoginAsPage extends StatelessWidget {
   const LoginAsPage({super.key});

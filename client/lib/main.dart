@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:smartclass_fyp_2024/data/dataprovider/user_provider.dart';
-import 'package:smartclass_fyp_2024/data/services/auth_services.dart';
+import 'package:smartclass_fyp_2024/shared/data/dataprovider/user_provider.dart';
+import 'package:smartclass_fyp_2024/shared/data/services/auth_services.dart';
 import 'package:smartclass_fyp_2024/features/onboarding/splashscreen/splashScreen.dart';
 import 'package:smartclass_fyp_2024/navigator_validToken.dart';
 
