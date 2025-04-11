@@ -207,7 +207,7 @@ class _StudentHomePageState extends ConsumerState<StudentHomePage> {
                                           title: 'Upcoming',
                                         ),
                                         TabItem(
-                                          title: 'Archived',
+                                          title: 'Summarization',
                                         ),
                                       ],
                                     ),
@@ -223,17 +223,7 @@ class _StudentHomePageState extends ConsumerState<StudentHomePage> {
                                         _tabIndex, // manage this via a state variable
                                     children: [
                                       _classSection(classData),
-                                      Center(
-                                        child: Text(
-                                          'Archived Classes',
-                                          style: TextStyle(
-                                            fontSize: 18,
-                                            fontFamily: 'Figtree',
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.grey[600],
-                                          ),
-                                        ),
-                                      ),
+                                      _classSection(classData),
                                       _classSection(classData),
                                     ],
                                   ),
