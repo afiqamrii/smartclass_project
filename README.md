@@ -1,20 +1,86 @@
-<<<<<<< HEAD
-# smartclass_fyp_2024
+# 📚 IntelliClass – AI-Integrated Learning & Classroom Control System
 
-A new Flutter project.
+**IntelliClass** is a smart classroom prototype developed for the Final Year Project at Universiti Malaysia Terengganu (UMT). It integrates Artificial Intelligence and Internet of Things (IoT) technologies to transform traditional learning environments into intelligent, efficient, and user-friendly spaces for students, lecturers, and technicians.
 
-## Getting Started
+---
 
-This project is a starting point for a Flutter application.
+## 🎯 Project Objective
 
-A few resources to get you started if this is your first Flutter project:
+To enhance the traditional classroom experience through AI-generated lecture summarization, intelligent attendance validation, and IoT-based utility management — all accessible via a centralized Flutter-based mobile application.
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+---
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
-=======
-# smartclass_project
->>>>>>> c052c25383e480145e56357981535f1843adacbd
+## 👥 User Roles
+
+1. **Students**
+   - View AI-generated lecture summaries
+   - Check and track personal attendance
+
+2. **Lecturers**
+   - Use voice commands to control utilities (e.g., lights/projector modes)
+   - Monitor attendance via smart door with motion detection
+
+3. **PPH Technicians**
+   - Remotely monitor and control classroom utilities
+   - Receive system status updates and manage power usage
+
+---
+
+## 🔧 Key Features
+
+- 🎤 **Lecture Audio Capture & AI Summarization**
+  - Real-time or post-class transcription and summarization via API
+- 🚪 **Smart Attendance System**
+  - RFID + Motion Sensor validation using ESP32
+  - NFC-based student check-in via phone
+- 💡 **Utility Control**
+  - Voice-triggered or app-based control (lights, projector, fan, etc.)
+  - IoT monitoring for classroom power usage
+- 🌐 **Cross-Role App Interface**
+  - Built using Flutter
+  - Separate views for students, lecturers, and PPH technicians
+
+---
+
+## 🛠️ Technologies Used
+
+- **Flutter** – Mobile frontend
+- **ESP32** – IoT microcontroller
+- **Ultrasonic Sensor & MAX9814 Mic** – Motion + Audio capture
+- **NFC HCE (Flutter)** – Phone as RFID card
+- **Google Speech-to-Text API** – AI transcription
+- **MySQL** – Backend database
+- **Node.js + Express** – Backend APIs
+
+---
+
+🚀 How to Run (Frontend Demo Only)
+Note: This is a prototype with partial backend integration.
+
+Clone the repo:
+
+bash
+Copy
+Edit
+git clone https://github.com/yourusername/intelli-class.git
+Navigate to the mobile app folder:
+
+bash
+Copy
+Edit
+cd intelli-class/mobile_app
+Run with Flutter:
+
+bash
+Copy
+Edit
+flutter pub get
+flutter run
+📌 Disclaimer
+This is an academic prototype developed for a Final Year Project at UMT. Some features are simulated or partially functional due to hardware/API limitations during development.
+
+📧 Contact
+Developed by Afiq Amri
+Bachelor of Computer Science (Software Engineering)
+Universiti Malaysia Terengganu
+2025
