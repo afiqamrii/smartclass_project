@@ -35,12 +35,12 @@ transporter.verify(function(error, success) {
 })
 
 //Sign Up
-exports.signUp = async ({userName , userEmail , userPassword , confirmPassword , roleId}, res) => {
+exports.signUp = async ({userName , userEmail , userPassword , confirmPassword , roleId , externalId}, res) => {
 
-        console.log("Received data:", {userName , userEmail , userPassword , confirmPassword , roleId}); //Debugging Purposes
+        console.log("Received data:", {userName , userEmail , userPassword , confirmPassword , roleId , externalId}); //Debugging Purposes
 
         //Check if all required fields are present
-        if(!userName || !userEmail || !userPassword || !confirmPassword || !roleId){
+        if(!userName || !userEmail || !userPassword || !confirmPassword || !roleId || !externalId){
             throw new Error("All fields are required!");
         }
 
@@ -76,7 +76,8 @@ exports.signUp = async ({userName , userEmail , userPassword , confirmPassword ,
             userEmail,
             userPassword: hashedPassword, 
             roleId,
-            verified: false
+            verified: false,
+            externalId: externalId
         });
 
         //Send verification email

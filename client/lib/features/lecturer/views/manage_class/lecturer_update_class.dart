@@ -1,21 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:quickalert/quickalert.dart';
 import 'package:smartclass_fyp_2024/constants/api_constants.dart';
 import 'package:smartclass_fyp_2024/features/lecturer/views/manage_class/lecturer_view_class.dart';
+import 'package:smartclass_fyp_2024/shared/data/dataprovider/user_provider.dart';
 import '../../../../shared/data/models/class_models.dart';
 import '../../../../shared/data/services/classApi.dart';
 
-class LectUpdateClass extends StatefulWidget {
-  final ClassModel classItem;
+class LectUpdateClass extends ConsumerStatefulWidget {
+  final ClassCreateModel classItem;
 
   const LectUpdateClass({super.key, required this.classItem});
 
   @override
-  State<LectUpdateClass> createState() => _LectUpdateClassState();
+  ConsumerState<LectUpdateClass> createState() => _LectUpdateClassState();
 }
 
-class _LectUpdateClassState extends State<LectUpdateClass> {
+class _LectUpdateClassState extends ConsumerState<LectUpdateClass> {
   final _formKey = GlobalKey<FormState>();
 
   late TextEditingController _courseCodeController;
@@ -80,6 +82,8 @@ class _LectUpdateClassState extends State<LectUpdateClass> {
 
   @override
   Widget build(BuildContext context) {
+    final user = ref.watch(userProvider);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -129,7 +133,7 @@ class _LectUpdateClassState extends State<LectUpdateClass> {
               ElevatedButton(
                 onPressed: () async {
                   if (_formKey.currentState!.validate()) {
-                    final updatedClass = ClassModel(
+                    final updatedClass = ClassCreateModel(
                       classId: widget.classItem.classId,
                       courseCode: _courseCodeController.text,
                       courseName: _titleController.text,
@@ -137,10 +141,11 @@ class _LectUpdateClassState extends State<LectUpdateClass> {
                       startTime: _timeStartController.text,
                       endTime: _timeEndController.text,
                       location: _classLocationController.text,
+                      lecturerId: user.externalId,
                     );
 
-                    final response =
-                        await Api.updateClass(ApiConstants.baseUrl, updatedClass);
+                    final response = await Api.updateClass(
+                        ApiConstants.baseUrl, updatedClass);
 
                     //Show QuickAlert message for user if the update is error or success
                     if (response != null) {

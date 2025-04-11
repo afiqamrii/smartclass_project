@@ -43,7 +43,7 @@ class ClassCard extends StatelessWidget {
                     className,
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
-                      fontSize: 17,
+                      fontSize: 14,
                       fontFamily: 'Figtree',
                       fontWeight: FontWeight.bold,
                     ),

@@ -20,6 +20,7 @@ class LecturerSignupPage extends ConsumerWidget {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
+  final lecturerIdController = TextEditingController();
 
   //Sign user in method
   void signUserIn(BuildContext context, WidgetRef ref) async {
@@ -33,6 +34,7 @@ class LecturerSignupPage extends ConsumerWidget {
       userPassword: passwordController.text,
       confirmPassword: confirmPasswordController.text,
       roleId: 2, //Set roleId to 2 (Lecturer)
+      externalId: lecturerIdController.text, //Set externalId to username
     );
 
     ref.read(loadingProvider.notifier).state = false; //Stop loading after done
@@ -90,10 +92,41 @@ class LecturerSignupPage extends ConsumerWidget {
                 ),
                 const SizedBox(height: 5),
 
-                //Email textfield
+                
+
+                //Username textfield
                 MyLoginTextField(
                   controller: userNameController,
                   hintText: 'alibinabu123',
+                  obscureText: false,
+                ),
+
+                const SizedBox(height: 20),
+
+                //Staf id textfield
+                Padding(
+                  padding: EdgeInsets.only(left: screenWidth * 0.05),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Lecturer ID',
+                        style: TextStyle(
+                          color: Colors.grey[600],
+                          fontFamily: 'Figtree',
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 5),
+
+                
+
+                //Username textfield
+                MyLoginTextField(
+                  controller: lecturerIdController,
+                  hintText: 'L1234',
                   obscureText: false,
                 ),
 

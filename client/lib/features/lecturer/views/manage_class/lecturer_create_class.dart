@@ -1,18 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:quickalert/quickalert.dart';
 import 'package:smartclass_fyp_2024/features/lecturer/views/manage_class/lecturer_show_all_classes.dart';
+import 'package:smartclass_fyp_2024/shared/data/dataprovider/user_provider.dart';
 import 'package:smartclass_fyp_2024/shared/data/models/class_models.dart';
+import 'package:smartclass_fyp_2024/shared/data/models/user.dart';
 import '../../../../shared/data/services/classApi.dart';
 
-class LectCreateClass extends StatefulWidget {
+class LectCreateClass extends ConsumerStatefulWidget {
   const LectCreateClass({super.key});
 
   @override
-  State<LectCreateClass> createState() => _LectCreateClassState();
+  ConsumerState<LectCreateClass> createState() => _LectCreateClassState();
 }
 
-class _LectCreateClassState extends State<LectCreateClass> {
+class _LectCreateClassState extends ConsumerState<LectCreateClass> {
   // Controllers for text fields
   final courseCodeController = TextEditingController();
   final titleController = TextEditingController();
@@ -23,13 +26,15 @@ class _LectCreateClassState extends State<LectCreateClass> {
 
   @override
   Widget build(BuildContext context) {
+    final user = ref.watch(userProvider);
+    
     return Scaffold(
         appBar: appBar(context),
-        body: _createClassSection(context),
+        body: _createClassSection(context, user),
         resizeToAvoidBottomInset: true);
   }
 
-  Padding _createClassSection(BuildContext context) {
+  Padding _createClassSection(BuildContext context, User user) {
     return Padding(
       padding: const EdgeInsets.only(left: 30.0, right: 30.0),
       child: ListView(
@@ -49,7 +54,7 @@ class _LectCreateClassState extends State<LectCreateClass> {
 
           // Title Input
           inputField(
-            'Title',
+            'Class Name',
             'e.g : Programming (K1) , Max 50 words',
             50,
             null,
@@ -113,9 +118,10 @@ class _LectCreateClassState extends State<LectCreateClass> {
 
           // Create Class Button
           Center(
+            
             child: ElevatedButton.icon(
               onPressed: () async {
-                final classData = ClassModel(
+                final classData = ClassCreateModel(
                   classId: 0,
                   courseCode: courseCodeController.text,
                   courseName: titleController.text,
@@ -123,6 +129,7 @@ class _LectCreateClassState extends State<LectCreateClass> {
                   startTime: timeStartController.text,
                   endTime: timeEndController.text,
                   location: locationController.text,
+                  lecturerId: user.externalId,  
                 );
                 // var data = {
                 //   'courseCode': courseCodeController.text,

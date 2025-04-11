@@ -49,6 +49,7 @@ class AuthService {
     required String userPassword,
     required String confirmPassword,
     required int roleId,
+    required String externalId,
   }) async {
     try {
       // ignore: no_leading_underscores_for_local_identifiers
@@ -60,6 +61,7 @@ class AuthService {
         confirmPassword: confirmPassword,
         token: '',
         roleId: roleId,
+        externalId: externalId,
       );
 
       http.Response res = await http.post(

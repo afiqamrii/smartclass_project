@@ -25,7 +25,7 @@ class MyWidget extends ConsumerWidget {
       body: data.when(
         data: (data) {
           // ignore: unused_local_variable
-          List<ClassModel> classItem = data;
+          List<ClassCreateModel> classItem = data;
           return LiquidPullToRefresh(
             onRefresh: () => _handleRefresh(ref),
             color: Colors.deepPurple,

@@ -3,7 +3,6 @@ const classService = require("../services/classService");
 // Function to add a class
 exports.addClass = async (req, res) => {
     try {
-
         const addClass = req.body;
         console.log("Received add class request:", addClass);
 
@@ -11,7 +10,7 @@ exports.addClass = async (req, res) => {
         res.status(200).json({ Status_Code: 200, message: "Class added successfully", classId: result.classId });
     } catch (error) {
         console.error("Controller Error:", error);
-        res.status(500).json({ message: "Failed to add class" });
+        res.status(400).json({ message: error.message });
     }
 };
 
