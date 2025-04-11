@@ -57,8 +57,8 @@ To enhance the traditional classroom experience through AI-generated lecture sum
 📌 Disclaimer
 This is an academic prototype developed for a Final Year Project at UMT. Some features are simulated or partially functional due to hardware/API limitations during development.
 
-📧 Contact
-Developed by Afiq Amri
+
+Developed by **Afiq Amri**
 Bachelor of Computer Science (Software Engineering)
 Universiti Malaysia Terengganu
 2025
