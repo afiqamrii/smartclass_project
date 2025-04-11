@@ -1,3 +1,5 @@
+// ignore_for_file: await_only_futures
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
@@ -31,15 +33,16 @@ class _LectHomepageState extends ConsumerState<LectHomepage> {
     });
 
     // Invalidate the provider to trigger loading state
-    ref.invalidate(classDataProvider);
-    ref.invalidate(classDataProviderSummarizationStatus);
-    ref.invalidate(userProvider);
+    await ref.read(classDataProvider);
+    await ref.read(classDataProviderSummarizationStatus);
+    await ref.read(userProvider);
 
     // Wait for new data to load
     await Future.delayed(
       const Duration(seconds: 3),
     );
 
+    if (!mounted) return; // Check again before calling setState
     setState(() {
       _isRefreshing = false; // Set loading state to false
     });
@@ -195,18 +198,18 @@ class _LectHomepageState extends ConsumerState<LectHomepage> {
               ),
             ),
             const SizedBox(height: 5),
-            const Text.rich(
+            Text.rich(
               TextSpan(
                 text: "Welcome to ",
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 18,
                   color: Color.fromARGB(255, 238, 238, 238),
                   fontFamily: 'FigtreeRegular',
                 ),
                 children: [
                   TextSpan(
-                    text: "Smart Class",
-                    style: TextStyle(
+                    text: user.userName,
+                    style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                       color: Color.fromARGB(255, 232, 103, 255),
