@@ -14,7 +14,7 @@ import '../../../../shared/data/models/class_models.dart';
 import '../../../../shared/data/services/classApi.dart';
 
 class LecturerViewClass extends ConsumerWidget {
-  final ClassModel classItem;
+  final ClassCreateModel classItem;
 
   const LecturerViewClass({super.key, required this.classItem});
 
@@ -360,7 +360,7 @@ class LecturerViewClass extends ConsumerWidget {
     return await Future.delayed(const Duration(seconds: 1));
   }
 
-  Widget _deleteButton(BuildContext context, ClassModel classItem) {
+  Widget _deleteButton(BuildContext context, ClassCreateModel classItem) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20),
       child: ElevatedButton(

@@ -6,7 +6,7 @@ import 'package:smartclass_fyp_2024/shared/data/services/classApi.dart';
 import 'package:smartclass_fyp_2024/shared/data/services/summarizationApi.dart'; // Import the Api class
 
 // Create a Provider Object for class
-final classDataProvider = StreamProvider<List<ClassModel>>((ref) async* {
+final classDataProvider = StreamProvider<List<ClassCreateModel>>((ref) async* {
   yield* ref
       .watch(classProvider)
       .getClasses(); // Use classProvider from api.dart

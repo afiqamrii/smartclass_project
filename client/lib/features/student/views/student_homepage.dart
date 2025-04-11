@@ -4,6 +4,7 @@ import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:smartclass_fyp_2024/constants/color_constants.dart';
 import 'package:smartclass_fyp_2024/features/student/views/widgets/classCard.dart';
+import 'package:smartclass_fyp_2024/features/student/views/widgets/tabs_item.dart';
 import 'package:smartclass_fyp_2024/shared/data/dataprovider/data_provider.dart';
 import 'package:smartclass_fyp_2024/shared/data/dataprovider/user_provider.dart';
 import 'package:smartclass_fyp_2024/shared/data/models/class_models.dart';
@@ -18,6 +19,8 @@ class StudentHomePage extends ConsumerStatefulWidget {
 
 class _StudentHomePageState extends ConsumerState<StudentHomePage> {
   bool _isRefreshing = false; // Add loading state
+  int limit = 5; // Set the limit for the number of items to display
+  int _tabIndex = 0;
 
 // Handle the refresh and reload data from provider
   Future<void> _handleRefresh(WidgetRef ref) async {
@@ -26,6 +29,7 @@ class _StudentHomePageState extends ConsumerState<StudentHomePage> {
     });
 
     await ref.read(userProvider.notifier).refreshUserData();
+    await ref.read(classDataProvider.future);
     await Future.delayed(const Duration(seconds: 3));
 
     setState(() {
@@ -48,6 +52,7 @@ class _StudentHomePageState extends ConsumerState<StudentHomePage> {
         springAnimationDurationInMilliseconds: 350,
         showChildOpacityTransition: false,
         child: CustomScrollView(
+          physics: const BouncingScrollPhysics(),
           slivers: [
             SliverAppBar(
               pinned: false,
@@ -144,8 +149,9 @@ class _StudentHomePageState extends ConsumerState<StudentHomePage> {
                       ),
                     ),
                     child: Padding(
-                      padding: const EdgeInsets.all(20.0),
+                      padding: const EdgeInsets.all(17.0),
                       child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           //Add search bar
@@ -156,9 +162,85 @@ class _StudentHomePageState extends ConsumerState<StudentHomePage> {
                           const SizedBox(height: 20),
                           //Featured courses section
                           _featuresCourseSection(context),
-                          const SizedBox(height: 20),
+                          const SizedBox(height: 30),
                           //Add card section
-                          _classSection(classData)
+                          DefaultTabController(
+                            length: 3,
+                            initialIndex: 0,
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                ClipRRect(
+                                  borderRadius: const BorderRadius.all(
+                                    Radius.circular(10),
+                                  ),
+                                  child: Container(
+                                    height: 35,
+                                    margin: const EdgeInsets.symmetric(
+                                      horizontal: 4,
+                                    ),
+                                    child: TabBar(
+                                      onTap: (index) {
+                                        setState(() => _tabIndex = index);
+                                      },
+                                      physics: const BouncingScrollPhysics(),
+                                      indicatorSize: TabBarIndicatorSize.tab,
+                                      dividerColor: Colors.transparent,
+                                      labelPadding: const EdgeInsets.symmetric(
+                                        horizontal: 10,
+                                      ),
+                                      indicator: ShapeDecoration(
+                                        color: ColorConstants.primaryColor,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(20),
+                                        ),
+                                      ),
+                                      labelColor: Colors.white,
+                                      unselectedLabelColor: Colors.black54,
+                                      tabs: const [
+                                        TabItem(
+                                          title: "Today's Class",
+                                        ),
+                                        TabItem(
+                                          title: 'Upcoming',
+                                        ),
+                                        TabItem(
+                                          title: 'Archived',
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(
+                                  height: 10,
+                                ),
+                                AnimatedSize(
+                                  duration: const Duration(milliseconds: 300),
+                                  child: IndexedStack(
+                                    index:
+                                        _tabIndex, // manage this via a state variable
+                                    children: [
+                                      _classSection(classData),
+                                      Center(
+                                        child: Text(
+                                          'Archived Classes',
+                                          style: TextStyle(
+                                            fontSize: 18,
+                                            fontFamily: 'Figtree',
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.grey[600],
+                                          ),
+                                        ),
+                                      ),
+                                      _classSection(classData),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -172,19 +254,11 @@ class _StudentHomePageState extends ConsumerState<StudentHomePage> {
     );
   }
 
-  Column _classSection(AsyncValue<List<ClassModel>> classData) {
+  Widget _classSection(AsyncValue<List<ClassCreateModel>> classData) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
       children: [
-        const Text(
-          "Your Class",
-          style: TextStyle(
-            fontSize: 18,
-            fontFamily: 'Figtree',
-            fontWeight: FontWeight.bold,
-            color: Colors.black,
-          ),
-        ),
         const SizedBox(height: 10),
         classData.when(
           data: (data) {
@@ -195,7 +269,7 @@ class _StudentHomePageState extends ConsumerState<StudentHomePage> {
               },
               child: Column(
                 children: List.generate(
-                  data.length,
+                  data.length > limit ? limit : data.length,
                   (index) => ClassCard(
                     className: data[index].courseName,
                     lecturerName: "Dr Nor Hassan",
@@ -221,7 +295,33 @@ class _StudentHomePageState extends ConsumerState<StudentHomePage> {
               child: CircularProgressIndicator(),
             );
           },
-        )
+        ),
+        const SizedBox(height: 10),
+        // Add a button to view all classes
+        GestureDetector(
+          onTap: () => {
+            // Handle tap on "View All" button here
+            // For example, navigate to class list page
+          },
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                'Show All',
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Colors.grey[600],
+                ),
+              ),
+              const SizedBox(width: 5),
+              Icon(
+                Icons.arrow_forward_ios,
+                color: Colors.grey[600],
+                size: 12,
+              ),
+            ],
+          ),
+        ),
       ],
     );
   }

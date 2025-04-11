@@ -8,6 +8,7 @@ class User {
   final String? confirmPassword;
   final String token;
   final int roleId;
+  final String externalId; 
 
   User({
     this.userId,
@@ -17,6 +18,7 @@ class User {
     this.confirmPassword,
     required this.token,
     required this.roleId,
+    required this.externalId,
   });
 
   // Convert a User object to a Map
@@ -29,6 +31,7 @@ class User {
       if (confirmPassword != null) 'confirmPassword': confirmPassword, // Include confirmPassword only if it's not null
       'roleId': roleId,
       'token': token,
+      'externalId': externalId, 
     };
   }
 
@@ -41,6 +44,7 @@ class User {
       userPassword: map['userPassword'] ?? '',
       roleId: map['roleId'] ?? 0,
       token: map['token'] ?? '',
+      externalId: map['externalId'] ?? '',
     );
   }
 

@@ -9,7 +9,7 @@ const SummarizationModel = {
         try{
             const query = `
             SELECT c.*, cr.recordingStatus
-            FROM class c
+            FROM ClassSession c
             LEFT JOIN ClassRecording cr ON c.classId = cr.classId
             WHERE cr.recordingStatus IS NOT NULL;
         `;

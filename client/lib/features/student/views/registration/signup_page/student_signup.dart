@@ -20,6 +20,7 @@ class StudentSignupPage extends ConsumerWidget {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
+  final studentIdController = TextEditingController();
 
   //Sign user in method
   void signUserIn(BuildContext context, WidgetRef ref) async {
@@ -33,6 +34,7 @@ class StudentSignupPage extends ConsumerWidget {
       userPassword: passwordController.text,
       confirmPassword: confirmPasswordController.text,
       roleId: 1, //Set roleId to 1 (Student)
+      externalId: studentIdController.text, //Set externalId to studentId
     );
 
     ref.read(loadingProvider.notifier).state = false; //Stop loading
@@ -94,6 +96,33 @@ class StudentSignupPage extends ConsumerWidget {
                 MyLoginTextField(
                   controller: userNameController,
                   hintText: 'alibinabu123',
+                  obscureText: false,
+                ),
+
+                const SizedBox(height: 20),
+
+                //Staf id textfield
+                Padding(
+                  padding: EdgeInsets.only(left: screenWidth * 0.05),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Staff ID',
+                        style: TextStyle(
+                          color: Colors.grey[600],
+                          fontFamily: 'Figtree',
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 5),
+
+                //Username textfield
+                MyLoginTextField(
+                  controller: studentIdController,
+                  hintText: 'S12345',
                   obscureText: false,
                 ),
 

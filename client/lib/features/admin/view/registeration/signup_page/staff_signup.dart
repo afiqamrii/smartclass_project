@@ -20,6 +20,7 @@ class StaffSignUpPage extends ConsumerWidget {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
+  final staffIdController = TextEditingController();
 
   //Sign user in method
   void signUserIn(BuildContext context, WidgetRef ref) async {
@@ -33,6 +34,7 @@ class StaffSignUpPage extends ConsumerWidget {
       userPassword: passwordController.text,
       confirmPassword: confirmPasswordController.text,
       roleId: 3, //Set roleId to 3 (Staff)
+      externalId: staffIdController.text, //Set externalId to staffId
     );
 
     ref.read(loadingProvider.notifier).state = false; //Stop loading
@@ -90,10 +92,41 @@ class StaffSignUpPage extends ConsumerWidget {
                 ),
                 const SizedBox(height: 5),
 
-                //Email textfield
+                
+
+                //Username textfield
                 MyLoginTextField(
                   controller: userNameController,
                   hintText: 'alibinabu123',
+                  obscureText: false,
+                ),
+
+                const SizedBox(height: 20),
+
+                //Staf id textfield
+                Padding(
+                  padding: EdgeInsets.only(left: screenWidth * 0.05),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Staff ID',
+                        style: TextStyle(
+                          color: Colors.grey[600],
+                          fontFamily: 'Figtree',
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 5),
+
+                
+
+                //Username textfield
+                MyLoginTextField(
+                  controller: staffIdController,
+                  hintText: 'PPH1234',
                   obscureText: false,
                 ),
 

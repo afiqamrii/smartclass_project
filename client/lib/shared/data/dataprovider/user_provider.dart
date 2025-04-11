@@ -11,6 +11,7 @@ class UserProvider extends StateNotifier<User> {
           userPassword: '',
           token: '',
           roleId: 0,
+          externalId: '',
         ));
 
   // Set user data from JSON

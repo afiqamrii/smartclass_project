@@ -30,7 +30,7 @@ class LectViewAllClass extends ConsumerWidget {
       appBar: appBar(context),
       body: data.when(
         data: (data) {
-          List<ClassModel> classes = data;
+          List<ClassCreateModel> classes = data;
           return LiquidPullToRefresh(
             onRefresh: () => _handleRefresh(ref),
             color: Colors.deepPurple,
@@ -50,7 +50,7 @@ class LectViewAllClass extends ConsumerWidget {
   }
 
   // Today's Classes Section
-  Padding _todayClassesSection(List<ClassModel> classes, BuildContext context) {
+  Padding _todayClassesSection(List<ClassCreateModel> classes, BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(left: 10, right: 20),
       child: Column(

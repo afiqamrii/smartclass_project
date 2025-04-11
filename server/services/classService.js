@@ -5,9 +5,9 @@ const addClass = async (classData) => {
     try {
 
         // Ensure we pass correct values in order
-        const { courseCode, className, date, timeStart, timeEnd, classLocation } = classData;
+        const { courseCode, className, date, timeStart, timeEnd, classLocation , lecturerId } = classData;
         
-        const classId = await classModel.addClass(courseCode, className, date, timeStart, timeEnd, classLocation);
+        const classId = await classModel.addClass(courseCode, className, date, timeStart, timeEnd, classLocation , lecturerId);
         return { success: true, classId };
     } catch (error) {
         throw new Error("Error in service while adding class: " + error.message);
