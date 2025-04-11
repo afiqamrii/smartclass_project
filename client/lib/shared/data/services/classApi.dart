@@ -17,13 +17,13 @@ class Api {
   // static const summarizationUrl = "http://172.20.10.2:3000/summarization/";
 
   //GET API Using provider to all classes data
-  Stream<List<ClassModel>> getClasses() async* {
+  Stream<List<ClassCreateModel>> getClasses() async* {
     while (true) {
       Response response =
           await get(Uri.parse("${ApiConstants.baseUrl}/class/viewclass"));
       if (response.statusCode == 200) {
         final List result = jsonDecode(response.body)['Data'];
-        yield result.map(((e) => ClassModel.fromJson(e))).toList();
+        yield result.map(((e) => ClassCreateModel.fromJson(e))).toList();
       } else {
         throw Exception("Failed to load classes");
       }
@@ -46,7 +46,7 @@ class Api {
   ///   'classLocation': 'Room 101'
   /// }
   /// ```
-  static addClass(ClassModel data) async {
+  static addClass(ClassCreateModel data) async {
     // Print the input data for debugging purposes.
     // ignore: avoid_print
     print(data);
@@ -100,7 +100,7 @@ class Api {
   ///   'classLocation': 'Room 101'
   /// }
   /// ```
-  static updateClass(String url, ClassModel data) async {
+  static updateClass(String url, ClassCreateModel data) async {
     try {
       var uri = Uri.parse(
           "${ApiConstants.baseUrl}/class/updateclass/${data.classId}");

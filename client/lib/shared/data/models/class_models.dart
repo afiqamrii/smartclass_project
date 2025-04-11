@@ -1,6 +1,6 @@
 import 'package:intl/intl.dart';
 
-class ClassModel {
+class ClassCreateModel {
   final int classId;
   final String courseCode;
   final String courseName;
@@ -8,8 +8,9 @@ class ClassModel {
   final String startTime;
   final String endTime;
   final String date;
+  final String lecturerId;
 
-  ClassModel({
+  ClassCreateModel({
     required this.classId,
     required this.courseCode,
     required this.courseName,
@@ -17,10 +18,12 @@ class ClassModel {
     required this.startTime,
     required this.endTime,
     required this.date,
+    required this.lecturerId,
+    
   });
 
   // Convert JSON object to ClassModel
-  factory ClassModel.fromJson(Map<String, dynamic> json) {
+  factory ClassCreateModel.fromJson(Map<String, dynamic> json) {
     // Fix date parsing
     DateTime parsedDate = DateTime.parse(json['date']);
     String formattedDate = DateFormat('dd MMMM yyyy').format(parsedDate);
@@ -29,7 +32,7 @@ class ClassModel {
     String formattedStartTime = _formatTime(json['timeStart']);
     String formattedEndTime = _formatTime(json['timeEnd']);
 
-    return ClassModel(
+    return ClassCreateModel(
       classId: json['classId'] ?? 0,
       courseCode: json['courseCode'] ?? "Unknown Code",
       courseName: json['className'] ?? "Unknown Class",
@@ -37,6 +40,8 @@ class ClassModel {
       startTime: formattedStartTime,
       endTime: formattedEndTime,
       date: formattedDate,
+      lecturerId: json['lecturerId'] ?? "Unknown",
+
     );
   }
 
@@ -50,6 +55,7 @@ class ClassModel {
       'timeStart': timeToJSON(startTime),
       'timeEnd': timeToJSON(endTime),
       'date': formatDate(date),
+      'lecturerId': lecturerId,
     };
   }
 

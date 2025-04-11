@@ -7,12 +7,12 @@ const User = require("../models/User");
 exports.signUp = async (req, res) => {
     try {
         //Extract data from request
-        const { userName, userEmail, userPassword , confirmPassword , roleId } = req.body;
+        const { userName, userEmail, userPassword , confirmPassword , roleId , externalId } = req.body;
 
         //Debug
         console.log("Received data:", req.body);
 
-        const result = await authService.signUp({userName, userEmail, userPassword, confirmPassword,  roleId}, res);
+        const result = await authService.signUp({userName, userEmail, userPassword, confirmPassword,  roleId , externalId}, res);
 
         //Send response
         res.status(200).json({ message: "User registered successfully . Please check your email to verify your account", userId: result.userId });

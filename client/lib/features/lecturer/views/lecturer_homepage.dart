@@ -186,7 +186,7 @@ class _LectHomepageState extends ConsumerState<LectHomepage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              "Hello ${user.userName}",
+              "Hello ${user.userName} & ${user.externalId}",
               style: const TextStyle(
                 fontSize: 22,
                 color: Color.fromARGB(255, 238, 238, 238),
@@ -462,7 +462,7 @@ class _LectHomepageState extends ConsumerState<LectHomepage> {
   }
 
   SizedBox _classListCard(
-      BuildContext context, List<ClassModel> classDataItem) {
+      BuildContext context, List<ClassCreateModel> classDataItem) {
     return SizedBox(
       width: MediaQuery.of(context).size.width * 1.0,
       height: 170,

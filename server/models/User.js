@@ -34,6 +34,10 @@ const User = sequelize.define("User", {
     defaultValue: false, // Default: not verified
     allowNull: false,
   },
+  externalId: {
+    type: DataTypes.STRING(45),
+    allowNull: true,
+  },
 }, {
   tableName: "User",
   timestamps: false, // Disable createdAt/updatedAt
