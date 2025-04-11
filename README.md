@@ -54,28 +54,6 @@ To enhance the traditional classroom experience through AI-generated lecture sum
 
 ---
 
-🚀 How to Run (Frontend Demo Only)
-Note: This is a prototype with partial backend integration.
-
-Clone the repo:
-
-bash
-Copy
-Edit
-git clone https://github.com/yourusername/intelli-class.git
-Navigate to the mobile app folder:
-
-bash
-Copy
-Edit
-cd intelli-class/mobile_app
-Run with Flutter:
-
-bash
-Copy
-Edit
-flutter pub get
-flutter run
 📌 Disclaimer
 This is an academic prototype developed for a Final Year Project at UMT. Some features are simulated or partially functional due to hardware/API limitations during development.
 
@@ -84,3 +62,5 @@ Developed by Afiq Amri
 Bachelor of Computer Science (Software Engineering)
 Universiti Malaysia Terengganu
 2025
+
+
