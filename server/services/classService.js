@@ -24,6 +24,16 @@ const viewClass = async () => {
     }
 };
 
+// Function to view class for students
+const studentViewTodayClass = async () => {
+    try {
+        const todayClasses = await classModel.studentViewTodayClass();
+        return todayClasses || [];
+    } catch (error) {
+        throw new Error("Error in service while fetching class data: " + error.message);
+    }
+};
+
 //Function to update class
 const updateClass = async (classId, classData) => {
     try {
@@ -51,4 +61,4 @@ const deleteClass = async (id) => {
 };
 
 //EXport module
-module.exports = { addClass , viewClass , updateClass , deleteClass };
+module.exports = { addClass , viewClass , updateClass , deleteClass , studentViewTodayClass };

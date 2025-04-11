@@ -35,6 +35,35 @@ const ClassModel = {
         }
     },
 
+    // Retrieve today's classes for students
+    async studentViewTodayClass() {
+        try {
+            const today = moment().format("YYYY-MM-DD");
+            const query = `
+            SELECT 
+                cs.classId,
+                cs.courseCode,
+                cs.className,
+                cs.date,
+                cs.classLocation,
+                u.userName
+            FROM 
+                ClassSession cs
+            
+            JOIN 
+                User u ON cs.lecturerId = u.externalId
+                WHERE 
+                cs.date = ?
+
+            `;
+            const [rows] = await pool.query(query, [today]);
+            return rows;
+        } catch (err) {
+            console.error("Error retrieving data:", err.message);
+            return [];
+        }
+    },
+
     //Update Class
     async updateClass(id, courseCode, className, date, timeStart, timeEnd, classLocation) {
         const query = `
