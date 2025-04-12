@@ -6,6 +6,7 @@ class ClassCardModel {
   final String date;
   final String recordingStatus;
   final String publishStatus;
+  final String imageUrl;
 
   ClassCardModel({
     required this.classId,
@@ -13,6 +14,7 @@ class ClassCardModel {
     required this.date,
     required this.recordingStatus,
     required this.publishStatus,
+    required this.imageUrl,
   });
 
   // Convert JSON object to ClassModel
@@ -26,6 +28,7 @@ class ClassCardModel {
       date: formattedDate,
       recordingStatus: json['recordingStatus'],
       publishStatus: json['publishStatus'],
+      imageUrl: json['imageUrl'],
     );
   }
 }

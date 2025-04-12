@@ -24,8 +24,8 @@ class StudentMyclass extends StatelessWidget {
               child: Stack(
                 fit: StackFit.expand,
                 children: [
-                  Image.asset(
-                    'assets/pictures/compPicture.jpg',
+                  Image.network(
+                    'https://www.cloudblue.com/wp-content/uploads/2024/06/what-is-the-internet-of-things-iot.png',
                     fit: BoxFit.cover,
                   ),
                   Positioned(
@@ -78,15 +78,15 @@ class StudentMyclass extends StatelessWidget {
                             ),
                             const SizedBox(height: 10),
                             Container(
-                              padding: const EdgeInsets.all(5),
+                              padding: const EdgeInsets.all(8),
                               decoration: BoxDecoration(
                                 color: Colors.green.withOpacity(1),
-                                borderRadius: BorderRadius.circular(5),
+                                borderRadius: BorderRadius.circular(20),
                               ),
                               child: const Text(
-                                "Class Summary Available",
+                                "Summary Available",
                                 style: TextStyle(
-                                  fontSize: 12,
+                                  fontSize: 9,
                                   fontFamily: 'Figtree',
                                   color: Colors.white,
                                 ),
