@@ -9,6 +9,7 @@ class ClassCreateModel {
   final String endTime;
   final String date;
   final String lecturerId;
+  final String imageUrl;
 
   ClassCreateModel({
     required this.classId,
@@ -19,7 +20,7 @@ class ClassCreateModel {
     required this.endTime,
     required this.date,
     required this.lecturerId,
-    
+    required this.imageUrl,
   });
 
   // Convert JSON object to ClassModel
@@ -41,7 +42,7 @@ class ClassCreateModel {
       endTime: formattedEndTime,
       date: formattedDate,
       lecturerId: json['lecturerId'] ?? "Unknown",
-
+      imageUrl: json['imageUrl'] ?? "Image Not Available",
     );
   }
 

@@ -51,6 +51,7 @@ dependencies:
   url_launcher: 
   skeletonizer: ^1.4.3
   flutter_markdown: ^0.7.7
+  swipe_refresh: ^1.1.2
   
   
   

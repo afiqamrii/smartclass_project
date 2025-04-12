@@ -130,6 +130,7 @@ class _LectCreateClassState extends ConsumerState<LectCreateClass> {
                   endTime: timeEndController.text,
                   location: locationController.text,
                   lecturerId: user.externalId,  
+                  imageUrl: "",
                 );
                 // var data = {
                 //   'courseCode': courseCodeController.text,

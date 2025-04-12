@@ -142,6 +142,7 @@ class _LectUpdateClassState extends ConsumerState<LectUpdateClass> {
                       endTime: _timeEndController.text,
                       location: _classLocationController.text,
                       lecturerId: user.externalId,
+                      imageUrl: "",
                     );
 
                     final response = await Api.updateClass(

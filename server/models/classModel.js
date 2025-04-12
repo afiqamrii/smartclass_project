@@ -3,13 +3,13 @@ const moment = require("moment");
 
 const ClassModel = {
     // Add a class to the database
-    async addClass(courseCode, className, date, timeStart, timeEnd, classLocation , lecturerId) {
+    async addClass(courseCode, className, date, timeStart, timeEnd, classLocation , imageUrl) {
         try {
             const query = `
-            INSERT INTO ClassSession (courseCode, className, date, timeStart, timeEnd, classLocation ,lecturerId)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO ClassSession (courseCode, className, date, timeStart, timeEnd, classLocation ,lecturerId , imageUrl)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
             `;
-            const values = [courseCode, className, date, timeStart, timeEnd, classLocation , lecturerId];
+            const values = [courseCode, className, date, timeStart, timeEnd, classLocation , lecturerId , imageUrl];
             const [result] = await pool.query(query, values);
             console.log("Class added successfully:", result);
             return result.insertId;
@@ -35,6 +35,19 @@ const ClassModel = {
         }
     },
 
+    // Retrieve a class by its ID
+    async getClassById(id) {    
+        try {
+            const query = `SELECT * FROM ClassSession WHERE classId = ?`;
+            const [rows] = await pool.query(query, [id]);
+            return rows[0] || null;
+        }
+        catch (err) {
+            console.error("Error retrieving data:", err.message);
+            return null;
+        }
+    },
+
     // Retrieve today's classes for students
     async studentViewTodayClass() {
         try {
@@ -46,7 +59,8 @@ const ClassModel = {
                 cs.className,
                 cs.date,
                 cs.classLocation,
-                u.userName
+                u.
+                cs.imageUrl,
             FROM 
                 ClassSession cs
             
@@ -65,13 +79,18 @@ const ClassModel = {
     },
 
     //Update Class
-    async updateClass(id, courseCode, className, date, timeStart, timeEnd, classLocation) {
+    async updateClass(id, courseCode, className, date, timeStart, timeEnd, classLocation , imageUrl) {
+
+        //Debugging
+        console.log("Update Class ID:", id);
+        console.log("Update Class Data:", { courseCode, className, date, timeStart, timeEnd, classLocation , imageUrl });
+        
         const query = `
             UPDATE ClassSession
-            SET courseCode = ?, className = ?, date = ?, timeStart = ?, timeEnd = ?, classLocation = ?
+            SET courseCode = ?, className = ?, date = ?, timeStart = ?, timeEnd = ?, classLocation = ? , imageUrl = ?
             WHERE classId = ?
         `;
-        const values = [courseCode, className, date, timeStart, timeEnd, classLocation, id];
+        const values = [courseCode, className, date, timeStart, timeEnd, classLocation , imageUrl , id];
     
         console.log("Executing SQL:", query);
         console.log("With values:", values);
