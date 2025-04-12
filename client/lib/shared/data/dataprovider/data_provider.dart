@@ -12,6 +12,11 @@ final classDataProvider = StreamProvider<List<ClassCreateModel>>((ref) async* {
       .getClasses(); // Use classProvider from api.dart
 });
 
+final classByIdProvider =
+    StreamProvider.family<List<ClassCreateModel>, int>((ref, classId) async* {
+  yield* ref.watch(classProvider).getClassById(classId);
+});
+
 // Create a Provider Object for get summarization status for the classes
 final classDataProviderSummarizationStatus =
     StreamProvider<List<ClassSumModel>>((ref) async* {

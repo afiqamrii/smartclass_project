@@ -23,9 +23,26 @@ class Api {
           await get(Uri.parse("${ApiConstants.baseUrl}/class/viewclass"));
       if (response.statusCode == 200) {
         final List result = jsonDecode(response.body)['Data'];
+        //Tokenize the data and convert it to ClassCreateModel
         yield result.map(((e) => ClassCreateModel.fromJson(e))).toList();
       } else {
         throw Exception("Failed to load classes");
+      }
+      await Future.delayed(const Duration(seconds: 5)); // Polling interval
+    }
+  }
+
+  //GET API Using provider to get class by ID
+  Stream<List<ClassCreateModel>> getClassById(int classId) async* {
+    while (true) {
+      Response response = await get(
+          Uri.parse("${ApiConstants.baseUrl}/class/viewclassbyid/$classId"));
+      if (response.statusCode == 200) {
+        final List result = jsonDecode(response.body)['Data'];
+        //Tokenize the data and convert it to ClassCreateModel
+        yield result.map(((e) => ClassCreateModel.fromJson(e))).toList();
+      } else {
+        throw Exception("Failed to load class by ID");
       }
       await Future.delayed(const Duration(seconds: 5)); // Polling interval
     }
