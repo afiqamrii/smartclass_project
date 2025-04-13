@@ -7,6 +7,7 @@ import 'package:smartclass_fyp_2024/features/student/models/todayClass_card_mode
 import 'package:smartclass_fyp_2024/features/student/providers/student_class_provider.dart';
 import 'package:smartclass_fyp_2024/features/student/views/widgets/student_todayclass_card.dart';
 import 'package:smartclass_fyp_2024/features/student/views/widgets/tabs_item.dart';
+import 'package:smartclass_fyp_2024/shared/components/unavailablePage.dart';
 import 'package:smartclass_fyp_2024/shared/data/dataprovider/data_provider.dart';
 import 'package:smartclass_fyp_2024/shared/data/dataprovider/user_provider.dart';
 import 'package:smartclass_fyp_2024/test.dart';
@@ -218,7 +219,7 @@ class _StudentHomePageState extends ConsumerState<StudentHomePage> {
                                   ),
                                 ),
                                 const SizedBox(
-                                  height: 10,
+                                  height: 5,
                                 ),
                                 AnimatedSize(
                                   duration: const Duration(milliseconds: 300),
@@ -253,40 +254,42 @@ class _StudentHomePageState extends ConsumerState<StudentHomePage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        const SizedBox(height: 10),
+        const SizedBox(height: 5),
         todayClassData.when(
           data: (data) {
-            return GestureDetector(
-              onTap: () => {
-                // Handle tap on class card here
-                // For example, navigate to class details page
-              },
-              child: Column(
-                children: List.generate(
-                  data.length > limit ? limit : data.length,
-                  (index) => StudentTodayclassCard(
-                    className: data[index].courseName,
-                    lecturerName: data[index].lecturerName,
-                    courseCode: data[index].courseCode,
-                    classLocation: data[index].location,
-                    date: data[index].date,
-                    timeStart: data[index].startTime,
-                    timeEnd: data[index].endTime,
-                    publishStatus: data[index].publishStatus,
-                    imageUrl: data[index].imageUrl,
+            if (data.isEmpty) {
+              return const Unavailablepage(
+                message: "No Class Today. YAY!",
+              );
+            } else {
+              return GestureDetector(
+                onTap: () => {
+                  // Handle tap on class card here
+                  // For example, navigate to class details page
+                },
+                child: Column(
+                  children: List.generate(
+                    data.length > limit ? limit : data.length,
+                    (index) => StudentTodayclassCard(
+                      className: data[index].courseName,
+                      lecturerName: data[index].lecturerName,
+                      courseCode: data[index].courseCode,
+                      classLocation: data[index].location,
+                      date: data[index].date,
+                      timeStart: data[index].startTime,
+                      timeEnd: data[index].endTime,
+                      publishStatus: data[index].publishStatus,
+                      imageUrl: data[index].imageUrl,
+                    ),
                   ),
                 ),
-              ),
-            );
+              );
+            }
           },
           error: (error, stackTrace) {
             // Handle the error here
-            return const Text(
-              'Error loading class data',
-              style: TextStyle(
-                color: Colors.red,
-                fontSize: 16,
-              ),
+            return const Unavailablepage(
+              message: "Class not found",
             );
           },
           loading: () {

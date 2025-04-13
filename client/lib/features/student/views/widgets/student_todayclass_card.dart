@@ -32,103 +32,140 @@ class StudentTodayclassCard extends StatefulWidget {
 class _StudentTodayclassCardState extends State<StudentTodayclassCard> {
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Card(
-        elevation: 5,
-        color: const Color.fromARGB(255, 255, 249, 249),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(10),
-          child: IntrinsicHeight(
-            child: Stack(
-              fit: StackFit.expand,
-              children: [
-                SizedBox(
-                  height: 200,
-                  child: Image.network(
-                    widget.imageUrl,
-                    fit: BoxFit.cover,
-                    width: double.infinity,
-                  ),
+    return Card(
+      elevation: 5,
+      color: const Color.fromARGB(255, 255, 249, 249),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(10),
+        child: IntrinsicHeight(
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              SizedBox(
+                height: 200,
+                child: Image.network(
+                  widget.imageUrl,
+                  fit: BoxFit.cover,
+                  width: double.infinity,
                 ),
-                Positioned(
-                  top: 10,
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.bottomCenter,
-                        end: Alignment.topCenter,
-                        colors: [
-                          Colors.black.withOpacity(1),
-                          Colors.transparent,
-                        ],
-                      ),
+              ),
+              Positioned(
+                top: 10,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                child: Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.bottomCenter,
+                      end: Alignment.topCenter,
+                      colors: [
+                        Colors.black.withOpacity(1),
+                        Colors.transparent,
+                      ],
                     ),
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 50, left: 20, right: 20),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.max,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          //Class name
-                          Text(
-                            widget.className,
-                            style: const TextStyle(
-                              fontSize: 17,
-                              fontFamily: 'Figtree',
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
+              ),
+              Positioned(
+                top: MediaQuery.of(context).size.height * 0.02,
+                right: MediaQuery.of(context).size.height * 0.02,
+                child: Container(
+                  padding: const EdgeInsets.all(6),
+                  decoration: BoxDecoration(
+                    color: widget.publishStatus == "Published"
+                        ? Colors.green.withOpacity(1)
+                        : Colors.red.withOpacity(0.9),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    widget.publishStatus == "Published"
+                        ? "Summary Available"
+                        : "No Summary",
+                    style: const TextStyle(
+                      fontSize: 9,
+                      fontFamily: 'Figtree',
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+              //Class Info Section
+              Padding(
+                padding: EdgeInsets.only(
+                  top: MediaQuery.of(context).size.height * 0.09,
+                  bottom: MediaQuery.of(context).size.height * 0.01,
+                  left: MediaQuery.of(context).size.height * 0.02,
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.max,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        //Class name
+                        Text(
+                          "${widget.courseCode} - ${widget.className}",
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontFamily: 'Figtree',
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
                           ),
-                          const SizedBox(height: 2),
-                          Text(
-                            widget.lecturerName,
-                            style: const TextStyle(
-                              fontSize: 12,
-                              fontFamily: 'Figtree',
-                              color: Colors.white,
-                            ),
-                          ),
-                          const SizedBox(height: 10),
-                          Container(
-                            padding: const EdgeInsets.all(8),
-                            decoration: BoxDecoration(
-                              color: widget.publishStatus == "Published"
-                                  ? Colors.green.withOpacity(1)
-                                  : Colors.red.withOpacity(1),
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: Text(
-                              widget.publishStatus == "Published"
-                                  ? "Summary Available"
-                                  : "Summary Not Available",
+                        ),
+
+                        const SizedBox(height: 5),
+                        //Time
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              "${widget.timeStart} - ${widget.timeEnd}",
                               style: const TextStyle(
-                                fontSize: 12,
-                                fontFamily: 'Figtree',
+                                fontSize: 13,
+                                fontFamily: 'FigtreeRegular',
                                 color: Colors.white,
                               ),
                             ),
+                          ],
+                        ),
+                        const SizedBox(height: 1),
+                        //Class location
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              widget.classLocation,
+                              style: const TextStyle(
+                                fontSize: 13,
+                                fontFamily: 'FigtreeRegular',
+                                color: Colors.white,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          widget.lecturerName,
+                          style: const TextStyle(
+                            fontSize: 12,
+                            fontFamily: 'FigtreeRegular',
+                            color: Colors.white,
                           ),
-                        ],
-                      ),
-                    ],
-                  ),
+                        ),
+                        const SizedBox(height: 10),
+                      ],
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
