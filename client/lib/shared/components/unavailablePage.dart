@@ -30,9 +30,9 @@ class _UnavailablepageState extends State<Unavailablepage> {
                 fit: BoxFit.fill,
               ),
               const SizedBox(height: 10),
-              const Text(
-                "No summarization available yet.",
-                style: TextStyle(
+              Text(
+                widget.message,
+                style: const TextStyle(
                   fontSize: 14,
                   color: Colors.grey,
                 ),
