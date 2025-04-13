@@ -1,4 +1,4 @@
-# Miscellaneous
+# Files that are not source code, but might be created by the build or development process
 *.class
 *.log
 *.pyc
@@ -10,6 +10,9 @@
 .svn/
 migrate_working_dir/
 node_modules
+
+# Environment variables
+.env
 
 # IntelliJ related
 *.iml

@@ -3,11 +3,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:smartclass_fyp_2024/constants/color_constants.dart';
-import 'package:smartclass_fyp_2024/features/student/views/widgets/classCard.dart';
+import 'package:smartclass_fyp_2024/features/student/models/todayClass_card_models.dart';
+import 'package:smartclass_fyp_2024/features/student/providers/student_class_provider.dart';
+import 'package:smartclass_fyp_2024/features/student/views/widgets/student_todayclass_card.dart';
 import 'package:smartclass_fyp_2024/features/student/views/widgets/tabs_item.dart';
 import 'package:smartclass_fyp_2024/shared/data/dataprovider/data_provider.dart';
 import 'package:smartclass_fyp_2024/shared/data/dataprovider/user_provider.dart';
-import 'package:smartclass_fyp_2024/shared/data/models/class_models.dart';
 import 'package:smartclass_fyp_2024/test.dart';
 
 class StudentHomePage extends ConsumerStatefulWidget {
@@ -30,6 +31,8 @@ class _StudentHomePageState extends ConsumerState<StudentHomePage> {
 
     await ref.read(userProvider.notifier).refreshUserData();
     await ref.read(classDataProvider.future);
+    // ignore: unused_result
+    ref.refresh(todayClassProviders);
     await Future.delayed(const Duration(seconds: 3));
 
     setState(() {
@@ -41,7 +44,8 @@ class _StudentHomePageState extends ConsumerState<StudentHomePage> {
   Widget build(BuildContext context) {
     // Get the user data from provider
     final user = ref.watch(userProvider);
-    final classData = ref.watch(classDataProvider);
+
+    final todayClassData = ref.watch(todayClassProviders);
     // final sumData = ref.watch(classDataProviderSummarizationStatus);
 
     return Scaffold(
@@ -222,9 +226,9 @@ class _StudentHomePageState extends ConsumerState<StudentHomePage> {
                                     index:
                                         _tabIndex, // manage this via a state variable
                                     children: [
-                                      _classSection(classData),
-                                      _classSection(classData),
-                                      _classSection(classData),
+                                      _classSection(todayClassData),
+                                      _classSection(todayClassData),
+                                      _classSection(todayClassData),
                                     ],
                                   ),
                                 ),
@@ -244,13 +248,13 @@ class _StudentHomePageState extends ConsumerState<StudentHomePage> {
     );
   }
 
-  Widget _classSection(AsyncValue<List<ClassCreateModel>> classData) {
+  Widget _classSection(AsyncValue<List<TodayclassCardModels>> todayClassData) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
         const SizedBox(height: 10),
-        classData.when(
+        todayClassData.when(
           data: (data) {
             return GestureDetector(
               onTap: () => {
@@ -260,10 +264,16 @@ class _StudentHomePageState extends ConsumerState<StudentHomePage> {
               child: Column(
                 children: List.generate(
                   data.length > limit ? limit : data.length,
-                  (index) => ClassCard(
+                  (index) => StudentTodayclassCard(
                     className: data[index].courseName,
-                    lecturerName: "Dr Nor Hassan",
-                    summaryAvailablity: "Class Summary Available",
+                    lecturerName: data[index].lecturerName,
+                    courseCode: data[index].courseCode,
+                    classLocation: data[index].location,
+                    date: data[index].date,
+                    timeStart: data[index].startTime,
+                    timeEnd: data[index].endTime,
+                    publishStatus: data[index].publishStatus,
+                    imageUrl: data[index].imageUrl,
                   ),
                 ),
               ),

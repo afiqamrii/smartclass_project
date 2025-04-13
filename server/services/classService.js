@@ -4,9 +4,25 @@ const classModel = require("../models/classModel");
 
 const fetchImageFromGoogle= async (query) => {
     try {
-        const response = await fetch(`https://www.googleapis.com/customsearch/v1?key=${process.env.GOOGLE_API_KEY}&cx=${process.env.GOOGLE_SEARCH_CX}&q=${query}&searchType=image&num=1`);
+        const response = await fetch(`https://www.googleapis.com/customsearch/v1?key=${process.env.GOOGLE_API_KEY}&cx=${process.env.GOOGLE_SEARCH_CX}&q=${query}&searchType=image&imgsz=l&imgar=xw&num=5`);
         const data = await response.json();
-        return data.items[0].link;
+        
+        //Check to select only if image is landscape or width is greater than height 
+        for (const item of data.items) {
+            const { width, height } = item.image;
+
+            // Check if image is landscape
+            if (width > height) {
+                console.log("Image is landscape, returning this image.");
+                console.log("Image URL:", item.link);
+                return item.link;
+            } else {
+                console.log("Image is not landscape, skipping this image.");
+            }
+        }
+        //Return default image route if no landscape image is found
+        return "https://news.virginia.edu/sites/default/files/Header_Math_Class.jpg";
+        
     } catch (error) {
         throw new Error("Error fetching image from Google API: " + error.message);
     }
