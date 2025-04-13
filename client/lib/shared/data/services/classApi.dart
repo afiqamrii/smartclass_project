@@ -38,13 +38,14 @@ class Api {
       Response response = await get(
           Uri.parse("${ApiConstants.baseUrl}/class/viewclassbyid/$classId"));
       if (response.statusCode == 200) {
-        final List result = jsonDecode(response.body)['Data'];
-        //Tokenize the data and convert it to ClassCreateModel
-        yield result.map(((e) => ClassCreateModel.fromJson(e))).toList();
+        final data = jsonDecode(response.body)['Data'];
+
+        // Wrap single object in a list
+        yield [ClassCreateModel.fromJson(data)];
       } else {
         throw Exception("Failed to load class by ID");
       }
-      await Future.delayed(const Duration(seconds: 5)); // Polling interval
+      await Future.delayed(const Duration(seconds: 5));
     }
   }
 
