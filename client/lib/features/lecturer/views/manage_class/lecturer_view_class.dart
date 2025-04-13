@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:quickalert/models/quickalert_type.dart';
 import 'package:quickalert/widgets/quickalert_dialog.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 import 'package:smartclass_fyp_2024/constants/api_constants.dart';
 import 'package:smartclass_fyp_2024/shared/data/dataprovider/data_provider.dart';
 import 'package:smartclass_fyp_2024/shared/data/dataprovider/recording_state_notifier.dart';
@@ -65,244 +65,264 @@ class _LecturerViewClassState extends ConsumerState<LecturerViewClass> {
 
     // ignore: unused_local_variable
     final userData = ref.watch(userProvider);
+    final data = ref.watch(classByIdProvider(widget.classItem.classId));
 
-    return Scaffold(
-      backgroundColor: Colors.grey[200],
-      appBar: AppBar(
-        leading: GestureDetector(
-          onTap: () {
-            Navigator.push(
-              context,
-              toRightTransition(
-                const LectViewAllClass(),
-              ),
-            );
-          },
-          child: const Padding(
-            padding: EdgeInsets.only(left: 20.0),
-            child: Row(
-              children: [
-                Icon(
-                  Icons.arrow_back_ios,
-                  color: Colors.black,
-                  size: 20,
-                ),
-              ],
-            ),
-          ),
-        ),
-        title: Text(
-          '${widget.classItem.courseCode} - ${widget.classItem.courseName}',
-          style: const TextStyle(
-            fontSize: 15,
-            color: Colors.black,
-          ),
-        ),
-        shape: Border(
-          bottom: BorderSide(
-            color: Colors.grey[300]!,
-            width: 1.0,
-          ),
-        ),
-        centerTitle: true,
-      ),
-      body: RefreshIndicator(
-        onRefresh: () => _handleRefresh(ref),
-        child: SingleChildScrollView(
-          physics: const AlwaysScrollableScrollPhysics(
-              parent: BouncingScrollPhysics()),
-          child: Column(
-            children: [
-              Padding(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 20.0, horizontal: 20),
-                child: Card(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                  clipBehavior: Clip.antiAlias,
-                  child: IntrinsicHeight(
-                    child: Stack(
-                      fit: StackFit.expand,
-                      children: [
-                        Image.network(
-                          widget.classItem.imageUrl,
-                          errorBuilder: (context, error, stackTrace) {
-                            return Image.asset(
-                              'assets/pictures/compPicture.jpg',
-                              fit: BoxFit.cover,
-                            );
-                          },
-                          loadingBuilder: (context, child, loadingProgress) {
-                            if (loadingProgress == null) return child;
-                            return const Center(
-                              child: CircularProgressIndicator(),
-                            );
-                          },
-                          fit: BoxFit.cover,
-                        ),
-                        Positioned(
-                          top: 50,
-                          left: 0,
-                          right: 0,
-                          bottom: 0,
-                          child: Container(
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                begin: Alignment.bottomCenter,
-                                end: Alignment.topCenter,
-                                colors: [
-                                  Colors.black.withOpacity(0.8),
-                                  Colors.transparent,
-                                ],
+    return data.when(
+      data: (classData) {
+        // Ensure we have at least one class item
+        if (classData.isEmpty) {
+          return const Center(
+            child: Text('Class not found'),
+          );
+        }
+        final classItem = classData.first;
+
+        return Scaffold(
+          backgroundColor: Colors.grey[200],
+          appBar: _appBarSection(context, classItem),
+          body: RefreshIndicator(
+            onRefresh: () => _handleRefresh(ref),
+            child: SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(
+                  parent: BouncingScrollPhysics()),
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 20.0, horizontal: 20),
+                    child: Card(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      clipBehavior: Clip.antiAlias,
+                      child: IntrinsicHeight(
+                        child: Stack(
+                          fit: StackFit.expand,
+                          children: [
+                            Skeletonizer(
+                              enabled: _isRefreshing,
+                              child: Image.network(
+                                classItem.imageUrl,
+                                fit: BoxFit.cover,
                               ),
                             ),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(15.0),
-                          child: Column(
-                            children: [
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
+                            Positioned(
+                              top: 10,
+                              left: 0,
+                              right: 0,
+                              bottom: 0,
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    begin: Alignment.bottomCenter,
+                                    end: Alignment.topCenter,
+                                    colors: [
+                                      Colors.black.withOpacity(1),
+                                      Colors.transparent,
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(15.0),
+                              child: Column(
                                 children: [
-                                  GestureDetector(
-                                    onTap: () {
-                                      Navigator.push(
-                                        context,
-                                        toLeftTransition(
-                                          LectUpdateClass(
-                                            classItem: widget.classItem,
-                                          ),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      GestureDetector(
+                                        onTap: () {
+                                          Navigator.push(
+                                            context,
+                                            toLeftTransition(
+                                              LectUpdateClass(
+                                                classItem: classItem,
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                        child: Image.asset(
+                                          'assets/icons/editicon.png',
+                                          height: 25,
+                                          width: 25,
                                         ),
-                                      );
-                                    },
-                                    child: Image.asset(
-                                      'assets/icons/editicon.png',
-                                      height: 25,
-                                      width: 25,
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 60),
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                        left: 10.0, right: 10),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            SizedBox(
+                                              width: MediaQuery.of(context)
+                                                      .size
+                                                      .width *
+                                                  0.7,
+                                              child: Text(
+                                                "${classItem.courseCode} - ${classItem.courseName}",
+                                                style: const TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 18,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                            ),
+                                            const SizedBox(height: 5),
+                                            Text(
+                                              "${classItem.startTime} - ${classItem.endTime}",
+                                              style: const TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 13,
+                                                fontFamily: 'FigtreeRegular',
+                                              ),
+                                            ),
+                                            Text(
+                                              classItem.date,
+                                              style: const TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 13,
+                                                fontFamily: 'FigtreeRegular',
+                                              ),
+                                            ),
+                                            const SizedBox(height: 10),
+                                            SizedBox(
+                                              width: MediaQuery.of(context)
+                                                      .size
+                                                      .width *
+                                                  0.7,
+                                              child: Text(
+                                                "Lecturer : Dr Nor | Location : ${classItem.location}",
+                                                style: const TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 13,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
                                     ),
                                   ),
                                 ],
                               ),
-                              const SizedBox(height: 60),
-                              Padding(
-                                padding: const EdgeInsets.only(
-                                    left: 10.0, right: 10),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        SizedBox(
-                                          width: MediaQuery.of(context)
-                                                  .size
-                                                  .width *
-                                              0.7,
-                                          child: Text(
-                                            "${widget.classItem.courseCode} - ${widget.classItem.courseName}",
-                                            style: const TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 18,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                        ),
-                                        const SizedBox(height: 5),
-                                        Text(
-                                          "${widget.classItem.startTime} - ${widget.classItem.endTime}",
-                                          style: const TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 13,
-                                            fontFamily: 'FigtreeRegular',
-                                          ),
-                                        ),
-                                        Text(
-                                          widget.classItem.date,
-                                          style: const TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 13,
-                                            fontFamily: 'FigtreeRegular',
-                                          ),
-                                        ),
-                                        const SizedBox(height: 10),
-                                        SizedBox(
-                                          width: MediaQuery.of(context)
-                                                  .size
-                                                  .width *
-                                              0.7,
-                                          child: Text(
-                                            "Lecturer : Dr Nor | Location : ${widget.classItem.location}",
-                                            style: const TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 13,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+                  //Features section
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 22.0),
+                    child: IntrinsicHeight(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.only(
+                              left: 20.0, right: 20, top: 10, bottom: 15),
+                          child: Column(
+                            children: [
+                              //Attendance
+                              _attendanceSection(),
+                              Divider(
+                                thickness: 1,
+                                color: Colors.black.withOpacity(0.15),
+                              ),
+                              //Recording section
+                              _recordingSection(recordingState, classItem),
+                              Divider(
+                                thickness: 1,
+                                color: Colors.black.withOpacity(0.15),
+                              ),
+                              //View Summarization section
+                              _viewSummarizationSection(context, classItem),
+                              Divider(
+                                thickness: 1,
+                                color: Colors.black.withOpacity(0.15),
                               ),
                             ],
                           ),
                         ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 5),
-              //Features section
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 22.0),
-                child: IntrinsicHeight(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.only(
-                          left: 20.0, right: 20, top: 10, bottom: 15),
-                      child: Column(
-                        children: [
-                          //Attendance
-                          _attendanceSection(),
-                          Divider(
-                            thickness: 1,
-                            color: Colors.black.withOpacity(0.15),
-                          ),
-                          //Recording section
-                          _recordingSection(recordingState),
-                          Divider(
-                            thickness: 1,
-                            color: Colors.black.withOpacity(0.15),
-                          ),
-                          //View Summarization section
-                          _viewSummarizationSection(context),
-                          Divider(
-                            thickness: 1,
-                            color: Colors.black.withOpacity(0.15),
-                          ),
-                        ],
                       ),
                     ),
                   ),
-                ),
+                  _deleteButton(context, classItem),
+                ],
               ),
-              _deleteButton(context, widget.classItem),
+            ),
+          ),
+        );
+      },
+      loading: () => const Center(
+        child: CircularProgressIndicator(),
+      ),
+      error: (error, stackTrace) {
+        return Center(
+          child: Text(
+            'Error: $error',
+            style: const TextStyle(color: Colors.red),
+          ),
+        );
+      },
+    );
+  }
+
+  AppBar _appBarSection(BuildContext context, ClassCreateModel classItem) {
+    return AppBar(
+      leading: GestureDetector(
+        onTap: () {
+          Navigator.push(
+            context,
+            toRightTransition(
+              const LectViewAllClass(),
+            ),
+          );
+        },
+        child: const Padding(
+          padding: EdgeInsets.only(left: 20.0),
+          child: Row(
+            children: [
+              Icon(
+                Icons.arrow_back_ios,
+                color: Colors.black,
+                size: 20,
+              ),
             ],
           ),
         ),
       ),
+      title: Text(
+        '${classItem.courseCode} - ${classItem.courseName}',
+        style: const TextStyle(
+          fontSize: 15,
+          color: Colors.black,
+        ),
+      ),
+      shape: Border(
+        bottom: BorderSide(
+          color: Colors.grey[300]!,
+          width: 1.0,
+        ),
+      ),
+      centerTitle: true,
     );
   }
 
-  Row _viewSummarizationSection(BuildContext context) {
+  Row _viewSummarizationSection(
+      BuildContext context, ClassCreateModel classItem) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -320,7 +340,7 @@ class _LecturerViewClassState extends ConsumerState<LecturerViewClass> {
               context,
               MaterialPageRoute(
                 builder: (context) => LecturerViewsummarization(
-                  classId: widget.classItem.classId,
+                  classId: classItem.classId,
                 ),
               ),
             );
@@ -335,7 +355,8 @@ class _LecturerViewClassState extends ConsumerState<LecturerViewClass> {
     );
   }
 
-  Column _recordingSection(RecordingState recordingState) {
+  Column _recordingSection(
+      RecordingState recordingState, ClassCreateModel classItem) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -373,7 +394,7 @@ class _LecturerViewClassState extends ConsumerState<LecturerViewClass> {
                 onChanged: (bool value) async {
                   await ref
                       .read(recordingStateProvider.notifier)
-                      .toggleRecording(widget.classItem.classId);
+                      .toggleRecording(classItem.classId);
                 },
               ),
             ),

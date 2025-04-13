@@ -1,0 +1,46 @@
+// ignore: file_names
+import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
+
+class Unavailablepage extends StatefulWidget {
+  final String message;
+
+  const Unavailablepage({
+    super.key,
+    required this.message,
+  });
+
+  @override
+  State<StatefulWidget> createState() => _UnavailablepageState();
+}
+
+class _UnavailablepageState extends State<Unavailablepage> {
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 20.0),
+      child: SizedBox(
+        height: 200,
+        child: Center(
+          child: Column(
+            children: [
+              LottieBuilder.asset(
+                "assets/animations/unavailableAnimation.json",
+                width: 150,
+                fit: BoxFit.fill,
+              ),
+              const SizedBox(height: 10),
+              const Text(
+                "No summarization available yet.",
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.grey,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}

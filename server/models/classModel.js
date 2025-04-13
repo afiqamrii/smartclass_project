@@ -3,7 +3,7 @@ const moment = require("moment");
 
 const ClassModel = {
     // Add a class to the database
-    async addClass(courseCode, className, date, timeStart, timeEnd, classLocation , imageUrl) {
+    async addClass(courseCode, className, date, timeStart, timeEnd, classLocation , lecturerId , imageUrl) {
         try {
             const query = `
             INSERT INTO ClassSession (courseCode, className, date, timeStart, timeEnd, classLocation ,lecturerId , imageUrl)
@@ -58,19 +58,24 @@ const ClassModel = {
                 cs.courseCode,
                 cs.className,
                 cs.date,
+                cs.timeStart,
+                cs.timeEnd,
                 cs.classLocation,
-                u.
                 cs.imageUrl,
+                cr.publishStatus,
+                u.name
             FROM 
                 ClassSession cs
-            
             JOIN 
                 User u ON cs.lecturerId = u.externalId
-                WHERE 
-                cs.date = ?
+            LEFT JOIN 
+                ClassRecording cr ON cs.classId = cr.classId
 
+            WHERE 
+                cs.date = ?
             `;
             const [rows] = await pool.query(query, [today]);
+            console.log("Today's classes:", today);
             return rows;
         } catch (err) {
             console.error("Error retrieving data:", err.message);

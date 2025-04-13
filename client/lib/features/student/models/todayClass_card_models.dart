@@ -9,19 +9,20 @@ class TodayclassCardModels {
   final String endTime;
   final String date;
   final String lecturerName;
-  
+  final String imageUrl;
+  final String publishStatus;
 
-  TodayclassCardModels({
-    required this.classId,
-    required this.courseCode,
-    required this.courseName,
-    required this.location,
-    required this.startTime,
-    required this.endTime,
-    required this.date,
-    required this.lecturerName,
-    
-  });
+  TodayclassCardModels(
+      {required this.classId,
+      required this.courseCode,
+      required this.courseName,
+      required this.location,
+      required this.startTime,
+      required this.endTime,
+      required this.date,
+      required this.lecturerName,
+      required this.imageUrl,
+      required this.publishStatus});
 
   // Convert JSON object to ClassModel
   factory TodayclassCardModels.fromJson(Map<String, dynamic> json) {
@@ -41,8 +42,9 @@ class TodayclassCardModels {
       startTime: formattedStartTime,
       endTime: formattedEndTime,
       date: formattedDate,
-      lecturerName: json['lecturerName'] ?? "Unknown",
-
+      lecturerName: json['name'] ?? "Unknown",
+      imageUrl: json['imageUrl'] ?? "Unknown",
+      publishStatus: json['publishStatus'] ?? "Unknown",
     );
   }
 

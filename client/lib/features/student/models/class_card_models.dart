@@ -6,6 +6,7 @@ class ClassCardModel {
   final String date;
   final String recordingStatus;
   final String publishStatus;
+  final String classLocation;
   final String imageUrl;
 
   ClassCardModel({
@@ -14,6 +15,7 @@ class ClassCardModel {
     required this.date,
     required this.recordingStatus,
     required this.publishStatus,
+    required this.classLocation,
     required this.imageUrl,
   });
 
@@ -28,6 +30,7 @@ class ClassCardModel {
       date: formattedDate,
       recordingStatus: json['recordingStatus'],
       publishStatus: json['publishStatus'],
+      classLocation: json['classLocation'],
       imageUrl: json['imageUrl'],
     );
   }

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+import 'package:smartclass_fyp_2024/shared/components/unavailablePage.dart';
 import 'package:smartclass_fyp_2024/shared/data/dataprovider/data_provider.dart';
 import 'package:smartclass_fyp_2024/shared/data/dataprovider/user_provider.dart';
 import 'package:smartclass_fyp_2024/features/lecturer/views/manage_summarization/lecturer_viewSummarization.dart';
@@ -276,153 +277,160 @@ class _LectHomepageState extends ConsumerState<LectHomepage> {
         ),
         const SizedBox(height: 10),
         //Start of Card of Class Summarization Status
-        Column(
-          children: List.generate(classes.length, (index) {
-            //Start of the content in side each card of class summarization
-            return GestureDetector(
-              onTap: () {
-                Navigator.push(
-                    context,
-                    toLeftTransition(
-                      LecturerViewsummarization(
-                          classId: classes[index].classId),
-                    ));
-              },
-              child: Padding(
-                padding: const EdgeInsets.only(bottom: 13.0),
-                child: IntrinsicHeight(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(12.0),
-                      //Give the shadow to the card
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.5),
-                          spreadRadius: 1,
-                          blurRadius: 6,
-                          offset: const Offset(8, 7),
-                        ),
-                      ],
-                    ),
-                    // Card content
-                    child: Padding(
-                      padding: const EdgeInsets.all(18.0),
-                      //Start of the content in side each card of class summarization
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Container(
-                            width: MediaQuery.of(context).size.width * 0.5,
-                            color: Colors.white,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  '${classes[index].courseCode} - ${classes[index].courseName}',
-                                ),
-                                const SizedBox(height: 20),
-                                //Class Time
-                                Row(
-                                  children: [
-                                    const Icon(
-                                      Icons.location_on,
-                                      size: 15,
-                                    ),
-                                    const SizedBox(width: 4),
-                                    Text(
-                                      classes[index].location,
-                                      style: const TextStyle(
-                                        fontSize: 11,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(
-                                  height: 8,
-                                ),
-                                Row(
-                                  children: [
-                                    const Icon(
-                                      Icons.timer_outlined,
-                                      size: 15,
-                                    ),
-                                    const SizedBox(width: 3),
-                                    Text(
-                                      '${classes[index].startTime} - ${classes[index].endTime}',
-                                      style: const TextStyle(
-                                        fontSize: 11,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(
-                                  height: 8,
-                                ),
-                                //Class Date Section
-                                Row(
-                                  children: [
-                                    const Icon(
-                                      Icons.calendar_today_rounded,
-                                      size: 15,
-                                    ),
-                                    const SizedBox(width: 4),
-                                    Text(
-                                      classes[index].date,
-                                      style: const TextStyle(
-                                        fontSize: 11,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
+        if (classes.isEmpty)
+          const Unavailablepage(
+            message: "No summarization available yet.",
+          )
+        else
+          Column(
+            children: List.generate(classes.length, (index) {
+              //Start of the content in side each card of class summarization
+              return GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      toLeftTransition(
+                        LecturerViewsummarization(
+                            classId: classes[index].classId),
+                      ));
+                },
+                child: Padding(
+                  padding: const EdgeInsets.only(bottom: 13.0),
+                  child: IntrinsicHeight(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12.0),
+                        //Give the shadow to the card
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.5),
+                            spreadRadius: 1,
+                            blurRadius: 6,
+                            offset: const Offset(8, 7),
                           ),
-                          const SizedBox(width: 10),
-                          //Right Side of the Card
-                          Container(
-                            color: Colors.white,
-                            width: MediaQuery.of(context).size.width * 0.2,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              //Summarization Status
-                              children: [
-                                Container(
-                                  width: 80,
-                                  height: 30,
-                                  decoration: BoxDecoration(
-                                    color: classes[index].recordingStatus ==
-                                            "Summarized"
-                                        ? const Color(0xff00A619)
-                                        : const Color(0xffCC3300),
-                                    borderRadius: BorderRadius.circular(50.0),
+                        ],
+                      ),
+                      // Card content
+                      child: Padding(
+                        padding: const EdgeInsets.all(18.0),
+                        //Start of the content in side each card of class summarization
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Container(
+                              width: MediaQuery.of(context).size.width * 0.5,
+                              color: Colors.white,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    '${classes[index].courseCode} - ${classes[index].courseName}',
                                   ),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
+                                  const SizedBox(height: 20),
+                                  //Class Time
+                                  Row(
                                     children: [
+                                      const Icon(
+                                        Icons.location_on,
+                                        size: 15,
+                                      ),
+                                      const SizedBox(width: 4),
                                       Text(
-                                        classes[index].recordingStatus,
+                                        classes[index].location,
                                         style: const TextStyle(
-                                          fontSize: 9,
-                                          color: Color(0xffFFFFFF),
+                                          fontSize: 11,
                                         ),
                                       ),
                                     ],
                                   ),
-                                ),
-                              ],
+                                  const SizedBox(
+                                    height: 8,
+                                  ),
+                                  Row(
+                                    children: [
+                                      const Icon(
+                                        Icons.timer_outlined,
+                                        size: 15,
+                                      ),
+                                      const SizedBox(width: 3),
+                                      Text(
+                                        '${classes[index].startTime} - ${classes[index].endTime}',
+                                        style: const TextStyle(
+                                          fontSize: 11,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(
+                                    height: 8,
+                                  ),
+                                  //Class Date Section
+                                  Row(
+                                    children: [
+                                      const Icon(
+                                        Icons.calendar_today_rounded,
+                                        size: 15,
+                                      ),
+                                      const SizedBox(width: 4),
+                                      Text(
+                                        classes[index].date,
+                                        style: const TextStyle(
+                                          fontSize: 11,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
-                        ],
+                            const SizedBox(width: 10),
+                            //Right Side of the Card
+                            Container(
+                              color: Colors.white,
+                              width: MediaQuery.of(context).size.width * 0.2,
+                              child: Column(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                //Summarization Status
+                                children: [
+                                  Container(
+                                    width: 80,
+                                    height: 30,
+                                    decoration: BoxDecoration(
+                                      color: classes[index].recordingStatus ==
+                                              "Summarized"
+                                          ? const Color(0xff00A619)
+                                          : const Color(0xffCC3300),
+                                      borderRadius: BorderRadius.circular(50.0),
+                                    ),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          classes[index].recordingStatus,
+                                          style: const TextStyle(
+                                            fontSize: 9,
+                                            color: Color(0xffFFFFFF),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
-            );
-          }),
-        ),
+              );
+            }),
+          ),
       ],
     );
   }
