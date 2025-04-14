@@ -4,7 +4,7 @@ const classModel = require("../models/classModel");
 
 const fetchImageFromGoogle= async (query) => {
     try {
-        const response = await fetch(`https://www.googleapis.com/customsearch/v1?key=${process.env.GOOGLE_API_KEY}&cx=${process.env.GOOGLE_SEARCH_CX}&q=${query}&searchType=image&imgsz=l&imgar=xw&num=5`);
+        const response = await fetch(`https://www.googleapis.com/customsearch/v1?key=${process.env.GOOGLE_API_KEY}&cx=${process.env.GOOGLE_SEARCH_CX}&q=${query}&searchType=image&imgsz=l&imgar=xw&num=10`);
         const data = await response.json();
         
         //Check to select only if image is landscape or width is greater than height 
@@ -79,6 +79,36 @@ const studentViewTodayClass = async () => {
     }
 };
 
+// View past class
+const viewPastClass = async () => {
+    try {
+        const todayClasses = await classModel.viewPastClass();
+        return todayClasses || [];
+    } catch (error) {
+        throw new Error("Error in service while fetching class data: " + error.message);
+    }
+};
+
+// View upcoming class
+const viewUpcomingClass = async () => {
+    try {
+        const todayClasses = await classModel.viewUpcomingClass();
+        return todayClasses || [];
+    } catch (error) {
+        throw new Error("Error in service while fetching class data: " + error.message);
+    }
+};
+
+//View current class
+const viewCurrentClass = async () => {
+    try {
+        const todayClasses = await classModel.viewCurrentClass();
+        return todayClasses || [];
+    } catch (error) {
+        throw new Error("Error in service while fetching class data: " + error.message);
+    }
+}
+
 //Function to update class
 const updateClass = async (classId, classData) => {
     try {
@@ -113,4 +143,4 @@ const deleteClass = async (id) => {
 };
 
 //EXport module
-module.exports = { addClass , viewClass ,viewClassById , updateClass , deleteClass , studentViewTodayClass };
+module.exports = { addClass , viewClass ,viewClassById , updateClass , deleteClass , studentViewTodayClass ,viewUpcomingClass ,viewPastClass ,viewCurrentClass};

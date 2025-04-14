@@ -91,8 +91,8 @@ class Api {
         return data;
       } else {
         // Print an error message with the status code and response body.
-        print("Failed to upload DATA: ${res.statusCode}");
-        print("Response: ${res.body}");
+        // print("Failed to upload DATA: ${res.statusCode}");
+        // print("Response: ${res.body}");
         return null;
       }
     } catch (e) {
@@ -133,12 +133,12 @@ class Api {
       if (res.statusCode == 200) {
         var responseData = jsonDecode(res.body);
         // ignore: avoid_print
-        print(responseData);
-        print("Updating class with data: ${jsonEncode(data.toJson())}");
+        // print(responseData);
+        // print("Updating class with data: ${jsonEncode(data.toJson())}");
         return responseData;
       } else {
-        print("Failed to update class: ${res.statusCode}");
-        print("Response: ${res.body}");
+        // print("Failed to update class: ${res.statusCode}");
+        // print("Response: ${res.body}");
         return null;
       }
     } catch (e) {
@@ -161,8 +161,9 @@ class Api {
         // ignore: avoid_print
         print(responseData);
       } else {
-        print("Failed to delete class: ${res.statusCode}");
-        print("Response: ${res.body}");
+        //Debug purposes
+        // print("Failed to delete class: ${res.statusCode}");
+        // print("Response: ${res.body}");
       }
     } catch (e) {
       debugPrint("Error: $e");
