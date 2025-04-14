@@ -279,6 +279,7 @@ class _LectHomepageState extends ConsumerState<LectHomepage> {
         //Start of Card of Class Summarization Status
         if (classes.isEmpty)
           const Unavailablepage(
+            animation: "assets/animations/noClassAnimation.json",
             message: "No summarization available yet.",
           )
         else

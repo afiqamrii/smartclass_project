@@ -83,6 +83,114 @@ const ClassModel = {
         }
     },
 
+    // Student view upcoming class
+    async viewUpcomingClass() {
+        try {
+            const today = moment().format("YYYY-MM-DD");
+            const query = `
+            SELECT 
+                cs.classId,
+                cs.courseCode,
+                cs.className,
+                cs.date,
+                cs.timeStart,
+                cs.timeEnd,
+                cs.classLocation,
+                cs.imageUrl,
+                cr.publishStatus,
+                u.name
+            FROM 
+                ClassSession cs
+            JOIN 
+                User u ON cs.lecturerId = u.externalId
+            LEFT JOIN 
+                ClassRecording cr ON cs.classId = cr.classId
+
+            WHERE 
+                cs.date > ?
+            `;
+            const [rows] = await pool.query(query, [today]);
+            console.log("Upcoming classes:", today);
+            return rows;
+        } catch (err) {
+            console.error("Error retrieving data:", err.message);
+            return [];
+        }
+    },
+
+    //View passt class
+    async viewPastClass(){
+        try {
+            const today = moment().format("YYYY-MM-DD");
+            const query = `
+            SELECT 
+                cs.classId,
+                cs.courseCode,
+                cs.className,
+                cs.date,
+                cs.timeStart,
+                cs.timeEnd,
+                cs.classLocation,
+                cs.imageUrl,
+                cr.publishStatus,
+                u.name
+            FROM 
+                ClassSession cs
+            JOIN 
+                User u ON cs.lecturerId = u.externalId
+            LEFT JOIN 
+                ClassRecording cr ON cs.classId = cr.classId
+
+            WHERE 
+                cs.date < ?
+            `;
+            const [rows] = await pool.query(query, [today]);
+            console.log("Pass classes:", today);
+            return rows;
+        } catch (err) {
+            console.error("Error retrieving data:", err.message);
+            return [];
+        }
+    },
+
+    //View current class
+    async viewCurrentClass(){
+        try {
+            const today = moment().format("YYYY-MM-DD");
+            const currentTime = moment().format("HH:mm:ss");
+            const query = `
+            SELECT 
+                cs.classId,
+                cs.courseCode,
+                cs.className,
+                cs.date,
+                cs.timeStart,
+                cs.timeEnd,
+                cs.classLocation,
+                cs.imageUrl,
+                cr.publishStatus,
+                u.name
+            FROM 
+                ClassSession cs
+            JOIN 
+                User u ON cs.lecturerId = u.externalId
+            LEFT JOIN 
+                ClassRecording cr ON cs.classId = cr.classId
+
+            WHERE 
+                cs.date = ?
+                AND cs.timeStart <= ?
+                AND cs.timeEnd >= ?
+            `;
+            const [rows] = await pool.query(query, [today ,currentTime, currentTime]);
+            console.log("Current time:", currentTime);
+            return rows;
+        } catch (err) {
+            console.error("Error retrieving data:", err.message);
+            return [];
+        }
+    },
+
     //Update Class
     async updateClass(id, courseCode, className, date, timeStart, timeEnd, classLocation , imageUrl) {
 

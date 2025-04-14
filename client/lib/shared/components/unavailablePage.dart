@@ -4,10 +4,12 @@ import 'package:lottie/lottie.dart';
 
 class Unavailablepage extends StatefulWidget {
   final String message;
+  final String animation;
 
   const Unavailablepage({
     super.key,
     required this.message,
+    required this.animation,
   });
 
   @override
@@ -18,14 +20,14 @@ class _UnavailablepageState extends State<Unavailablepage> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 20.0),
+      padding: const EdgeInsets.symmetric(vertical: 1.0),
       child: SizedBox(
         height: 200,
         child: Center(
           child: Column(
             children: [
               LottieBuilder.asset(
-                "assets/animations/unavailableAnimation.json",
+                widget.animation,
                 width: 150,
                 fit: BoxFit.fill,
               ),

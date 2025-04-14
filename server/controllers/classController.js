@@ -56,6 +56,48 @@ exports.studentViewTodayClass = async (req, res) => {
     }
 };
 
+//Student view upcoming class
+exports.viewUpcomingClass = async (req, res) => {
+    try {
+        const todayClasses = await classService.viewUpcomingClass();
+        res.status(200).json({
+            message: "Class data fetched successfully",
+            Data: todayClasses ?? [],
+        });
+    } catch (error) {
+        console.error("Controller Error:", error);
+        res.status(500).json({ message: "Failed to fetch class data" });
+    }
+}
+
+//View current class
+exports.viewCurrentClass = async (req,res) =>{
+    try{
+        const currentClass = await classService.viewCurrentClass();
+        res.status(200).json({
+            message: "Class data fetched successfully",
+            Data: currentClass ?? [],
+        });
+    } catch (error) {
+        console.error("Controller Error:", error);
+        res.status(500).json({ message: "Failed to fetch class data" });
+    }
+}
+
+//View passt class
+exports.viewPastClass = async (req,res) =>{
+    try{
+        const todayClasses = await classService.viewPastClass();
+        res.status(200).json({
+            message: "Class data fetched successfully",
+            Data: todayClasses ?? [],
+        });
+    } catch (error) {
+        console.error("Controller Error:", error);
+        res.status(500).json({ message: "Failed to fetch class data" });
+    }
+}
+
 //Function to update class
 exports.updateClass = async (req, res) => {
     try {

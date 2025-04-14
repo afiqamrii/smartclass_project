@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:lottie/lottie.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:smartclass_fyp_2024/constants/color_constants.dart';
 import 'package:smartclass_fyp_2024/features/student/models/todayClass_card_models.dart';
@@ -10,6 +12,7 @@ import 'package:smartclass_fyp_2024/features/student/views/widgets/tabs_item.dar
 import 'package:smartclass_fyp_2024/shared/components/unavailablePage.dart';
 import 'package:smartclass_fyp_2024/shared/data/dataprovider/data_provider.dart';
 import 'package:smartclass_fyp_2024/shared/data/dataprovider/user_provider.dart';
+import 'package:smartclass_fyp_2024/shared/widgets/loading.dart';
 import 'package:smartclass_fyp_2024/test.dart';
 
 class StudentHomePage extends ConsumerStatefulWidget {
@@ -21,7 +24,7 @@ class StudentHomePage extends ConsumerStatefulWidget {
 
 class _StudentHomePageState extends ConsumerState<StudentHomePage> {
   bool _isRefreshing = false; // Add loading state
-  int limit = 5; // Set the limit for the number of items to display
+  int limit = 3; // Set the limit for the number of items to display
   int _tabIndex = 0;
 
 // Handle the refresh and reload data from provider
@@ -32,6 +35,8 @@ class _StudentHomePageState extends ConsumerState<StudentHomePage> {
 
     await ref.read(userProvider.notifier).refreshUserData();
     await ref.read(classDataProvider.future);
+    await ref.read(upcomingClassProviders.future);
+    await ref.read(nowClassProviders);
     // ignore: unused_result
     ref.refresh(todayClassProviders);
     await Future.delayed(const Duration(seconds: 3));
@@ -46,7 +51,18 @@ class _StudentHomePageState extends ConsumerState<StudentHomePage> {
     // Get the user data from provider
     final user = ref.watch(userProvider);
 
+    //Get the data from provider
+    //Today class
     final todayClassData = ref.watch(todayClassProviders);
+
+    //Upcoming class
+    final upcomingClassData = ref.watch(upcomingClassProviders);
+
+    //Past class
+    final pastClassData = ref.watch(pastClassProviders);
+
+    //Get now/current class
+    final currentClassData = ref.watch(nowClassProviders);
     // final sumData = ref.watch(classDataProviderSummarizationStatus);
 
     return Scaffold(
@@ -160,7 +176,7 @@ class _StudentHomePageState extends ConsumerState<StudentHomePage> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           //Add search bar
-                          _searchBarSection(),
+                          _nowClassSection(currentClassData),
                           const SizedBox(height: 20),
                           //Add card section
                           _cardSection(context),
@@ -212,7 +228,7 @@ class _StudentHomePageState extends ConsumerState<StudentHomePage> {
                                           title: 'Upcoming',
                                         ),
                                         TabItem(
-                                          title: 'Summarization',
+                                          title: 'Class History',
                                         ),
                                       ],
                                     ),
@@ -224,12 +240,11 @@ class _StudentHomePageState extends ConsumerState<StudentHomePage> {
                                 AnimatedSize(
                                   duration: const Duration(milliseconds: 300),
                                   child: IndexedStack(
-                                    index:
-                                        _tabIndex, // manage this via a state variable
+                                    index: _tabIndex,
                                     children: [
                                       _classSection(todayClassData),
-                                      _classSection(todayClassData),
-                                      _classSection(todayClassData),
+                                      _upcomingClassSection(upcomingClassData),
+                                      _viewPastClass(pastClassData),
                                     ],
                                   ),
                                 ),
@@ -259,6 +274,7 @@ class _StudentHomePageState extends ConsumerState<StudentHomePage> {
           data: (data) {
             if (data.isEmpty) {
               return const Unavailablepage(
+                animation: "assets/animations/noClassAnimation.json",
                 message: "No Class Today. YAY!",
               );
             } else {
@@ -280,6 +296,7 @@ class _StudentHomePageState extends ConsumerState<StudentHomePage> {
                       timeEnd: data[index].endTime,
                       publishStatus: data[index].publishStatus,
                       imageUrl: data[index].imageUrl,
+                      isClassHistory: false,
                     ),
                   ),
                 ),
@@ -289,6 +306,7 @@ class _StudentHomePageState extends ConsumerState<StudentHomePage> {
           error: (error, stackTrace) {
             // Handle the error here
             return const Unavailablepage(
+              animation: "assets/animations/unavailableAnimation.json",
               message: "Class not found",
             );
           },
@@ -301,29 +319,266 @@ class _StudentHomePageState extends ConsumerState<StudentHomePage> {
         ),
         const SizedBox(height: 10),
         // Add a button to view all classes
-        GestureDetector(
-          onTap: () => {
-            // Handle tap on "View All" button here
-            // For example, navigate to class list page
-          },
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                'Show All',
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Colors.grey[600],
+
+        todayClassData.when(
+          data: (data) {
+            if (data.length > limit) {
+              return GestureDetector(
+                onTap: () => {
+                  // Handle tap on "View All" button here
+                  // For example, navigate to class list page
+                },
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Show All',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey[600],
+                      ),
+                    ),
+                    const SizedBox(width: 5),
+                    Icon(
+                      Icons.arrow_forward_ios,
+                      color: Colors.grey[600],
+                      size: 12,
+                    ),
+                  ],
                 ),
-              ),
-              const SizedBox(width: 5),
-              Icon(
-                Icons.arrow_forward_ios,
-                color: Colors.grey[600],
-                size: 12,
-              ),
-            ],
-          ),
+              );
+            } else {
+              return Padding(
+                padding: const EdgeInsets.only(top: 20.0),
+                child: Unavailablepage(
+                    animation: "assets/animations/noClassAnimation.json",
+                    message: "You only got ${data.length} class today."),
+              );
+            }
+          },
+          error: (error, stackTrace) {
+            // Handle the error here
+            return const Unavailablepage(
+              animation: "assets/animations/unavailableAnimation.json",
+              message: "Class not found",
+            );
+          },
+          loading: () {
+            // Show a loading indicator while data is being fetched
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget _upcomingClassSection(
+      AsyncValue<List<TodayclassCardModels>> upcomingClassData) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        const SizedBox(height: 5),
+        upcomingClassData.when(
+          data: (data) {
+            if (data.isEmpty) {
+              return const Unavailablepage(
+                animation: "assets/animations/noClassAnimation.json",
+                message: "No Upcoming Class.",
+              );
+            } else {
+              return GestureDetector(
+                onTap: () => {
+                  // Handle tap on class card here
+                  // For example, navigate to class details page
+                },
+                child: Column(
+                  children: List.generate(
+                    data.length > limit ? limit : data.length,
+                    (index) => StudentTodayclassCard(
+                      className: data[index].courseName,
+                      lecturerName: data[index].lecturerName,
+                      courseCode: data[index].courseCode,
+                      classLocation: data[index].location,
+                      date: data[index].date,
+                      timeStart: data[index].startTime,
+                      timeEnd: data[index].endTime,
+                      publishStatus: data[index].publishStatus,
+                      imageUrl: data[index].imageUrl,
+                      isClassHistory: false,
+                    ),
+                  ),
+                ),
+              );
+            }
+          },
+          error: (error, stackTrace) {
+            // Handle the error here
+            return const Unavailablepage(
+              animation: "assets/animations/unavailableAnimation.json",
+              message: "Class not found",
+            );
+          },
+          loading: () {
+            // Show a loading indicator while data is being fetched
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          },
+        ),
+        const SizedBox(height: 10),
+        // Add a button to view all classes only if there are more than limit classes
+        upcomingClassData.when(
+          data: (data) {
+            if (data.length > limit) {
+              return GestureDetector(
+                onTap: () => {
+                  // Handle tap on "View All" button here
+                  // For example, navigate to class list page
+                },
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Show All',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey[600],
+                      ),
+                    ),
+                    const SizedBox(width: 5),
+                    Icon(
+                      Icons.arrow_forward_ios,
+                      color: Colors.grey[600],
+                      size: 12,
+                    ),
+                  ],
+                ),
+              );
+            } else {
+              return const SizedBox.shrink(); // Or any fallback widget
+            }
+          },
+          error: (error, stackTrace) {
+            // Handle the error here
+            return const Unavailablepage(
+              animation: "assets/animations/unavailableAnimation.json",
+              message: "Class not found",
+            );
+          },
+          loading: () {
+            // Show a loading indicator while data is being fetched
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget _viewPastClass(AsyncValue<List<TodayclassCardModels>> pastClassData) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        const SizedBox(height: 5),
+        pastClassData.when(
+          data: (data) {
+            if (data.isEmpty) {
+              return const Unavailablepage(
+                animation: "assets/animations/unavailableAnimation.json",
+                message: "No Past Class",
+              );
+            } else {
+              return GestureDetector(
+                onTap: () => {
+                  // Handle tap on class card here
+                  // For example, navigate to class details page
+                },
+                child: Column(
+                  children: List.generate(
+                    data.length > limit ? limit : data.length,
+                    (index) => StudentTodayclassCard(
+                      className: data[index].courseName,
+                      lecturerName: data[index].lecturerName,
+                      courseCode: data[index].courseCode,
+                      classLocation: data[index].location,
+                      date: data[index].date,
+                      timeStart: data[index].startTime,
+                      timeEnd: data[index].endTime,
+                      publishStatus: data[index].publishStatus,
+                      imageUrl: data[index].imageUrl,
+                      isClassHistory: false,
+                    ),
+                  ),
+                ),
+              );
+            }
+          },
+          error: (error, stackTrace) {
+            // Handle the error here
+            return const Unavailablepage(
+              animation: "assets/animations/unavailableAnimation.json",
+              message: "Class not found",
+            );
+          },
+          loading: () {
+            // Show a loading indicator while data is being fetched
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          },
+        ),
+        const SizedBox(height: 10),
+        // Add a button to view all classes
+
+        pastClassData.when(
+          data: (data) {
+            if (data.length > limit) {
+              return GestureDetector(
+                onTap: () => {
+                  // Handle tap on "View All" button here
+                  // For example, navigate to class list page
+                },
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Show All',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey[600],
+                      ),
+                    ),
+                    const SizedBox(width: 5),
+                    Icon(
+                      Icons.arrow_forward_ios,
+                      color: Colors.grey[600],
+                      size: 12,
+                    ),
+                  ],
+                ),
+              );
+            } else {
+              return const SizedBox.shrink(); // Or any fallback widget
+            }
+          },
+          error: (error, stackTrace) {
+            // Handle the error here
+            return const Unavailablepage(
+              animation: "assets/animations/unavailableAnimation.json",
+              message: "Class not found",
+            );
+          },
+          loading: () {
+            // Show a loading indicator while data is being fetched
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          },
         ),
       ],
     );
@@ -377,56 +632,149 @@ class _StudentHomePageState extends ConsumerState<StudentHomePage> {
 
   Row _cardSection(BuildContext context) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Container(
-          width: MediaQuery.of(context).size.width * 0.41,
-          height: 50,
-          decoration: BoxDecoration(
-            color: Colors.grey[300],
-            borderRadius: BorderRadius.circular(8),
+        // Left card (Empty or any content you want)
+        Expanded(
+          child: Container(
+            height: 70,
+            decoration: BoxDecoration(
+              color: Colors.grey[200],
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Center(
+              child: Text(
+                "Left Card",
+                style: TextStyle(
+                  fontSize: 13,
+                  fontFamily: 'FigtreeRegular',
+                  fontWeight: FontWeight.w600,
+                  color: Colors.grey[700],
+                ),
+              ),
+            ),
           ),
         ),
-        Container(
-          width: MediaQuery.of(context).size.width * 0.41,
-          height: 50,
-          decoration: BoxDecoration(
-            color: Colors.grey[300],
-            borderRadius: BorderRadius.circular(8),
+
+        const SizedBox(width: 12),
+
+        // Right card (Report Utility Problem)
+        Expanded(
+          child: GestureDetector(
+            onTap: () => {}, // Handle tap on the card
+            child: Container(
+              height: 65,
+              decoration: BoxDecoration(
+                color: const Color.fromARGB(255, 250, 250, 250),
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.2),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Row(
+                  children: [
+                    Center(
+                      child: Image.asset(
+                        "assets/icons/reportIcon.png",
+                        width: 22,
+                        height: 22,
+                        fit: BoxFit.contain,
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    const Expanded(
+                      child: Text(
+                        'Report Utility Problem',
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontFamily: 'FigtreeRegular',
+                          fontWeight: FontWeight.w600,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
           ),
-        )
+        ),
       ],
     );
   }
 
-  SearchBar _searchBarSection() {
-    return SearchBar(
-      backgroundColor: WidgetStatePropertyAll(
-        Colors.grey[100], // Set background color
-      ), // Set background color
-      leading: const Icon(
-        Icons.search,
-        color: Colors.grey,
-      ),
-      hintText: 'Search here...',
-      shadowColor: WidgetStatePropertyAll(
-        Colors.grey[300], // Set shadow color
-      ),
-      hintStyle: const WidgetStatePropertyAll(
-        TextStyle(
-          color: Colors.grey,
-          fontSize: 14,
-          fontFamily: 'FigtreeRegular',
-        ),
-      ),
-      shape: WidgetStatePropertyAll(
-        RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
-      ),
-      padding: const WidgetStatePropertyAll(
-        EdgeInsets.all(8),
+  Widget _nowClassSection(
+      AsyncValue<List<TodayclassCardModels>> currentClassData) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 5.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Padding(
+            padding: EdgeInsets.only(left: 5.0),
+            child: Text(
+              'Now Class',
+              style: TextStyle(
+                fontSize: 18,
+                fontFamily: 'Figtree',
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
+            ),
+          ),
+          const SizedBox(height: 5),
+          GestureDetector(
+              onTap: () => {}, // Handle tap on the card
+              child: currentClassData.when(
+                data: (data) {
+                  if (data.isEmpty) {
+                    return const Unavailablepage(
+                      animation: "assets/animations/noClassAnimation.json",
+                      message: "No Class Today. YAY!",
+                    );
+                  } else {
+                    return GestureDetector(
+                      onTap: () => {
+                        // Handle tap on class card here
+                        // For example, navigate to class details page
+                      },
+                      child: Column(
+                        children: List.generate(
+                          data.length > limit ? limit : data.length,
+                          (index) => StudentTodayclassCard(
+                            className: data[index].courseName,
+                            lecturerName: data[index].lecturerName,
+                            courseCode: data[index].courseCode,
+                            classLocation: data[index].location,
+                            date: data[index].date,
+                            timeStart: data[index].startTime,
+                            timeEnd: data[index].endTime,
+                            publishStatus: data[index].publishStatus,
+                            imageUrl: data[index].imageUrl,
+                            isClassHistory: false,
+                          ),
+                        ),
+                      ),
+                    );
+                  }
+                },
+                error: (error, stackTrace) {
+                  return const SizedBox.shrink();
+                },
+                loading: () {
+                  // Show a loading indicator while data is being fetched
+                  return const LoadingWidget();
+                },
+              )),
+        ],
       ),
     );
+    
   }
 }

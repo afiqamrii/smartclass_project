@@ -6,3 +6,21 @@ final todayClassProviders =
     FutureProvider<List<TodayclassCardModels>>((ref) async {
   return await Classsessionapi.getClasses(); // Use classProvider from api.dart
 });
+
+final upcomingClassProviders =
+    FutureProvider<List<TodayclassCardModels>>((ref) async {
+  return await Classsessionapi
+      .getUpcomingClasses(); // Use classProvider from api.dart
+});
+
+final pastClassProviders =
+    FutureProvider<List<TodayclassCardModels>>((ref) async {
+  return await Classsessionapi
+      .getPastClasses(); // Use classProvider from api.dart
+});
+
+//Now class provider
+final nowClassProviders =
+    StreamProvider<List<TodayclassCardModels>>((ref) async* {
+  yield* Classsessionapi.getNowClasses(); // Use classProvider from api.dart
+});

@@ -67,7 +67,10 @@ exports.signIn = async (req, res) => {
         res.status(200).json({ 
             message: "User signed in successfully",
             userId: result.userId,
+            userEmail: result.userEmail,
+            name: result.name,
             userName: result.userName, 
+            externalId: result.externalId,
             roleId: result.roleId,
             token: result.token  // token is included
         });
