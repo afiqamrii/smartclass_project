@@ -12,6 +12,10 @@ const User = sequelize.define("User", {
     type: DataTypes.STRING(50),
     allowNull: false,
   },
+  name:{
+    type: DataTypes.STRING(255),
+    allowNull: false,
+  },
   userEmail: {
     type: DataTypes.STRING(255),
     allowNull: false,

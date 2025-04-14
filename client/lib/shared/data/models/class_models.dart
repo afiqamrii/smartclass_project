@@ -84,19 +84,26 @@ class ClassCreateModel {
   //Format Time to save in database
   static String timeToJSON(String time) {
     try {
-      // print("Input time: $time"); // Debugging
+      // print("Input time: $time");
 
-      // Normalize any irregular spaces and characters
       String cleanedTime = time.replaceAll(RegExp(r'\s+'), ' ').trim();
 
-      DateTime parsedTime = DateFormat("hh:mm a").parse(cleanedTime);
-      String formattedTime = DateFormat("HH:mm:ss").format(parsedTime);
+      DateTime parsedTime;
 
-      // print("Converted time: $formattedTime"); // Debugging
+      // Try parsing as 12-hour format with AM/PM
+      try {
+        parsedTime = DateFormat("hh:mm a").parseStrict(cleanedTime);
+      } catch (_) {
+        // If 12-hour parsing fails, try 24-hour format
+        parsedTime = DateFormat("HH:mm").parseStrict(cleanedTime);
+      }
+
+      String formattedTime = DateFormat("HH:mm:ss").format(parsedTime);
       return formattedTime;
     } catch (e) {
       // print("Error parsing time: $e");
-      return "00:00:00"; // Default invalid time
+      // print("Input time: $time");
+      return "00:00:00";
     }
   }
 }

@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:quickalert/quickalert.dart';
 import 'package:smartclass_fyp_2024/constants/api_constants.dart';
 import 'package:smartclass_fyp_2024/features/lecturer/views/manage_class/lecturer_view_class.dart';
+import 'package:smartclass_fyp_2024/shared/components/custom_buttom.dart';
 import 'package:smartclass_fyp_2024/shared/data/dataprovider/user_provider.dart';
 import '../../../../shared/data/models/class_models.dart';
 import '../../../../shared/data/services/classApi.dart';
@@ -74,9 +75,17 @@ class _LectUpdateClassState extends ConsumerState<LectUpdateClass> {
     final TimeOfDay? picked = await showTimePicker(
       context: context,
       initialTime: TimeOfDay.now(),
+      builder: (BuildContext context, Widget? child) {
+        // Wrap with MediaQuery to force 12-hour format
+        return MediaQuery(
+          data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: false),
+          child: child!,
+        );
+      },
     );
     if (picked != null) {
-      controller.text = picked.format(context);
+      controller.text =
+          picked.format(context); // This will now return 12-hour format
     }
   }
 
@@ -117,7 +126,7 @@ class _LectUpdateClassState extends ConsumerState<LectUpdateClass> {
             children: [
               _buildInputField('Course Code', _courseCodeController),
               const SizedBox(height: 16),
-              _buildInputField('Title', _titleController),
+              _buildInputField('Class Title', _titleController),
               const SizedBox(height: 16),
               _buildInputField('Date', _dateController,
                   onTap: () => pickDate(context, _dateController)),
@@ -130,61 +139,74 @@ class _LectUpdateClassState extends ConsumerState<LectUpdateClass> {
               const SizedBox(height: 16),
               _buildInputField('Class Location', _classLocationController),
               const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: () async {
-                  if (_formKey.currentState!.validate()) {
-                    final updatedClass = ClassCreateModel(
-                      classId: widget.classItem.classId,
-                      courseCode: _courseCodeController.text,
-                      courseName: _titleController.text,
-                      date: _dateController.text,
-                      startTime: _timeStartController.text,
-                      endTime: _timeEndController.text,
-                      location: _classLocationController.text,
-                      lecturerId: user.externalId,
-                      imageUrl: "",
-                    );
-
-                    final response = await Api.updateClass(
-                        ApiConstants.baseUrl, updatedClass);
-
-                    //Show QuickAlert message for user if the update is error or success
-                    if (response != null) {
-                      QuickAlert.show(
-                        context: context,
-                        type: QuickAlertType.success,
-                        text: 'Class updated successfully',
-                        confirmBtnText: 'OK',
-                        onConfirmBtnTap: () {
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  LecturerViewClass(classItem: updatedClass),
-                            ),
+              Padding(
+                padding: const EdgeInsets.all(30.0),
+                child: CustomButton(
+                  onTap: () async {
+                    QuickAlert.show(
+                      context: context,
+                      type: QuickAlertType.confirm,
+                      title: "Update Class",
+                      text: "Are you sure you want to update this class?",
+                      confirmBtnText: "Yes",
+                      cancelBtnText: "No",
+                      onConfirmBtnTap: () async {
+                        if (_formKey.currentState!.validate()) {
+                          final updatedClass = ClassCreateModel(
+                            classId: widget.classItem.classId,
+                            courseCode: _courseCodeController.text,
+                            courseName: _titleController.text,
+                            date: _dateController.text,
+                            startTime: _timeStartController.text,
+                            endTime: _timeEndController.text,
+                            location: _classLocationController.text,
+                            lecturerId: user.externalId,
+                            imageUrl: "",
                           );
-                        },
-                      );
-                    } else {
-                      QuickAlert.show(
-                        context: context,
-                        type: QuickAlertType.error,
-                        text: 'Failed to update class, try again!',
-                        confirmBtnText: 'OK',
-                        onConfirmBtnTap: () {
-                          Navigator.pop(context);
-                        },
-                      );
-                    }
 
-                    // Navigator.pop(context);
-                    // ScaffoldMessenger.of(context).showSnackBar(
-                    //   const SnackBar(
-                    //       content: Text('Class updated successfully')),
-                    // );
-                  }
-                },
-                child: const Text('Update Class'),
+                          final response = await Api.updateClass(
+                              ApiConstants.baseUrl, updatedClass);
+
+                          //Show QuickAlert message for user if the update is error or success
+                          if (response != null) {
+                            QuickAlert.show(
+                              context: context,
+                              type: QuickAlertType.success,
+                              text: 'Class updated successfully',
+                              confirmBtnText: 'OK',
+                              onConfirmBtnTap: () {
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => LecturerViewClass(
+                                        classItem: updatedClass),
+                                  ),
+                                );
+                              },
+                            );
+                          } else {
+                            QuickAlert.show(
+                              context: context,
+                              type: QuickAlertType.error,
+                              text: 'Failed to update class, try again!',
+                              confirmBtnText: 'OK',
+                              onConfirmBtnTap: () {
+                                Navigator.pop(context);
+                              },
+                            );
+                          }
+
+                          // Navigator.pop(context);
+                          // ScaffoldMessenger.of(context).showSnackBar(
+                          //   const SnackBar(
+                          //       content: Text('Class updated successfully')),
+                          // );
+                        }
+                      },
+                    );
+                  },
+                  text: "Update Class",
+                ),
               ),
             ],
           ),

@@ -11,6 +11,7 @@ class StudentTodayclassCard extends StatefulWidget {
   final String publishStatus;
   final String imageUrl;
   final String lecturerName;
+  final bool? isClassHistory; //Check if card is for class history
 
   const StudentTodayclassCard({
     super.key,
@@ -23,6 +24,7 @@ class StudentTodayclassCard extends StatefulWidget {
     required this.publishStatus,
     required this.imageUrl,
     required this.lecturerName,
+    this.isClassHistory,
   });
 
   @override
@@ -47,6 +49,9 @@ class _StudentTodayclassCardState extends State<StudentTodayclassCard> {
               SizedBox(
                 height: 200,
                 child: Image.network(
+                  errorBuilder: (context, error, stackTrace) => const Center(
+                    child: Text("Image not found"),
+                  ),
                   widget.imageUrl,
                   fit: BoxFit.cover,
                   width: double.infinity,
@@ -70,98 +75,99 @@ class _StudentTodayclassCardState extends State<StudentTodayclassCard> {
                   ),
                 ),
               ),
-              Positioned(
-                top: MediaQuery.of(context).size.height * 0.02,
-                right: MediaQuery.of(context).size.height * 0.02,
-                child: Container(
-                  padding: const EdgeInsets.all(6),
-                  decoration: BoxDecoration(
-                    color: widget.publishStatus == "Published"
-                        ? Colors.green.withOpacity(1)
-                        : Colors.red.withOpacity(0.9),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Text(
-                    widget.publishStatus == "Published"
-                        ? "Summary Available"
-                        : "No Summary",
-                    style: const TextStyle(
-                      fontSize: 9,
-                      fontFamily: 'Figtree',
-                      color: Colors.white,
+              if (widget.isClassHistory == true)
+                Positioned(
+                  top: MediaQuery.of(context).size.height * 0.02,
+                  right: MediaQuery.of(context).size.height * 0.02,
+                  child: Container(
+                    padding: const EdgeInsets.all(6),
+                    decoration: BoxDecoration(
+                      color: widget.publishStatus == "Published"
+                          ? Colors.green.withOpacity(1)
+                          : Colors.red.withOpacity(0.9),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Text(
+                      widget.publishStatus == "Published"
+                          ? "Summary Available"
+                          : "No Summary",
+                      style: const TextStyle(
+                        fontSize: 9,
+                        fontFamily: 'Figtree',
+                        color: Colors.white,
+                      ),
                     ),
                   ),
                 ),
-              ),
               //Class Info Section
               Padding(
                 padding: EdgeInsets.only(
-                  top: MediaQuery.of(context).size.height * 0.09,
+                  top: MediaQuery.of(context).size.height * 0.12,
                   bottom: MediaQuery.of(context).size.height * 0.01,
                   left: MediaQuery.of(context).size.height * 0.02,
+                  right: MediaQuery.of(context).size.height * 0.05,
                 ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.max,
-                  crossAxisAlignment: CrossAxisAlignment.center,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        //Class name
-                        Text(
-                          "${widget.courseCode} - ${widget.className}",
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontFamily: 'Figtree',
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                          ),
+                    //Class name
+                    Flexible(
+                      child: Text(
+                        "${widget.courseCode} - ${widget.className}",
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        softWrap: true,
+                        style: const TextStyle(
+                          fontSize: 17,
+                          fontFamily: 'Figtree',
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
                         ),
+                      ),
+                    ),
 
-                        const SizedBox(height: 5),
-                        //Time
-                        Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              "${widget.timeStart} - ${widget.timeEnd}",
-                              style: const TextStyle(
-                                fontSize: 13,
-                                fontFamily: 'FigtreeRegular',
-                                color: Colors.white,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 1),
-                        //Class location
-                        Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              widget.classLocation,
-                              style: const TextStyle(
-                                fontSize: 13,
-                                fontFamily: 'FigtreeRegular',
-                                color: Colors.white,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 2),
+                    const SizedBox(height: 5),
+                    //Time
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
                         Text(
-                          widget.lecturerName,
+                          "${widget.timeStart} - ${widget.timeEnd}",
                           style: const TextStyle(
                             fontSize: 12,
-                            fontFamily: 'FigtreeRegular',
+                            fontFamily: 'Poppins',
                             color: Colors.white,
                           ),
                         ),
-                        const SizedBox(height: 10),
                       ],
                     ),
+                    const SizedBox(height: 1),
+                    //Class location
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          widget.classLocation,
+                          style: const TextStyle(
+                            fontSize: 12,
+                            fontFamily: 'Poppins',
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      widget.lecturerName,
+                      style: const TextStyle(
+                        fontSize: 12,
+                        fontFamily: 'Poppins',
+                        color: Colors.white,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
                   ],
                 ),
               ),
