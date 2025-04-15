@@ -149,7 +149,7 @@ class _StudentTodayclassCardState extends State<StudentTodayclassCard> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
-                          widget.classLocation,
+                          "${widget.date} | ${widget.classLocation}",
                           style: const TextStyle(
                             fontSize: 12,
                             fontFamily: 'Poppins',
