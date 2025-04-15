@@ -183,7 +183,7 @@ const ClassModel = {
                 AND cs.timeEnd >= ?
             `;
             const [rows] = await pool.query(query, [today ,currentTime, currentTime]);
-            console.log("Current time:", currentTime);
+            // console.log("Current time:", currentTime);
             return rows;
         } catch (err) {
             console.error("Error retrieving data:", err.message);

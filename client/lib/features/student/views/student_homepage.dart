@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
-import 'package:loading_animation_widget/loading_animation_widget.dart';
-import 'package:lottie/lottie.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:smartclass_fyp_2024/constants/color_constants.dart';
 import 'package:smartclass_fyp_2024/features/student/models/todayClass_card_models.dart';
 import 'package:smartclass_fyp_2024/features/student/providers/student_class_provider.dart';
+import 'package:smartclass_fyp_2024/features/student/views/widgets/classnow_card.dart';
 import 'package:smartclass_fyp_2024/features/student/views/widgets/student_todayclass_card.dart';
 import 'package:smartclass_fyp_2024/features/student/views/widgets/tabs_item.dart';
 import 'package:smartclass_fyp_2024/shared/components/unavailablePage.dart';
@@ -96,7 +95,7 @@ class _StudentHomePageState extends ConsumerState<StudentHomePage> {
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             const CircleAvatar(
-                              radius: 25,
+                              radius: 20,
                               backgroundImage: AssetImage(
                                 'assets/pictures/compPicture.jpg',
                               ),
@@ -110,7 +109,7 @@ class _StudentHomePageState extends ConsumerState<StudentHomePage> {
                                 Text(
                                   user.userName,
                                   style: const TextStyle(
-                                    fontSize: 18,
+                                    fontSize: 16,
                                     fontFamily: 'Figtree',
                                     fontWeight: FontWeight.bold,
                                     color: Colors.white,
@@ -124,7 +123,7 @@ class _StudentHomePageState extends ConsumerState<StudentHomePage> {
                                           ? "Lecturer"
                                           : "PPH Staff",
                                   style: const TextStyle(
-                                    fontSize: 14,
+                                    fontSize: 12,
                                     fontFamily: 'FigtreeRegular',
                                     fontWeight: FontWeight.w400,
                                     color: Colors.white,
@@ -170,17 +169,21 @@ class _StudentHomePageState extends ConsumerState<StudentHomePage> {
                       ),
                     ),
                     child: Padding(
-                      padding: const EdgeInsets.all(17.0),
+                      padding: const EdgeInsets.only(
+                        top: 10.0,
+                        left: 12,
+                        right: 12,
+                      ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           //Add search bar
                           _nowClassSection(currentClassData),
-                          const SizedBox(height: 20),
+                          const SizedBox(height: 15),
                           //Add card section
                           _cardSection(context),
-                          const SizedBox(height: 20),
+                          const SizedBox(height: 12),
                           //Featured courses section
                           _featuresCourseSection(context),
                           const SizedBox(height: 30),
@@ -591,7 +594,7 @@ class _StudentHomePageState extends ConsumerState<StudentHomePage> {
         const Text(
           'Featured Courses',
           style: TextStyle(
-            fontSize: 18,
+            fontSize: 17,
             fontFamily: 'Figtree',
             fontWeight: FontWeight.bold,
             color: Colors.black,
@@ -630,7 +633,7 @@ class _StudentHomePageState extends ConsumerState<StudentHomePage> {
     );
   }
 
-  Row _cardSection(BuildContext context) {
+  Widget _cardSection(BuildContext context) {
     return Row(
       children: [
         // Left card (Empty or any content you want)
@@ -721,60 +724,49 @@ class _StudentHomePageState extends ConsumerState<StudentHomePage> {
             child: Text(
               'Now Class',
               style: TextStyle(
-                fontSize: 18,
+                fontSize: 17,
                 fontFamily: 'Figtree',
                 fontWeight: FontWeight.bold,
                 color: Colors.black,
               ),
             ),
           ),
-          const SizedBox(height: 5),
-          GestureDetector(
-              onTap: () => {}, // Handle tap on the card
-              child: currentClassData.when(
-                data: (data) {
-                  if (data.isEmpty) {
-                    return const Unavailablepage(
-                      animation: "assets/animations/noClassAnimation.json",
-                      message: "No Class Today. YAY!",
-                    );
-                  } else {
-                    return GestureDetector(
-                      onTap: () => {
-                        // Handle tap on class card here
-                        // For example, navigate to class details page
-                      },
-                      child: Column(
-                        children: List.generate(
-                          data.length > limit ? limit : data.length,
-                          (index) => StudentTodayclassCard(
+          const SizedBox(
+            height: 2,
+          ),
+          currentClassData.when(
+            data: (data) {
+              if (data.isEmpty) {
+                return const Unavailablepage(
+                  animation: "assets/animations/noClassAnimation.json",
+                  message: "No Class Today. YAY!",
+                );
+              } else {
+                return Column(
+                  children: List.generate(
+                      data.length > limit ? limit : data.length,
+                      (index) => ClassNowCard(
                             className: data[index].courseName,
                             lecturerName: data[index].lecturerName,
                             courseCode: data[index].courseCode,
                             classLocation: data[index].location,
-                            date: data[index].date,
                             timeStart: data[index].startTime,
                             timeEnd: data[index].endTime,
-                            publishStatus: data[index].publishStatus,
                             imageUrl: data[index].imageUrl,
-                            isClassHistory: false,
-                          ),
-                        ),
-                      ),
-                    );
-                  }
-                },
-                error: (error, stackTrace) {
-                  return const SizedBox.shrink();
-                },
-                loading: () {
-                  // Show a loading indicator while data is being fetched
-                  return const LoadingWidget();
-                },
-              )),
+                          )),
+                );
+              }
+            },
+            error: (error, stackTrace) {
+              return const SizedBox.shrink();
+            },
+            loading: () {
+              // Show a loading indicator while data is being fetched
+              return const LoadingWidget();
+            },
+          ),
         ],
       ),
     );
-    
   }
 }

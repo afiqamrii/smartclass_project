@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 
+import 'package:flutter_svg/flutter_svg.dart';
+
 class StudentMyclass extends StatefulWidget {
   const StudentMyclass({super.key});
 
@@ -13,6 +15,7 @@ class _StudentMyclassState extends State<StudentMyclass> {
   late DateTime classEndTime;
   late Duration remaining;
   Timer? timer;
+  bool isLessThan10Minutes = false;
 
   @override
   void initState() {
@@ -32,6 +35,10 @@ class _StudentMyclassState extends State<StudentMyclass> {
     final now = DateTime.now();
     setState(() {
       remaining = classEndTime.difference(now);
+
+      // Dynamically update the isLessThan10Minutes flag
+      isLessThan10Minutes = remaining.inMinutes < 10;
+
       if (remaining.isNegative) {
         timer?.cancel();
       }
@@ -87,10 +94,10 @@ class _StudentMyclassState extends State<StudentMyclass> {
                     child: Container(
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
-                          begin: Alignment.bottomCenter,
-                          end: Alignment.topCenter,
+                          begin: Alignment.bottomLeft,
+                          end: Alignment.topRight,
                           colors: [
-                            Colors.black.withOpacity(1),
+                            Colors.black.withOpacity(0.95),
                             Colors.transparent,
                           ],
                         ),
@@ -112,16 +119,19 @@ class _StudentMyclassState extends State<StudentMyclass> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(
-                                    "CSF3233",
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontFamily: 'Figtree',
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white,
-                                    ),
+                                  Row(
+                                    children: [
+                                      Text(
+                                        "CSF3233",
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          fontFamily: 'Figtree',
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                  // SizedBox(height: 1),
                                   Text(
                                     "Cyber Security",
                                     style: TextStyle(
@@ -130,7 +140,24 @@ class _StudentMyclassState extends State<StudentMyclass> {
                                       color: Colors.white,
                                     ),
                                   ),
-                                  SizedBox(height: 20),
+                                  SizedBox(height: 15),
+                                  Text(
+                                    "10:00 AM - 11:00 AM",
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      fontFamily: 'Poppins',
+                                      color: Colors.white70,
+                                    ),
+                                  ),
+                                  Text(
+                                    "Dr. Nor Azlina | Ibnu Hibban",
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      fontFamily: 'Poppins',
+                                      color: Colors.white70,
+                                    ),
+                                  ),
+                                  SizedBox(height: 10),
                                   Text(
                                     "Scan attendance within the remaining time only.",
                                     style: TextStyle(
@@ -164,7 +191,9 @@ class _StudentMyclassState extends State<StudentMyclass> {
                                           height: 26,
                                           alignment: Alignment.center,
                                           decoration: BoxDecoration(
-                                            color: Colors.white,
+                                            color: isLessThan10Minutes
+                                                ? Colors.red
+                                                : Colors.white,
                                             borderRadius:
                                                 BorderRadius.circular(6),
                                             boxShadow: const [
@@ -177,11 +206,13 @@ class _StudentMyclassState extends State<StudentMyclass> {
                                           ),
                                           child: Text(
                                             time,
-                                            style: const TextStyle(
+                                            style: TextStyle(
                                               fontSize: 12,
                                               fontWeight: FontWeight.bold,
                                               fontFamily: 'Figtree',
-                                              color: Colors.black,
+                                              color: isLessThan10Minutes
+                                                  ? Colors.white
+                                                  : Colors.black,
                                             ),
                                           ),
                                         ),
@@ -202,7 +233,7 @@ class _StudentMyclassState extends State<StudentMyclass> {
                             ),
                           ],
                         ),
-                        const SizedBox(height: 19),
+                        const SizedBox(height: 5),
 
                         // Clock-in button
                         SizedBox(
@@ -211,11 +242,15 @@ class _StudentMyclassState extends State<StudentMyclass> {
                             onPressed: () {
                               // Add your clock-in logic here
                             },
-                            icon: const Icon(Icons.access_time, size: 18),
+                            icon: SvgPicture.asset(
+                              'assets/icons/fingerprint.svg',
+                              width: 15,
+                              height: 15,
+                            ),
                             label: const Text(
                               "Tap to Clock In",
                               style: TextStyle(
-                                fontSize: 14,
+                                fontSize: 13,
                                 fontFamily: 'Figtree',
                                 fontWeight: FontWeight.w500,
                               ),
