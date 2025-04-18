@@ -53,6 +53,7 @@ dependencies:
   flutter_markdown: ^0.7.7
   swipe_refresh: ^1.1.2
   modal_bottom_sheet: ^3.0.0
+  nfc_host_card_emulation: ^1.1.0
   
   
   
