@@ -1,6 +1,7 @@
 import 'package:intl/intl.dart';
 
 class TodayclassCardModels {
+  final String userId;
   final int classId;
   final String courseCode;
   final String courseName;
@@ -13,7 +14,9 @@ class TodayclassCardModels {
   final String publishStatus;
 
   TodayclassCardModels(
-      {required this.classId,
+      {
+      required this.userId,
+      required this.classId,
       required this.courseCode,
       required this.courseName,
       required this.location,
@@ -35,6 +38,7 @@ class TodayclassCardModels {
     String formattedEndTime = _formatTime(json['timeEnd']);
 
     return TodayclassCardModels(
+      userId: json['userId'] ?? "Unknown ID",
       classId: json['classId'] ?? 0,
       courseCode: json['courseCode'] ?? "Unknown Code",
       courseName: json['className'] ?? "Unknown Class",

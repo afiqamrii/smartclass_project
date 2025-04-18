@@ -11,6 +11,7 @@ import 'package:smartclass_fyp_2024/features/student/views/widgets/tabs_item.dar
 import 'package:smartclass_fyp_2024/shared/components/unavailablePage.dart';
 import 'package:smartclass_fyp_2024/shared/data/dataprovider/data_provider.dart';
 import 'package:smartclass_fyp_2024/shared/data/dataprovider/user_provider.dart';
+import 'package:smartclass_fyp_2024/shared/data/models/user.dart';
 import 'package:smartclass_fyp_2024/shared/widgets/loading.dart';
 import 'package:smartclass_fyp_2024/test.dart';
 
@@ -179,7 +180,7 @@ class _StudentHomePageState extends ConsumerState<StudentHomePage> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           //Add search bar
-                          _nowClassSection(currentClassData),
+                          _nowClassSection(currentClassData, user),
                           const SizedBox(height: 15),
                           //Add card section
                           _cardSection(context),
@@ -713,7 +714,7 @@ class _StudentHomePageState extends ConsumerState<StudentHomePage> {
   }
 
   Widget _nowClassSection(
-      AsyncValue<List<TodayclassCardModels>> currentClassData) {
+      AsyncValue<List<TodayclassCardModels>> currentClassData, User user) {
     return Padding(
       padding: const EdgeInsets.only(top: 5.0),
       child: Column(
@@ -746,6 +747,8 @@ class _StudentHomePageState extends ConsumerState<StudentHomePage> {
                   children: List.generate(
                       data.length > limit ? limit : data.length,
                       (index) => ClassNowCard(
+                            classId: data[index].classId,
+                            userId: user.externalId,
                             className: data[index].courseName,
                             lecturerName: data[index].lecturerName,
                             courseCode: data[index].courseCode,

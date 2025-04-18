@@ -5,9 +5,12 @@ import 'dart:async';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
+import 'package:smartclass_fyp_2024/nfc/start_clock_in_nfc.dart';
 
 class ClassNowCard extends StatefulWidget {
   //Class Card variable neededdd
+  final int classId;
+  final String userId;
   final String className;
   final String courseCode;
   final String classLocation;
@@ -18,6 +21,8 @@ class ClassNowCard extends StatefulWidget {
 
   const ClassNowCard({
     super.key,
+    required this.classId,
+    required this.userId,
     required this.className,
     required this.courseCode,
     required this.classLocation,
@@ -41,6 +46,11 @@ class _ClassNowCardState extends State<ClassNowCard> {
   @override
   void initState() {
     super.initState();
+
+    // ⬇️ Initialize NFC
+    NfcClockInService.initNfc();
+
+    //Check if nfc is enabled or not
 
     final now = DateTime.now();
     final timeFormat = DateFormat
@@ -288,8 +298,18 @@ class _ClassNowCardState extends State<ClassNowCard> {
                             ),
                             context: context,
                             builder: (modalContext) {
+                              // 🔄 Start NFC Clock-In when modal shows
+                              NfcClockInService.startClockIn(
+                                studentId: widget
+                                    .userId, // you can replace this with a dynamic value
+                                courseCode: widget.courseCode,
+                                classId: widget.classId
+                                    .toString(), // or use an actual classId if available
+                              );
                               // Start a timer to close the modal after 1 minutes
                               Timer(const Duration(minutes: 1), () {
+                                NfcClockInService
+                                    .stopClockIn(); // ⛔ Stop NFC on timeout
                                 if (Navigator.of(modalContext).canPop()) {
                                   Navigator.of(modalContext).pop();
                                 }
@@ -343,8 +363,11 @@ class _ClassNowCardState extends State<ClassNowCard> {
                                           fit: BoxFit.cover,
                                         ),
                                         ElevatedButton(
-                                          onPressed: () =>
-                                              Navigator.pop(modalContext),
+                                          onPressed: () {
+                                            NfcClockInService
+                                                .stopClockIn(); // ⛔ Stop NFC on cancel
+                                            Navigator.pop(modalContext);
+                                          },
                                           style: ElevatedButton.styleFrom(
                                             backgroundColor: Colors.white,
                                             foregroundColor: Colors.black,
@@ -364,8 +387,7 @@ class _ClassNowCardState extends State<ClassNowCard> {
                                           child: Text(
                                             "Cancel",
                                             style: TextStyle(
-                                              color: Colors.grey[500],
-                                            ),
+                                                color: Colors.grey[500]),
                                           ),
                                         ),
                                       ],
