@@ -101,14 +101,14 @@ class StudentSignupPage extends ConsumerWidget {
 
                 const SizedBox(height: 20),
 
-                //Staf id textfield
+                //User ID textfield
                 Padding(
                   padding: EdgeInsets.only(left: screenWidth * 0.05),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Text(
-                        'Staff ID',
+                        'Student ID',
                         style: TextStyle(
                           color: Colors.grey[600],
                           fontFamily: 'Figtree',

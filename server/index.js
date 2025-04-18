@@ -17,6 +17,7 @@ const pool = require("./config/database");
 const authRouter = require("./routes/authRoutes");
 // const lectCreateClassRoutes = require("./routes/lectAccessClass");
 const classRoutes = require("./routes/classRoutes");
+const attendanceRoutes = require("./routes/attendanceRoutes");
 const summarizationRoutes = require("./routes/summarizationRoutes");
 const generateTranscriptionTextRoutes = require("./routes/saveTranscriptionText");
 // const generateSummarizedTextRoutes = require("./routes/saveSummarizedText");
@@ -38,13 +39,15 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
 //Routes
-
 //Authentication
 app.use(authRouter);
 
 //Class Management
 // app.use("/class", lectCreateClassRoutes);
 app.use("/class", classRoutes);
+
+//Attendance Management
+app.use("/clockInAttendance", attendanceRoutes);
 
 //Summarization Management
 app.use("/summarization", summarizationRoutes);

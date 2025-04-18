@@ -6,6 +6,7 @@ import 'package:smartclass_fyp_2024/features/onboarding/splashscreen/splashScree
 import 'package:smartclass_fyp_2024/navigator_validToken.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(const ProviderScope(child: MyApp()));
 }
 
