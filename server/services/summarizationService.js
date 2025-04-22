@@ -42,5 +42,14 @@ const updatePublishStatus = async (publishStatus , classId) => {
     }
 }
 
+const saveSummarization = async (summarizedText, recordingId ,classId ,recordingStatus) => {
+    try{
+        const result = await summarizationModel.saveSummarization(summarizedText, recordingId ,classId ,recordingStatus);
+        return result || []; // To ensure not return as null 
+    } catch(error){
+        throw new Error("Error in service while saving summarization: " + error.message);
+    }   
+}
+
 //Export module
-module.exports = { viewSummarizationStatus  , accessSummarizationById , editSummarization , updatePublishStatus };
+module.exports = { viewSummarizationStatus  , accessSummarizationById , editSummarization , updatePublishStatus, saveSummarization };

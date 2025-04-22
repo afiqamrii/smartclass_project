@@ -68,3 +68,19 @@ exports.updatePublishStatus = async (req, res) => {
         res.status(500).json({ message: "Failed to update publish status" });
     }
 }
+
+exports.saveSummarization = async (req, res) => {
+    try{
+        //Debugging
+        console.log("Received save summarization request:", req.body);
+
+        const { summarizedText , recordingId , classId , recordingStatus} = req.body;
+
+        const result = await summarizationService.saveSummarization(summarizedText, recordingId ,classId ,recordingStatus);
+        res.status(200).json({ message: "Summarization saved successfully", Updated_Id: result });
+
+    } catch(error){
+        console.error("Controller Error:", error);
+        res.status(500).json({ message: "Failed to save summarization" });
+    }
+}

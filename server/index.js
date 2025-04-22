@@ -54,6 +54,8 @@ app.use("/summarization", summarizationRoutes);
 
 // Class transcription and summarization
 app.use("/classrecording", generateTranscriptionTextRoutes);
+
+
 // app.use("/classrecording", generateSummarizedTextRoutes);
 // app.use("/classSummarization", lectAccessSummarizationRoutes);
 
