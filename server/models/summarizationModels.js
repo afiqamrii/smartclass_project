@@ -63,6 +63,23 @@ const SummarizationModel = {
         console.error("Error updating data:", err.message);
         return [];
     }
+    },
+
+    //Save Summarized Text
+    async saveSummarization(summarizedText, recordingId ,classId ,recordingStatus) {
+        try{
+            const query = `
+            UPDATE ClassRecording
+                SET summaryText = ? , recordingStatus = ?
+                WHERE recordingId = ? and classId = ?
+        `;
+        const [result] = await pool.execute(query, [summarizedText, recordingStatus, recordingId, classId]);
+        return result;
+        } catch (err) {
+            console.error("Error updating data:", err.message);
+            return [];
+        }
+        
     }
 };
 

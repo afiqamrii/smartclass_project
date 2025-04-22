@@ -4,7 +4,7 @@
  */
 
 const express = require("express");
-const pool = require("../config/database"); // Import the MySQL pool
+const { pool } = require("../config/database"); // Destructure to get the MySQL pool // Import the MySQL pool
 
 const router = express.Router();
 

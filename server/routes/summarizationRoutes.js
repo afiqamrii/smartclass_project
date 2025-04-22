@@ -15,4 +15,8 @@ router.put("/editsummarizedtext", summarizationController.editSummarization);
 //Route to update publish status
 router.put("/updatepublishstatus", summarizationController.updatePublishStatus);
 
+//PUT API to add summarized text to the database
+// Endpoint: /classrecording/savesummarizedtext
+router.put("/savesummarizedtext", summarizationController.saveSummarization);
+
 module.exports = router;
