@@ -15,7 +15,7 @@ router.put("/savesummarizedtext", async (req, res) => {
         console.log("Received data:", req.body);
 
         // Destructure and validate the request body
-        const { summarizedText , recordingId ,  classId  } = req.body;
+        const { summarizedText , recordingId ,  classId , recordingStatus } = req.body;
 
         if (!summarizedText || !recordingId || !classId ) {
             return res.status(400).send({
@@ -34,12 +34,12 @@ router.put("/savesummarizedtext", async (req, res) => {
         // SQL query to insert data
         const query = `
             UPDATE ClassRecording
-            SET summaryText = ? , recordingStatus = "Summarized"
+            SET summaryText = ? , recordingStatus = ?
             WHERE recordingId = ? and classId = ?
         `;
 
         // Execute the query
-        const [result] = await pool.execute(query, [summarizedText, recordingId, classId]);
+        const [result] = await pool.execute(query, [summarizedText, recordingStatus, recordingId, classId]);
 
         // Send response
         res.status(201).send({
