@@ -12,3 +12,14 @@ exports.addAttendance = async (req, res) => {
         res.status(400).json({ message: error.message });
     }
 };
+
+exports.checkAttendance = async (req, res) => {
+    try {
+        const checkAttendance = req.params;
+        const result = await attendanceService.checkAttendance(checkAttendance);
+        res.status(200).json({ attendanceStatus : result.attendanceStatus });
+    } catch (error) {
+        console.error("Controller Error:", error);
+        res.status(400).json({ message: error.message });
+    }
+};

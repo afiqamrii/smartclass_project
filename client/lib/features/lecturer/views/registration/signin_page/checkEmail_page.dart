@@ -58,141 +58,146 @@ class CheckEmailPage extends ConsumerWidget {
 
     return Scaffold(
       appBar: const Appbar(),
-      body: Padding(
-        padding: EdgeInsets.symmetric(vertical: screenWidth * 0.1),
-        child: Column(
-          children: [
-            const SizedBox(
-              height: 20,
-            ),
-            //Icon
-            LottieBuilder.asset(
-              "assets/animations/emailSended.json",
-              width: 90,
-              fit: BoxFit.contain,
-            ),
-            const SizedBox(
-              height: 20,
-            ),
-            const Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+      body: ListView(
+        children: [
+          Padding(
+            padding: EdgeInsets.symmetric(vertical: screenWidth * 0.1),
+            child: Column(
               children: [
-                Text(
-                  "Check your email",
-                  style: TextStyle(
-                    fontSize: 27,
-                    fontFamily: 'FigtreeExtraBold',
-                    fontWeight: FontWeight.bold,
-                  ),
+                const SizedBox(
+                  height: 20,
                 ),
-              ],
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-            RichText(
-              text: TextSpan(
-                children: [
-                  const TextSpan(
-                    text: "We sent a password reset link to \n ",
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.black54,
-                      fontFamily: 'Figtree',
-                      fontWeight: FontWeight.w800,
-                    ),
-                  ),
-                  TextSpan(
-                    text: userEmail,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      color: Colors.black87,
-                      fontFamily: 'Figtree',
-                      fontWeight: FontWeight.w800,
-                    ),
-                  ),
-                ],
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 20),
-
-            //Login button
-            CustomButton(
-              text: 'Open Email App',
-              isLoading: ref.watch(loadingProvider), //Pass the loading state
-              onTap: () {
-                openEmailApp(context, ref);
-              },
-            ),
-            const SizedBox(
-              height: 30,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Text(
-                  "Didn't receive an email?",
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: Colors.black54,
-                    fontFamily: 'Figtree',
-                    fontWeight: FontWeight.w800,
-                  ),
+                //Icon
+                LottieBuilder.asset(
+                  "assets/animations/emailSended.json",
+                  width: 90,
+                  fit: BoxFit.contain,
                 ),
                 const SizedBox(
-                  width: 5,
+                  height: 20,
+                ),
+                const Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      "Check your email",
+                      style: TextStyle(
+                        fontSize: 27,
+                        fontFamily: 'FigtreeExtraBold',
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                RichText(
+                  text: TextSpan(
+                    children: [
+                      const TextSpan(
+                        text: "We sent a password reset link to \n ",
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.black54,
+                          fontFamily: 'Figtree',
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                      TextSpan(
+                        text: userEmail,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: Colors.black87,
+                          fontFamily: 'Figtree',
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                    ],
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 20),
+
+                //Login button
+                CustomButton(
+                  text: 'Open Email App',
+                  isLoading:
+                      ref.watch(loadingProvider), //Pass the loading state
+                  onTap: () {
+                    openEmailApp(context, ref);
+                  },
+                ),
+                const SizedBox(
+                  height: 30,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text(
+                      "Didn't receive an email?",
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Colors.black54,
+                        fontFamily: 'Figtree',
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                    const SizedBox(
+                      width: 5,
+                    ),
+                    GestureDetector(
+                      onTap: () => requestPasswordReset(context, ref),
+                      child: const Text(
+                        "Click here to resend",
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: Colors.blue,
+                          fontFamily: 'Figtree',
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(
+                  height: 30,
                 ),
                 GestureDetector(
-                  onTap: () => requestPasswordReset(context, ref),
-                  child: const Text(
-                    "Click here to resend",
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: Colors.blue,
-                      fontFamily: 'Figtree',
-                      fontWeight: FontWeight.w800,
-                    ),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      toRightTransition(
+                        LecturerLoginPage(),
+                      ),
+                    );
+                  },
+                  child: const Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.arrow_back,
+                        color: Colors.black54,
+                      ),
+                      const SizedBox(
+                        width: 5,
+                      ),
+                      Text(
+                        "Back to log in",
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.black54,
+                          fontFamily: 'Figtree',
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],
             ),
-            const SizedBox(
-              height: 30,
-            ),
-            GestureDetector(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  toRightTransition(
-                    LecturerLoginPage(),
-                  ),
-                );
-              },
-              child: const Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.arrow_back,
-                    color: Colors.black54,
-                  ),
-                  const SizedBox(
-                    width: 5,
-                  ),
-                  Text(
-                    "Back to log in",
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.black54,
-                      fontFamily: 'Figtree',
-                      fontWeight: FontWeight.w800,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

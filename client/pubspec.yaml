@@ -54,6 +54,7 @@ dependencies:
   swipe_refresh: ^1.1.2
   modal_bottom_sheet: ^3.0.0
   nfc_host_card_emulation: ^1.1.0
+  another_flushbar: ^1.12.30
   
   
   
@@ -89,6 +90,7 @@ flutter:
       - assets/animations/
       - assets/background/
       - assets/
+      - lib/master/strings.json
       # - assets/splash_screen/
 
   #   - images/a_dot_ham.jpeg

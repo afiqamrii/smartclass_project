@@ -1,3 +1,5 @@
+// ignore_for_file: unused_result
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
@@ -5,6 +7,7 @@ import 'package:skeletonizer/skeletonizer.dart';
 import 'package:smartclass_fyp_2024/constants/color_constants.dart';
 import 'package:smartclass_fyp_2024/features/student/models/todayClass_card_models.dart';
 import 'package:smartclass_fyp_2024/features/student/providers/student_class_provider.dart';
+import 'package:smartclass_fyp_2024/features/student/views/template/student_bottom_navbar.dart';
 import 'package:smartclass_fyp_2024/features/student/views/widgets/classnow_card.dart';
 import 'package:smartclass_fyp_2024/features/student/views/widgets/student_todayclass_card.dart';
 import 'package:smartclass_fyp_2024/features/student/views/widgets/tabs_item.dart';
@@ -13,6 +16,7 @@ import 'package:smartclass_fyp_2024/shared/data/dataprovider/data_provider.dart'
 import 'package:smartclass_fyp_2024/shared/data/dataprovider/user_provider.dart';
 import 'package:smartclass_fyp_2024/shared/data/models/user.dart';
 import 'package:smartclass_fyp_2024/shared/widgets/loading.dart';
+import 'package:smartclass_fyp_2024/shared/widgets/pageTransition.dart';
 import 'package:smartclass_fyp_2024/test.dart';
 
 class StudentHomePage extends ConsumerStatefulWidget {
@@ -34,10 +38,12 @@ class _StudentHomePageState extends ConsumerState<StudentHomePage> {
     });
 
     await ref.read(userProvider.notifier).refreshUserData();
-    await ref.read(classDataProvider.future);
-    await ref.read(upcomingClassProviders.future);
     await ref.read(nowClassProviders);
+    // ignore: duplicate_ignore
     // ignore: unused_result
+    ref.refresh(classDataProvider.future);
+    ref.refresh(upcomingClassProviders.future);
+    ref.refresh(pastClassProviders.future);
     ref.refresh(todayClassProviders);
     await Future.delayed(const Duration(seconds: 3));
 
@@ -462,7 +468,12 @@ class _StudentHomePageState extends ConsumerState<StudentHomePage> {
                 ),
               );
             } else {
-              return const SizedBox.shrink(); // Or any fallback widget
+              return Padding(
+                padding: const EdgeInsets.only(top: 20.0),
+                child: Unavailablepage(
+                    animation: "assets/animations/noClassAnimation.json",
+                    message: "You only got ${data.length} upcoming class."),
+              );
             }
           },
           error: (error, stackTrace) {
@@ -515,7 +526,7 @@ class _StudentHomePageState extends ConsumerState<StudentHomePage> {
                       timeEnd: data[index].endTime,
                       publishStatus: data[index].publishStatus,
                       imageUrl: data[index].imageUrl,
-                      isClassHistory: false,
+                      isClassHistory: true,
                     ),
                   ),
                 ),
@@ -545,25 +556,32 @@ class _StudentHomePageState extends ConsumerState<StudentHomePage> {
               return GestureDetector(
                 onTap: () => {
                   // Handle tap on "View All" button here
-                  // For example, navigate to class list page
+                  Navigator.of(context).push(
+                    toLeftTransition(
+                      const StudentBottomNavbar(initialIndex: 1),
+                    ),
+                  ),
                 },
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      'Show All',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey[600],
+                child: Padding(
+                  padding: const EdgeInsets.only(bottom: 20.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Show All',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey[600],
+                        ),
                       ),
-                    ),
-                    const SizedBox(width: 5),
-                    Icon(
-                      Icons.arrow_forward_ios,
-                      color: Colors.grey[600],
-                      size: 12,
-                    ),
-                  ],
+                      const SizedBox(width: 5),
+                      Icon(
+                        Icons.arrow_forward_ios,
+                        color: Colors.grey[600],
+                        size: 12,
+                      ),
+                    ],
+                  ),
                 ),
               );
             } else {
@@ -756,6 +774,7 @@ class _StudentHomePageState extends ConsumerState<StudentHomePage> {
                             timeStart: data[index].startTime,
                             timeEnd: data[index].endTime,
                             imageUrl: data[index].imageUrl,
+                            
                           )),
                 );
               }
