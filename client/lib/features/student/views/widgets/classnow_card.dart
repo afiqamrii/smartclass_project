@@ -1,13 +1,17 @@
+import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:async';
 
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
+import 'package:smartclass_fyp_2024/features/student/providers/student_class_provider.dart';
 import 'package:smartclass_fyp_2024/nfc/start_clock_in_nfc.dart';
+import 'package:smartclass_fyp_2024/shared/data/dataprovider/user_provider.dart';
 
-class ClassNowCard extends StatefulWidget {
+class ClassNowCard extends ConsumerStatefulWidget {
   //Class Card variable neededdd
   final int classId;
   final String userId;
@@ -33,15 +37,17 @@ class ClassNowCard extends StatefulWidget {
   });
 
   @override
-  State<ClassNowCard> createState() => _ClassNowCardState();
+  ConsumerState<ClassNowCard> createState() => _ClassNowCardState();
 }
 
-class _ClassNowCardState extends State<ClassNowCard> {
+class _ClassNowCardState extends ConsumerState<ClassNowCard> {
   late DateTime classStartTime;
   late DateTime classEndTime;
   late Duration remaining;
   Timer? timer;
   bool isLessThan10Minutes = false;
+  String currentAnimation = 'assets/animations/nfc.json';
+  bool isAlreadyClockIn = false;
 
   @override
   void initState() {
@@ -115,8 +121,71 @@ class _ClassNowCardState extends State<ClassNowCard> {
     return "$hours:$minutes:$seconds";
   }
 
+  // ignore: unused_field
+  bool _isRefreshing = false; // Add loading state
+
+// Handle the refresh and reload data from provider
+  Future<void> _handleRefresh(WidgetRef ref) async {
+    setState(() {
+      _isRefreshing = true;
+    });
+
+    // await ref.read(nowClassProviders);
+    await ref.read(userProvider.notifier).refreshUserData();
+    await Future.delayed(const Duration(seconds: 10));
+
+    setState(() {
+      _isRefreshing = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    // Get the user data from provider
+    // ignore: unused_local_variable
+    final user = ref.watch(userProvider);
+
+    ref.listen(
+      checkAttendanceProvider((widget.classId, widget.userId)),
+      (previous, next) {
+        next.whenData((attendanceList) {
+          final status = attendanceList.first.attendanceStatus;
+          if (status == "Present" &&
+              currentAnimation != 'assets/animations/animation_success.json') {
+            setState(() {
+              currentAnimation = 'assets/animations/animation_success.json';
+              isAlreadyClockIn = true;
+            });
+
+            Flushbar(
+              message:
+                  'Congrats ${user.userName}! Your attendance recorded successfully!',
+              duration: const Duration(seconds: 10),
+              backgroundColor: Colors.green.shade600,
+              margin: const EdgeInsets.all(8),
+              borderRadius: BorderRadius.circular(8),
+              flushbarPosition: FlushbarPosition.TOP,
+              icon: const Icon(
+                Icons.check_circle,
+                color: Colors.white,
+              ),
+            ).show(context);
+
+            // ✅ Close bottom sheet after short delay (e.g., 2 seconds)
+            Future.delayed(const Duration(seconds: 2), () {
+              if (Navigator.of(context).canPop()) {
+                Navigator.of(context).pop();
+              }
+            });
+          }
+        });
+      },
+    );
+
+    // ignore: unused_local_variable
+    final checkAttendance =
+        ref.watch(checkAttendanceProvider((widget.classId, widget.userId)));
+
     final countdownText =
         remaining.isNegative ? "Class Ended" : formatDuration(remaining);
 
@@ -303,8 +372,8 @@ class _ClassNowCardState extends State<ClassNowCard> {
                                 studentId: widget
                                     .userId, // you can replace this with a dynamic value
                                 courseCode: widget.courseCode,
-                                classId: widget.classId
-                                    .toString(), // or use an actual classId if available
+                                classId: widget.classId.toString(),
+                                // or use an actual classId if available
                               );
                               // Start a timer to close the modal after 1 minutes
                               Timer(const Duration(minutes: 1), () {
@@ -331,9 +400,11 @@ class _ClassNowCardState extends State<ClassNowCard> {
                                     child: Column(
                                       children: [
                                         const SizedBox(height: 5),
-                                        const Text(
-                                          "Ready to Scan",
-                                          style: TextStyle(
+                                        Text(
+                                          isAlreadyClockIn
+                                              ? "Already Clock In !"
+                                              : "Ready to Scan",
+                                          style: const TextStyle(
                                             fontSize: 24,
                                             fontFamily: 'Figtree',
                                             fontWeight: FontWeight.bold,
@@ -346,10 +417,12 @@ class _ClassNowCardState extends State<ClassNowCard> {
                                                   .size
                                                   .width *
                                               0.8,
-                                          child: const Text(
+                                          child: Text(
                                             textAlign: TextAlign.center,
-                                            "Hold your device near the NFC reader to clock in attendance.",
-                                            style: TextStyle(
+                                            isAlreadyClockIn
+                                                ? "You have already clocked in for today class."
+                                                : "Hold your device near the NFC reader to clock in attendance.",
+                                            style: const TextStyle(
                                               fontSize: 14,
                                               fontFamily: 'Figtree',
                                               color: Colors.black54,
@@ -357,39 +430,46 @@ class _ClassNowCardState extends State<ClassNowCard> {
                                           ),
                                         ),
                                         Lottie.asset(
-                                          'assets/animations/nfc.json',
+                                          currentAnimation,
                                           frameRate: FrameRate.max,
-                                          width: 250,
+                                          width: 190,
                                           fit: BoxFit.cover,
+                                          repeat: currentAnimation !=
+                                              'assets/animations/success_tick.json',
                                         ),
-                                        ElevatedButton(
-                                          onPressed: () {
-                                            NfcClockInService
-                                                .stopClockIn(); // ⛔ Stop NFC on cancel
-                                            Navigator.pop(modalContext);
-                                          },
-                                          style: ElevatedButton.styleFrom(
-                                            backgroundColor: Colors.white,
-                                            foregroundColor: Colors.black,
-                                            elevation: 2,
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(10),
+                                        if (isAlreadyClockIn == false)
+                                          ElevatedButton(
+                                            onPressed: () {
+                                              NfcClockInService
+                                                  .stopClockIn(); // ⛔ Stop NFC on cancel
+                                              Navigator.pop(modalContext);
+                                            },
+                                            style: ElevatedButton.styleFrom(
+                                              backgroundColor: Colors.white,
+                                              foregroundColor: Colors.black,
+                                              elevation: 2,
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(10),
+                                              ),
+                                              padding: EdgeInsets.symmetric(
+                                                vertical: 12,
+                                                horizontal:
+                                                    MediaQuery.of(context)
+                                                            .size
+                                                            .width *
+                                                        0.30,
+                                              ),
                                             ),
-                                            padding: EdgeInsets.symmetric(
-                                              vertical: 12,
-                                              horizontal: MediaQuery.of(context)
-                                                      .size
-                                                      .width *
-                                                  0.30,
-                                            ),
+                                            child: isAlreadyClockIn
+                                                ? null
+                                                : Text(
+                                                    "Cancel",
+                                                    style: TextStyle(
+                                                        color:
+                                                            Colors.grey[500]),
+                                                  ),
                                           ),
-                                          child: Text(
-                                            "Cancel",
-                                            style: TextStyle(
-                                                color: Colors.grey[500]),
-                                          ),
-                                        ),
                                       ],
                                     ),
                                   ),
@@ -404,7 +484,7 @@ class _ClassNowCardState extends State<ClassNowCard> {
                           height: 15,
                         ),
                         label: const Text(
-                          "Tap to Clock In",
+                          "Tap to Clock In ",
                           style: TextStyle(
                             fontSize: 13,
                             fontFamily: 'Figtree',

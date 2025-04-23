@@ -7,6 +7,9 @@ const router = express.Router();
 //Add attendance route
 router.post("/addattendance", attendanceController.addAttendance);
 
+//Check student attendance
+router.get("/checkattendance/:classId/:studentId", attendanceController.checkAttendance);
+
 // //View attendance
 // router.get("/viewattendance", attendanceController.viewAttendance);
 
