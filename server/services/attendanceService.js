@@ -13,4 +13,15 @@ const addAttendance = async (attendanceData) => {
     }
 };
 
-module.exports = { addAttendance };
+//Check attendance
+const checkAttendance = async (checkAttendance) => {
+    try {
+        const { classId, studentId } = checkAttendance;
+        const attendanceStatus = await attendanceModel.checkAttendance(classId, studentId);
+        return { success: true, attendanceStatus };
+    } catch (error) {
+        throw new Error("Error in service while checking attendance: " + error.message);
+    }
+};
+
+module.exports = { addAttendance , checkAttendance };

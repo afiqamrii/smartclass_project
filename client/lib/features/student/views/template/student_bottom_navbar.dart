@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
-import 'package:smartclass_fyp_2024/features/student/views/class_session/student_myclass.dart';
+import 'package:smartclass_fyp_2024/features/student/views/class_history/student_class_history.dart';
 import 'package:smartclass_fyp_2024/features/student/views/student_homepage.dart';
 import 'package:smartclass_fyp_2024/features/student/views/manage_profile/student_profilepage.dart';
 

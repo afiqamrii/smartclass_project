@@ -23,6 +23,31 @@ const AttendanceModel = {
             throw genericError;
         }
     },
+
+    //Check student attendance
+    async checkAttendance(classId, studentId) {
+        try {
+            const query = `
+                SELECT attendanceStatus
+                FROM Attendance
+                WHERE classId = ? AND studentId = ?
+            `;
+            const [rows] = await pool.query(query, [classId, studentId]);
+    
+            // Check if a result exists and map the status
+            if (rows.length > 0) {
+                if(rows[0].attendanceStatus === "Absent") return "Absent";
+                if(rows[0].attendanceStatus === "Present") return "Present";
+            }
+    
+            // Default to "Absent" if no record is found
+            return "Absent";
+        } catch (error) {
+            const genericError = new Error("Error in model while checking attendance: " + error.message);
+            genericError.status = 500;
+            throw genericError;
+        }
+    },
 };
 
 module.exports = AttendanceModel;
