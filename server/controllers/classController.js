@@ -17,7 +17,8 @@ exports.addClass = async (req, res) => {
 //Function to view class
 exports.viewClass = async (req,res) => {
     try{
-        const classes = await classService.viewClass();
+        const lecturerId = req.params.lecturerId;
+        const classes = await classService.viewClass(lecturerId);
         res.status(200).json({
             message: "Class data fetched successfully", 
             Data: classes ?? [],

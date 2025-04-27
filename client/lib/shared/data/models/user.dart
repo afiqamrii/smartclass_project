@@ -3,16 +3,18 @@ import 'dart:convert';
 class User {
   final int? userId;
   final String userName;
+  final String name;
   final String userEmail;
   final String userPassword;
   final String? confirmPassword;
   final String token;
   final int roleId;
-  final String externalId; 
+  final String externalId;
 
   User({
     this.userId,
     required this.userName,
+    required this.name,
     required this.userEmail,
     required this.userPassword,
     this.confirmPassword,
@@ -24,14 +26,17 @@ class User {
   // Convert a User object to a Map
   Map<String, dynamic> toMap() {
     return {
-      if (userId != null) 'userId': userId, // Include userId only if it's not null
+      if (userId != null)
+        'userId': userId, // Include userId only if it's not null
       'userName': userName,
       'userEmail': userEmail,
       'userPassword': userPassword,
-      if (confirmPassword != null) 'confirmPassword': confirmPassword, // Include confirmPassword only if it's not null
+      if (confirmPassword != null)
+        'confirmPassword':
+            confirmPassword, // Include confirmPassword only if it's not null
       'roleId': roleId,
       'token': token,
-      'externalId': externalId, 
+      'externalId': externalId,
     };
   }
 
@@ -39,6 +44,7 @@ class User {
   factory User.fromMap(Map<String, dynamic> map) {
     return User(
       userId: map['userId'] ?? '',
+      name: map['name'] ?? '',
       userName: map['userName'] ?? '',
       userEmail: map['userEmail'] ?? '',
       userPassword: map['userPassword'] ?? '',

@@ -12,12 +12,10 @@ import 'package:smartclass_fyp_2024/features/student/views/widgets/classnow_card
 import 'package:smartclass_fyp_2024/features/student/views/widgets/student_todayclass_card.dart';
 import 'package:smartclass_fyp_2024/features/student/views/widgets/tabs_item.dart';
 import 'package:smartclass_fyp_2024/shared/components/unavailablePage.dart';
-import 'package:smartclass_fyp_2024/shared/data/dataprovider/data_provider.dart';
 import 'package:smartclass_fyp_2024/shared/data/dataprovider/user_provider.dart';
 import 'package:smartclass_fyp_2024/shared/data/models/user.dart';
 import 'package:smartclass_fyp_2024/shared/widgets/loading.dart';
 import 'package:smartclass_fyp_2024/shared/widgets/pageTransition.dart';
-import 'package:smartclass_fyp_2024/test.dart';
 
 class StudentHomePage extends ConsumerStatefulWidget {
   const StudentHomePage({super.key});
@@ -41,7 +39,6 @@ class _StudentHomePageState extends ConsumerState<StudentHomePage> {
     await ref.read(nowClassProviders);
     // ignore: duplicate_ignore
     // ignore: unused_result
-    ref.refresh(classDataProvider.future);
     ref.refresh(upcomingClassProviders.future);
     ref.refresh(pastClassProviders.future);
     ref.refresh(todayClassProviders);
@@ -148,10 +145,10 @@ class _StudentHomePageState extends ConsumerState<StudentHomePage> {
                               color: Color.fromARGB(255, 238, 238, 238),
                             ),
                             onPressed: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => const MyWidget()));
+                              // Navigator.push(
+                              //     context,
+                              //     MaterialPageRoute(
+                              //         builder: (context) => const MyWidget()));
                             },
                           ),
                         ),
@@ -774,7 +771,6 @@ class _StudentHomePageState extends ConsumerState<StudentHomePage> {
                             timeStart: data[index].startTime,
                             timeEnd: data[index].endTime,
                             imageUrl: data[index].imageUrl,
-                            
                           )),
                 );
               }

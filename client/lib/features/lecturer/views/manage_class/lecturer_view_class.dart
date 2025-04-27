@@ -33,7 +33,7 @@ class _LecturerViewClassState extends ConsumerState<LecturerViewClass> {
     });
 
     await ref.read(userProvider.notifier).refreshUserData();
-    await ref.read(classDataProvider.future);
+    // await ref.read(classDataProvider.future);
     await Future.delayed(const Duration(seconds: 3));
 
     setState(() {

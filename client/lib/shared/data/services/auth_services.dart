@@ -45,6 +45,7 @@ class AuthService {
     required WidgetRef ref,
     // required int userId,
     required String userName,
+    required String name,
     required String userEmail,
     required String userPassword,
     required String confirmPassword,
@@ -56,6 +57,7 @@ class AuthService {
       User _user = User(
         // userId: userId,
         userName: userName,
+        name : name,
         userEmail: userEmail,
         userPassword: userPassword,
         confirmPassword: confirmPassword,

@@ -6,7 +6,7 @@ const classController = require("../controllers/classController");
 const router = express.Router();
 
 router.post("/addclass", classController.addClass); // Add a class
-router.get("/viewclass", classController.viewClass); // View all classes 
+router.get("/viewclass/:lecturerId", classController.viewClass); // View all classes 
 router.get("/viewclassbyid/:id", classController.viewClassById); // View a class by id
 router.get("/studentviewclass", classController.studentViewTodayClass); // View all today classes student
 router.get("/viewupcomingclass", classController.viewUpcomingClass); // View all today classes lecturer

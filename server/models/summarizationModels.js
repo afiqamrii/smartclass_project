@@ -5,15 +5,15 @@ const moment = require("moment");
 const SummarizationModel = {
 
     // Retrieve Summarization Status
-    async getSummarizationStatus() {
+    async getSummarizationStatus(lecturerId) {
         try{
             const query = `
             SELECT c.*, cr.recordingStatus
             FROM ClassSession c
             LEFT JOIN ClassRecording cr ON c.classId = cr.classId
-            WHERE cr.recordingStatus IS NOT NULL;
+            WHERE cr.recordingStatus IS NOT NULL AND c.lecturerId = ?;
         `;
-        const [rows] = await pool.query(query);
+        const [rows] = await pool.query(query, [lecturerId]);
         return rows;
         } catch (err) {
             console.error("Error retrieving data:", err.message);

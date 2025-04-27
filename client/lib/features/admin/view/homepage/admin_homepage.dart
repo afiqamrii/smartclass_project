@@ -8,7 +8,6 @@ import 'package:smartclass_fyp_2024/shared/data/dataprovider/user_provider.dart'
 
 import 'package:smartclass_fyp_2024/shared/data/models/user.dart';
 import 'package:smartclass_fyp_2024/features/admin/view/constants/maintainance_card.dart';
-import 'package:smartclass_fyp_2024/test.dart';
 
 class AdminHomepage extends ConsumerStatefulWidget {
   const AdminHomepage({super.key});
@@ -228,10 +227,10 @@ class _AdminHomepageState extends ConsumerState<AdminHomepage> {
               color: Color.fromARGB(255, 238, 238, 238),
             ),
             onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const MyWidget()),
-              );
+              // Navigator.push(
+              //   context,
+              //   MaterialPageRoute(builder: (context) => const MyWidget()),
+              // );
             },
           ),
         ),

@@ -6,6 +6,7 @@ import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:smartclass_fyp_2024/shared/data/dataprovider/data_provider.dart';
 import 'package:smartclass_fyp_2024/features/lecturer/views/manage_class/lecturer_view_class.dart';
 import 'package:smartclass_fyp_2024/features/lecturer/views/template/lecturer_bottom_navbar.dart';
+import 'package:smartclass_fyp_2024/shared/data/dataprovider/user_provider.dart';
 import 'package:smartclass_fyp_2024/shared/widgets/pageTransition.dart';
 import 'lecturer_create_class.dart';
 import '../../../../shared/data/models/class_models.dart';
@@ -17,16 +18,17 @@ class LectViewAllClass extends ConsumerWidget {
   Future<void> _handleRefresh(WidgetRef ref) async {
     //Reload the data in class provider
     // ignore: await_only_futures
-    await ref.refresh(classDataProvider.future);
+    // await ref.refresh(classDataProvider.future);
     //reloading take some time..
     return await Future.delayed(const Duration(seconds: 1));
   }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final data = ref.watch(classDataProvider);
+    final user = ref.watch(userProvider);
+    final data = ref.watch(classDataProvider(user.externalId));
     return Scaffold(
-      backgroundColor: Color(0xffF7F7F7),
+      backgroundColor: const Color(0xffF7F7F7),
       appBar: appBar(context),
       body: data.when(
         data: (data) {
@@ -50,7 +52,8 @@ class LectViewAllClass extends ConsumerWidget {
   }
 
   // Today's Classes Section
-  Padding _todayClassesSection(List<ClassCreateModel> classes, BuildContext context) {
+  Padding _todayClassesSection(
+      List<ClassCreateModel> classes, BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(left: 10, right: 20),
       child: Column(

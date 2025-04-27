@@ -7,6 +7,7 @@ class UserProvider extends StateNotifier<User> {
       : super(User(
           userId: 0,
           userName: '',
+          name: '',
           userEmail: '',
           userPassword: '',
           token: '',

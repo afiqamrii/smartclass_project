@@ -3,7 +3,8 @@ const summarizationService = require('../services/summarizationService');
 // Function to view Summarization Status
 exports.viewSummarizationStatus = async (req, res) => {
     try {
-        const summarizationData = await summarizationService.viewSummarizationStatus();
+        const lecturerId = req.params.lecturerId;
+        const summarizationData = await summarizationService.viewSummarizationStatus(lecturerId);
 
         res.status(200).json({
             message: "Summarization status fetched successfully",
