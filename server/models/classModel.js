@@ -21,12 +21,14 @@ const ClassModel = {
     },
 
     // Retrieve all classes from the database
-    async getAllClasses(){
+    async getAllClasses(lecturerId){
         try{
             const query = `
-            SELECT * FROM ClassSession ORDER BY date DESC, timeStart DESC;
+            SELECT * FROM ClassSession
+            WHERE lecturerId = ?
+            ORDER BY date DESC, timeStart DESC;
             `;
-            const [rows] = await pool.query(query);
+            const [rows] = await pool.query(query,[lecturerId]);
             return rows;
         }
         catch (err) {

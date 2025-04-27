@@ -4,7 +4,7 @@ const summarizationController = require("../controllers/summarizationController"
 const router = express.Router();
 
 // Route to view Summarization Status
-router.get("/viewSummarizationStatus", summarizationController.viewSummarizationStatus);
+router.get("/viewSummarizationStatus/:lecturerId", summarizationController.viewSummarizationStatus);
 
 // Route to access summarization by class id
 router.get("/accesssummarization/:classId", summarizationController.accessSummarizationById);

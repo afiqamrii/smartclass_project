@@ -8,24 +8,12 @@ import 'package:smartclass_fyp_2024/shared/data/models/classSum_model.dart';
 import 'package:smartclass_fyp_2024/shared/data/models/summarization_models.dart';
 
 class Summarizationapi {
-  //Based url for WIFI Rumah
-  static const baseUrl = "http://192.168.0.99:3000/summarization/";
-
-  //Based url for update summarization
-  // static const updateUrl = "http://192.168.0.99:3000/classrecording/";
-
-  // //Based url for HOSTPOT MyPhone
-  // static const baseUrl = "http://172.20.10.2:3000/summarization/";
-
-  //domain for hotspot
-  //Based url for update summarization
-  // static const updateUrl = "http://172.20.10.2:3000/classrecording/";
 
   //GET API Using provider to the class with summarization status
-  Stream<List<ClassSumModel>> getClassesWithSummarization() async* {
+  Stream<List<ClassSumModel>> getClassesWithSummarization(String lecturerId) async* {
     while (true) {
       Response response = await get(Uri.parse(
-          "${ApiConstants.baseUrl}/summarization/viewSummarizationStatus"));
+          "${ApiConstants.baseUrl}/summarization/viewSummarizationStatus/$lecturerId"));
       if (response.statusCode == 200) {
         final List result = jsonDecode(response.body)['Data'];
         yield result.map(((e) => ClassSumModel.fromJson(e))).toList();
@@ -69,17 +57,17 @@ class Summarizationapi {
       );
 
       if (response.statusCode == 200) {
-        print("Update successful: ${jsonDecode(response.body)}");
+        // print("Update successful: ${jsonDecode(response.body)}");
         return true;
       } else {
-        print(
-            "Failed to update summarization: ${response.statusCode} - ${response.body}");
-        print("Class ID: $classId");
-        print("Summarized Text: $summarizedText");
+        // print(
+        //     "Failed to update summarization: ${response.statusCode} - ${response.body}");
+        // print("Class ID: $classId");
+        // print("Summarized Text: $summarizedText");
         return false;
       }
     } catch (e) {
-      print("Exception in updateSummarization: $e");
+      // print("Exception in updateSummarization: $e");
       return false;
     }
   }
@@ -99,15 +87,15 @@ class Summarizationapi {
       );
 
       if (response.statusCode == 200) {
-        print("Update successful: ${jsonDecode(response.body)}");
+        // print("Update successful: ${jsonDecode(response.body)}");
         return true;
       } else {
-        print(
-            "Failed to update publish status: ${response.statusCode} - ${response.body}");
+        // print(
+        //     "Failed to update publish status: ${response.statusCode} - ${response.body}");
         return false;
       }
     } catch (e) {
-      print("Exception in updatePublishStatus: $e");
+      // print("Exception in updatePublishStatus: $e");
       return false;
     }
   }

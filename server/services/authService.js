@@ -35,12 +35,12 @@ transporter.verify(function(error, success) {
 })
 
 //Sign Up
-exports.signUp = async ({userName , userEmail , userPassword , confirmPassword , roleId , externalId}, res) => {
+exports.signUp = async ({userName , userEmail , name , userPassword , confirmPassword , roleId , externalId}, res) => {
 
-        console.log("Received data:", {userName , userEmail , userPassword , confirmPassword , roleId , externalId}); //Debugging Purposes
+        console.log("Received data:", {userName , userEmail , name , userPassword , confirmPassword , roleId , externalId}); //Debugging Purposes
 
         //Check if all required fields are present
-        if(!userName || !userEmail || !userPassword || !confirmPassword || !roleId || !externalId){
+        if(!userName || !userEmail || !name || !userPassword || !confirmPassword || !roleId || !externalId){
             throw new Error("All fields are required!");
         }
 
@@ -57,7 +57,7 @@ exports.signUp = async ({userName , userEmail , userPassword , confirmPassword ,
 
         //Check if username already exists
         const existingUsername = await User.findOne({ where : {userName}});
-        if(existingUsername || existingUserEmail){
+        if(existingUsername || existingUserEmail || externalId){
             throw new Error("Username or Email is already exists!");
         }
 
@@ -73,6 +73,7 @@ exports.signUp = async ({userName , userEmail , userPassword , confirmPassword ,
         // ✅ Create and return new user
         const user = await User.create({ 
             userName, 
+            name,
             userEmail,
             userPassword: hashedPassword, 
             roleId,
