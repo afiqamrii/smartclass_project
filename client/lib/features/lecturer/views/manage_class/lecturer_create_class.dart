@@ -27,7 +27,7 @@ class _LectCreateClassState extends ConsumerState<LectCreateClass> {
   @override
   Widget build(BuildContext context) {
     final user = ref.watch(userProvider);
-    
+
     return Scaffold(
         appBar: appBar(context),
         body: _createClassSection(context, user),
@@ -84,7 +84,6 @@ class _LectCreateClassState extends ConsumerState<LectCreateClass> {
             null,
             textCapitalization: TextCapitalization.none,
             () => pickTime(
-              context,
               timeStartController,
             ),
             controller: timeStartController,
@@ -98,7 +97,6 @@ class _LectCreateClassState extends ConsumerState<LectCreateClass> {
             null,
             textCapitalization: TextCapitalization.none,
             () => pickTime(
-              context,
               timeEndController,
             ),
             controller: timeEndController,
@@ -118,7 +116,6 @@ class _LectCreateClassState extends ConsumerState<LectCreateClass> {
 
           // Create Class Button
           Center(
-            
             child: ElevatedButton.icon(
               onPressed: () async {
                 final classData = ClassCreateModel(
@@ -129,7 +126,7 @@ class _LectCreateClassState extends ConsumerState<LectCreateClass> {
                   startTime: timeStartController.text,
                   endTime: timeEndController.text,
                   location: locationController.text,
-                  lecturerId: user.externalId,  
+                  lecturerId: user.externalId,
                   imageUrl: "",
                 );
                 // var data = {
@@ -299,14 +296,21 @@ class _LectCreateClassState extends ConsumerState<LectCreateClass> {
   }
 
   // Function to pick time
-  Future<void> pickTime(
-      BuildContext context, TextEditingController controller) async {
+  Future<void> pickTime(TextEditingController controller) async {
     final TimeOfDay? picked = await showTimePicker(
       context: context,
       initialTime: TimeOfDay.now(),
+      builder: (BuildContext context, Widget? child) {
+        // Wrap with MediaQuery to force 12-hour format
+        return MediaQuery(
+          data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: false),
+          child: child!,
+        );
+      },
     );
     if (picked != null) {
-      controller.text = picked.format(context);
+      controller.text =
+          picked.format(context); // This will now return 12-hour format
     }
   }
 }

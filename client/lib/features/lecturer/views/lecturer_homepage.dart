@@ -11,7 +11,6 @@ import 'package:smartclass_fyp_2024/features/lecturer/views/manage_summarization
 import 'package:smartclass_fyp_2024/features/lecturer/views/manage_class/lecturer_view_class.dart';
 import 'package:smartclass_fyp_2024/shared/data/models/classSum_model.dart';
 import 'package:smartclass_fyp_2024/shared/data/models/user.dart';
-import 'package:smartclass_fyp_2024/test.dart';
 import 'package:smartclass_fyp_2024/shared/widgets/pageTransition.dart';
 import 'manage_class/lecturer_show_all_classes.dart';
 import '../../../shared/data/models/class_models.dart';
@@ -28,15 +27,16 @@ class _LectHomepageState extends ConsumerState<LectHomepage> {
   bool _isRefreshing = false; // Add loading state
 
 // Handle the refresh and reload data from provider
-  Future<void> _handleRefresh(WidgetRef ref) async {
+  Future<void> _handleRefresh(WidgetRef ref, String externalId) async {
     setState(() {
       _isRefreshing = true; // Set loading state to true
     });
 
     // Invalidate the provider to trigger loading state
-    await ref.read(classDataProvider);
-    await ref.read(classDataProviderSummarizationStatus);
+
+    await ref.read(classDataProviderSummarizationStatus(externalId));
     await ref.read(userProvider);
+    await ref.read(classDataProvider(externalId));
 
     // Wait for new data to load
     await Future.delayed(
@@ -51,13 +51,14 @@ class _LectHomepageState extends ConsumerState<LectHomepage> {
 
   @override
   Widget build(BuildContext context) {
-    final data = ref.watch(classDataProvider);
-    final sumData = ref.watch(classDataProviderSummarizationStatus);
     final user = ref.watch(userProvider);
+    final sumData =
+        ref.watch(classDataProviderSummarizationStatus(user.externalId));
+    final data = ref.watch(classDataProvider(user.externalId));
 
     return Scaffold(
       body: LiquidPullToRefresh(
-        onRefresh: () => _handleRefresh(ref),
+        onRefresh: () => _handleRefresh(ref, user.externalId),
         color: Colors.deepPurple,
         backgroundColor: Colors.deepPurple,
         animSpeedFactor: 3,
@@ -229,8 +230,8 @@ class _LectHomepageState extends ConsumerState<LectHomepage> {
               color: Color.fromARGB(255, 238, 238, 238),
             ),
             onPressed: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => const MyWidget()));
+              // Navigator.push(context,
+              //     MaterialPageRoute(builder: (context) => const MyWidget()));
             },
           ),
         ),

@@ -1,9 +1,9 @@
 const summarizationModel = require("../models/summarizationModels");
 
 // Function to view Summarization Status
-const viewSummarizationStatus = async () => {
+const viewSummarizationStatus = async (lecturerId) => {
     try{
-        const summarizationStatus = await summarizationModel.getSummarizationStatus();
+        const summarizationStatus = await summarizationModel.getSummarizationStatus(lecturerId);
         return summarizationStatus || [];
     } catch(error){
         throw new Error("Error in service while fetching summarization status: " + error.message);

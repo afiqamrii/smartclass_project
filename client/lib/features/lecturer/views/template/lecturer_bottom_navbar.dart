@@ -16,7 +16,7 @@ class LectBottomNavBar extends StatefulWidget {
 class _LectBottomNavBarState extends State<LectBottomNavBar> {
   late int _currentIndex;
   final List<Widget> _screens = [
-    LectHomepage(),
+    const LectHomepage(),
     const LecturerMyclass(),
     const LecturerProfilePage(),
   ];

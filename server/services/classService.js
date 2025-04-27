@@ -51,9 +51,9 @@ const addClass = async (classData) => {
 };
 
 // Function to view class
-const viewClass = async () => {
+const viewClass = async (lecturerId) => {
     try {
-        const classes = await classModel.getAllClasses();
+        const classes = await classModel.getAllClasses(lecturerId);
         return classes || [];
     } catch (error) {
         throw new Error("Error in service while fetching class data: " + error.message);

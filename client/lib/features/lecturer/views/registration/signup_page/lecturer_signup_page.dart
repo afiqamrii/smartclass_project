@@ -17,6 +17,7 @@ class LecturerSignupPage extends ConsumerWidget {
 
   //Text editing controller
   final userNameController = TextEditingController();
+  final name = TextEditingController();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
@@ -30,6 +31,7 @@ class LecturerSignupPage extends ConsumerWidget {
       context: context,
       ref: ref,
       userName: userNameController.text,
+      name: name.text,
       userEmail: emailController.text,
       userPassword: passwordController.text,
       confirmPassword: confirmPasswordController.text,
@@ -92,8 +94,6 @@ class LecturerSignupPage extends ConsumerWidget {
                 ),
                 const SizedBox(height: 5),
 
-                
-
                 //Username textfield
                 MyLoginTextField(
                   controller: userNameController,
@@ -103,7 +103,34 @@ class LecturerSignupPage extends ConsumerWidget {
 
                 const SizedBox(height: 20),
 
-                //Staf id textfield
+                //Name textfield
+                Padding(
+                  padding: EdgeInsets.only(left: screenWidth * 0.05),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Name',
+                        style: TextStyle(
+                          color: Colors.grey[600],
+                          fontFamily: 'Figtree',
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 5),
+
+                //Name textfield
+                MyLoginTextField(
+                  controller: userNameController,
+                  hintText: 'Ahmad Ali',
+                  obscureText: false,
+                ),
+
+                const SizedBox(height: 20),
+
+                //Lecturer id textfield
                 Padding(
                   padding: EdgeInsets.only(left: screenWidth * 0.05),
                   child: Row(
@@ -121,9 +148,7 @@ class LecturerSignupPage extends ConsumerWidget {
                 ),
                 const SizedBox(height: 5),
 
-                
-
-                //Username textfield
+                //Lecturer id textfield
                 MyLoginTextField(
                   controller: lecturerIdController,
                   hintText: 'L1234',

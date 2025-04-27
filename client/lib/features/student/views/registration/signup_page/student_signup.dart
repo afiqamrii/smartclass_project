@@ -18,6 +18,7 @@ class StudentSignupPage extends ConsumerWidget {
   //Text editing controller
   final userNameController = TextEditingController();
   final emailController = TextEditingController();
+  final name = TextEditingController();
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
   final studentIdController = TextEditingController();
@@ -30,6 +31,7 @@ class StudentSignupPage extends ConsumerWidget {
       context: context,
       ref: ref,
       userName: userNameController.text,
+      name: name.text,
       userEmail: emailController.text,
       userPassword: passwordController.text,
       confirmPassword: confirmPasswordController.text,
@@ -96,6 +98,33 @@ class StudentSignupPage extends ConsumerWidget {
                 MyLoginTextField(
                   controller: userNameController,
                   hintText: 'alibinabu123',
+                  obscureText: false,
+                ),
+
+                const SizedBox(height: 20),
+
+                //Name textfield
+                Padding(
+                  padding: EdgeInsets.only(left: screenWidth * 0.05),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Name',
+                        style: TextStyle(
+                          color: Colors.grey[600],
+                          fontFamily: 'Figtree',
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 5),
+
+                //Name textfield
+                MyLoginTextField(
+                  controller: userNameController,
+                  hintText: 'Ahmad Ali',
                   obscureText: false,
                 ),
 

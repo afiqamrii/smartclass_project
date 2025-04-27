@@ -8,19 +8,11 @@ import '../models/class_models.dart'; // HTTP package for making API requests.
 
 /// A class to handle API interactions for the application.
 class Api {
-  //Based url for WIFI Rumah
-  // static const baseUrl = "http://192.168.0.99:3000/class/";
-
-  //Based url for HOSTPOT MyPhone
-  // static const baseUrl = "http://172.20.10.2:3000/class/";
-
-  // static const summarizationUrl = "http://172.20.10.2:3000/summarization/";
-
   //GET API Using provider to all classes data
-  Stream<List<ClassCreateModel>> getClasses() async* {
+  Stream<List<ClassCreateModel>> getClasses(String lecturerId) async* {
     while (true) {
       Response response =
-          await get(Uri.parse("${ApiConstants.baseUrl}/class/viewclass"));
+          await get(Uri.parse("${ApiConstants.baseUrl}/class/viewclass/$lecturerId"));
       if (response.statusCode == 200) {
         final List result = jsonDecode(response.body)['Data'];
         //Tokenize the data and convert it to ClassCreateModel
