@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:smartclass_fyp_2024/features/lecturer/views/manage_profile/lecturer_edit_profile.dart';
+import 'package:smartclass_fyp_2024/features/lecturer/views/template/lecturer_bottom_navbar.dart';
 import 'package:smartclass_fyp_2024/shared/data/dataprovider/user_provider.dart';
 import 'package:smartclass_fyp_2024/shared/data/models/user.dart';
 import 'package:smartclass_fyp_2024/shared/widgets/pageTransition.dart';
@@ -143,6 +144,29 @@ class _LecturerAccountDetailsState
       ),
       centerTitle: true,
       backgroundColor: const Color(0xffF5F5F5),
+      elevation: 0,
+      leading: GestureDetector(
+        onTap: () {
+          Navigator.push(
+            context,
+            toRightTransition(
+              const LectBottomNavBar(initialIndex: 2),
+            ),
+          );
+        },
+        child: const Padding(
+          padding: EdgeInsets.only(left: 20.0),
+          child: Row(
+            children: [
+              Icon(
+                Icons.arrow_back_ios,
+                color: Colors.black,
+                size: 18,
+              ),
+            ],
+          ),
+        ),
+      ),
       actions: [
         Padding(
           padding: const EdgeInsets.only(right: 20.0),

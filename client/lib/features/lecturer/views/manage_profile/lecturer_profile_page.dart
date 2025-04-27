@@ -5,6 +5,7 @@ import 'package:quickalert/widgets/quickalert_dialog.dart';
 import 'package:smartclass_fyp_2024/features/lecturer/views/manage_profile/lecturer_account_details.dart';
 import 'package:smartclass_fyp_2024/shared/data/dataprovider/user_provider.dart';
 import 'package:smartclass_fyp_2024/shared/data/services/auth_services.dart';
+import 'package:smartclass_fyp_2024/shared/widgets/pageTransition.dart';
 
 class LecturerProfilePage extends ConsumerStatefulWidget {
   const LecturerProfilePage({super.key});
@@ -141,9 +142,8 @@ class _LecturerProfilePageState extends ConsumerState<LecturerProfilePage> {
                               onTap: () {
                                 Navigator.push(
                                   context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        const LecturerAccountDetails(),
+                                  toLeftTransition(
+                                    const LecturerAccountDetails(),
                                   ),
                                 );
                               },
