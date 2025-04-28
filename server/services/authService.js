@@ -435,6 +435,57 @@ exports.resetPassword = async (userId, resetString, newPassword, confirmPassword
         console.error("Error in resetPassword:", err.message);
         return { status: 500, json: { message: "Internal Server Error" } };
     }
-}
+};
+
+exports.updateProfile = async (userId, userName, name, lecturerId , userEmail) => {
+    try{
+
+        //Check if all required fields are present
+        if(!userName || !name || !lecturerId || !userEmail){
+            throw new Error("All fields are required!");
+        }
+
+        //Check if email is valid or not
+        if(!validator.isEmail(userEmail)){
+            throw new Error("Please Enter Valid Email!");
+        }
+
+        //Check if userName is already in use or not
+        const existingUserName = await User.findOne({ where: { userName } });
+        if(existingUserName){
+            throw new Error("Username is already in use!");
+        }
+
+        //Check if userEmail is already in use or not
+        const existingUserEmail = await User.findOne({ where: { userEmail } });
+        if(existingUserEmail){
+            throw new Error("Email is already in use!");
+        }
+
+        //Check if new lecturerId is already in use or not
+        const existingLecturerId = await User.findOne({ where: { lecturerId } });
+        if(existingLecturerId){
+            throw new Error("Lecturer ID is already in use!");
+        }
+
+        //Update user profile
+        await User.update({ userName, name, lecturerId , userEmail }, { where: { userId } });
+
+        console.log("Profile updated successfully!");
+        return {
+            status: 200,
+            json: {
+                success: true,
+                message: "Profile updated successfully."
+            }
+        };
+
+    } catch(err){
+
+        //Return error
+        console.error("Error in updateProfile:", err.message);
+        return { status: 500, json: { message: "Internal Server Error" } };
+    }
+};
 
 

@@ -186,3 +186,18 @@ exports.resetPassword = async (req, res) => {
     }
 }
 
+exports.updateProfile = async (req, res) => {
+    try {
+        const { userId, userName, name, lecturerId , userEmail } = req.body;
+
+        const result = await authService.updateProfile(userId, userName, name, lecturerId, userEmail);
+
+        // Send consistent JSON response
+        res.status(result.status).json(result.json);
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+};
+
