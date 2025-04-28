@@ -29,6 +29,7 @@ class User {
       if (userId != null)
         'userId': userId, // Include userId only if it's not null
       'userName': userName,
+      'name': name,
       'userEmail': userEmail,
       'userPassword': userPassword,
       if (confirmPassword != null)

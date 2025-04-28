@@ -55,6 +55,7 @@ dependencies:
   modal_bottom_sheet: ^3.0.0
   nfc_host_card_emulation: ^1.1.0
   another_flushbar: ^1.12.30
+  pull_to_refresh_flutter3: ^2.0.2
   
   
   

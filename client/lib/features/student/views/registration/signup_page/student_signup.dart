@@ -123,7 +123,7 @@ class StudentSignupPage extends ConsumerWidget {
 
                 //Name textfield
                 MyLoginTextField(
-                  controller: userNameController,
+                  controller: name,
                   hintText: 'Ahmad Ali',
                   obscureText: false,
                 ),

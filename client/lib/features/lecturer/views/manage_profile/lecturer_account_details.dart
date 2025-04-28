@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:smartclass_fyp_2024/features/lecturer/views/manage_profile/lecturer_edit_profile.dart';
 import 'package:smartclass_fyp_2024/features/lecturer/views/template/lecturer_bottom_navbar.dart';
 import 'package:smartclass_fyp_2024/shared/data/dataprovider/user_provider.dart';
@@ -16,6 +17,27 @@ class LecturerAccountDetails extends ConsumerStatefulWidget {
 
 class _LecturerAccountDetailsState
     extends ConsumerState<LecturerAccountDetails> {
+  final RefreshController _refreshController =
+      RefreshController(initialRefresh: false);
+
+  // ignore: unused_element
+  void _onRefresh() async {
+    // monitor network fetch
+    await ref.read(userProvider.notifier).refreshUserData();
+    await Future.delayed(const Duration(seconds: 1));
+    // if failed,use refreshFailed()
+    _refreshController.refreshCompleted();
+  }
+
+  void _onLoading() async {
+    // monitor network fetch
+    await Future.delayed(const Duration(seconds: 1));
+    // if failed,use loadFailed(),if no data return,use LoadNodata()
+
+    if (mounted) setState(() {});
+    _refreshController.loadComplete();
+  }
+
   @override
   Widget build(BuildContext context) {
     //User data
@@ -24,7 +46,23 @@ class _LecturerAccountDetailsState
     return Scaffold(
       backgroundColor: const Color(0xffF5F5F5),
       appBar: _appBar(user),
-      body: _accountDetailsSection(user),
+      body: SmartRefresher(
+        controller: _refreshController,
+        enablePullDown: true,
+        header: const ClassicHeader(
+          releaseIcon: Icon(
+            Icons.arrow_upward,
+            color: Colors.grey,
+          ),
+        ),
+        onRefresh: _onRefresh,
+        onLoading: _onLoading,
+        child: ListView(
+          children: [
+            _accountDetailsSection(user),
+          ],
+        ),
+      ),
     );
   }
 
