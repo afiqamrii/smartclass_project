@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:quickalert/models/quickalert_type.dart';
+import 'package:quickalert/widgets/quickalert_dialog.dart';
 import 'package:smartclass_fyp_2024/features/lecturer/views/manage_profile/lecturer_account_details.dart';
+import 'package:smartclass_fyp_2024/shared/data/dataprovider/user_provider.dart';
 import 'package:smartclass_fyp_2024/shared/data/models/user.dart';
+import 'package:smartclass_fyp_2024/shared/data/services/auth_services.dart';
 import 'package:smartclass_fyp_2024/shared/widgets/pageTransition.dart';
 
 class LecturerEditProfile extends ConsumerStatefulWidget {
@@ -19,6 +23,12 @@ class _LecturerEditProfileState extends ConsumerState<LecturerEditProfile> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _lecturerIdController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
+
+  //Form key'
+  final _formKey = GlobalKey<FormState>();
+
+  //Import AuthServices
+  final authService = AuthService();
 
   @override
   void initState() {
@@ -38,8 +48,57 @@ class _LecturerEditProfileState extends ConsumerState<LecturerEditProfile> {
     super.dispose();
   }
 
+  //Update Profile method
+  void updateProfile(BuildContext context, WidgetRef ref, int userId) async {
+    if (_formKey.currentState!.validate()) {
+      // Check if user made any changes
+      bool isUsernameChanged =
+          _usernameController.text.trim() != widget.user.userName;
+      bool isNameChanged = _nameController.text.trim() != widget.user.name;
+
+      if (!isUsernameChanged && !isNameChanged) {
+        // No changes detected
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('No changes were made.'),
+            backgroundColor: Colors.orange,
+          ),
+        );
+        return; // Stop the update
+      }
+
+      // Prepare fields to update
+      String? updatedUsername =
+          isUsernameChanged ? _usernameController.text.trim() : null;
+      String? updatedName = isNameChanged ? _nameController.text.trim() : null;
+
+      try {
+        await Future.any([
+          authService.updateUserProfile(
+            context: context,
+            userId: userId,
+            userName: updatedUsername ?? widget.user.userName,
+            name: updatedName ?? widget.user.name,
+          ),
+        ]);
+
+        // You can show a success message after update here if you want
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Update failed: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    //Get User data
+    final user = ref.watch(userProvider);
+
     return Scaffold(
       backgroundColor: const Color(0xFFF9F9F9),
       appBar: AppBar(
@@ -75,33 +134,36 @@ class _LecturerEditProfileState extends ConsumerState<LecturerEditProfile> {
         padding: const EdgeInsets.symmetric(horizontal: 24),
         children: [
           const SizedBox(height: 30),
-          Center(
-            child: Stack(
-              clipBehavior: Clip.none,
-              children: [
-                const CircleAvatar(
-                  radius: 45,
-                  backgroundImage: NetworkImage(
-                    "https://images.unsplash.com/photo-1745555926235-faa237ea89a0?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-                  ),
-                ),
-                Positioned(
-                  bottom: 0,
-                  right: -30,
-                  child: RawMaterialButton(
-                    onPressed: () {},
-                    elevation: 2,
-                    fillColor: Colors.white,
-                    shape: const CircleBorder(),
-                    padding: const EdgeInsets.all(8),
-                    child: const Icon(
-                      Icons.camera_alt_outlined,
-                      color: Colors.black87,
-                      size: 18,
+          Form(
+            key: _formKey,
+            child: Center(
+              child: Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  const CircleAvatar(
+                    radius: 45,
+                    backgroundImage: NetworkImage(
+                      "https://images.unsplash.com/photo-1745555926235-faa237ea89a0?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
                     ),
                   ),
-                ),
-              ],
+                  Positioned(
+                    bottom: 0,
+                    right: -30,
+                    child: RawMaterialButton(
+                      onPressed: () {},
+                      elevation: 2,
+                      fillColor: Colors.white,
+                      shape: const CircleBorder(),
+                      padding: const EdgeInsets.all(8),
+                      child: const Icon(
+                        Icons.camera_alt_outlined,
+                        color: Colors.black87,
+                        size: 18,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
           const SizedBox(height: 30),
@@ -109,12 +171,55 @@ class _LecturerEditProfileState extends ConsumerState<LecturerEditProfile> {
           const SizedBox(height: 16),
           _buildInputField('Name', _nameController),
           const SizedBox(height: 16),
-          _buildInputField('Lecturer ID', _lecturerIdController),
+          _buildInputField('Lecturer ID', _lecturerIdController, onTap: () {
+            QuickAlert.show(
+              context: context,
+              type: QuickAlertType.info,
+              title: 'Info',
+              text: 'Lecturer ID cannot be changed.',
+              confirmBtnText: 'OK',
+            );
+          }),
           const SizedBox(height: 16),
-          _buildInputField('Email', _emailController),
+          _buildInputField('Email', _emailController, onTap: () {
+            QuickAlert.show(
+              context: context,
+              type: QuickAlertType.info,
+              title: 'Info',
+              text: 'Email cannot be changed.',
+              confirmBtnText: 'OK',
+            );
+          }),
           const SizedBox(height: 30),
           ElevatedButton(
-            onPressed: () {},
+            onPressed: () {
+              QuickAlert.show(
+                context: context,
+                type: QuickAlertType.confirm,
+                title: "Update Class",
+                text: "Are you sure you want to update profile?",
+                confirmBtnText: "Yes",
+                cancelBtnText: "No",
+                onConfirmBtnTap: () async {
+                  if (user.userId != null) {
+                    updateProfile(context, ref, user.userId!);
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content:
+                            Text('User ID is null. Cannot update profile.'),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                  }
+                },
+              );
+              Future.delayed(const Duration(seconds: 5), () {
+                if (Navigator.canPop(context)) {
+                  Navigator.pop(context);
+                }
+              });
+            },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.black,
               shape: RoundedRectangleBorder(

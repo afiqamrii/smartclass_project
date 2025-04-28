@@ -42,7 +42,7 @@ authRouter.post("/tokenIsValid" , authController.checkToken);
 authRouter.get("/" , auth , authController.getUserData);
 
 //User update profile details route
-authRouter.put("/updateprofile" , auth , authController.updateProfile);
+authRouter.put("/updateprofile" ,  authController.updateProfile);
 
 
 module.exports = authRouter;
