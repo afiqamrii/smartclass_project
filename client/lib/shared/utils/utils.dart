@@ -17,7 +17,7 @@ void httpErrorHandle({
 }) {
   switch (response.statusCode) {
     case 200:
-      showSnackBar(context, jsonDecode(response.body)['message']);
+      // showSnackBar(context, jsonDecode(response.body)['message']);
       onSuccess();
       break;
     case 400:
@@ -27,6 +27,6 @@ void httpErrorHandle({
       showSnackBar(context, jsonDecode(response.body)['error']);
       break;
     default:
-      showSnackBar(context, "${response.body}");
+      showSnackBar(context, response.body);
   }
 }

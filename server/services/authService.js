@@ -4,6 +4,7 @@ const jwt = require("jsonwebtoken");
 
 const UserVerification = require("../models/UserVerification");
 const PasswordReset = require("../models/PasswordReset");
+const { Op } = require('sequelize');
 
 //Email handler
 const nodemailer = require("nodemailer");
@@ -51,13 +52,15 @@ exports.signUp = async ({userName , userEmail , name , userPassword , confirmPas
 
         //Check if all required fields are present
         const existingUserEmail = await User.findOne({ where: { userEmail } });
-        // if(existingUserEmail){
-        //     throw new Error("Email is already exists!");
-        // }
 
         //Check if username already exists
         const existingUsername = await User.findOne({ where : {userName}});
-        if(existingUsername || existingUserEmail || externalId){
+
+        //Check if externalId already exists
+        const existingExternalId = await User.findOne({ where : {externalId}});
+
+        if(existingUsername || existingUserEmail || existingExternalId){
+            console.log(existingUserEmail , existingUsername);
             throw new Error("Username or Email is already exists!");
         }
 
@@ -437,55 +440,31 @@ exports.resetPassword = async (userId, resetString, newPassword, confirmPassword
     }
 };
 
-exports.updateProfile = async (userId, userName, name, lecturerId , userEmail) => {
-    try{
-
-        //Check if all required fields are present
-        if(!userName || !name || !lecturerId || !userEmail){
-            throw new Error("All fields are required!");
+exports.updateProfile = async (userId, userName, name) => {
+    // Check if username is already in use by another user (not this user)
+    const existingUserName = await User.findOne({ 
+        where: { 
+            userName,
+            userId: { [Op.ne]: userId } // username exists but belongs to different user
         }
+    });
 
-        //Check if email is valid or not
-        if(!validator.isEmail(userEmail)){
-            throw new Error("Please Enter Valid Email!");
-        }
-
-        //Check if userName is already in use or not
-        const existingUserName = await User.findOne({ where: { userName } });
-        if(existingUserName){
-            throw new Error("Username is already in use!");
-        }
-
-        //Check if userEmail is already in use or not
-        const existingUserEmail = await User.findOne({ where: { userEmail } });
-        if(existingUserEmail){
-            throw new Error("Email is already in use!");
-        }
-
-        //Check if new lecturerId is already in use or not
-        const existingLecturerId = await User.findOne({ where: { lecturerId } });
-        if(existingLecturerId){
-            throw new Error("Lecturer ID is already in use!");
-        }
-
-        //Update user profile
-        await User.update({ userName, name, lecturerId , userEmail }, { where: { userId } });
-
-        console.log("Profile updated successfully!");
-        return {
-            status: 200,
-            json: {
-                success: true,
-                message: "Profile updated successfully."
-            }
-        };
-
-    } catch(err){
-
-        //Return error
-        console.error("Error in updateProfile:", err.message);
-        return { status: 500, json: { message: "Internal Server Error" } };
+    if(existingUserName){
+        throw new Error("Username is already in use!");
     }
+
+    // Update user profile
+    await User.update({ userName, name }, { where: { userId } });
+
+    console.log("Profile updated successfully!");
+    return {
+        status: 200,
+        json: {
+            success: true,
+            message: "Profile updated successfully."
+        }
+    };
 };
+
 
 

@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'package:smartclass_fyp_2024/constants/api_constants.dart';
+import 'package:smartclass_fyp_2024/features/lecturer/views/manage_profile/email_sended.dart';
+import 'package:smartclass_fyp_2024/features/lecturer/views/manage_profile/lecturer_account_details.dart';
 import 'package:smartclass_fyp_2024/shared/data/models/role.dart';
 import 'package:smartclass_fyp_2024/features/admin/view/bottom_nav/admin_bottom_navbar.dart';
 import 'package:smartclass_fyp_2024/features/admin/view/registeration/signup_page/admin_greets_page.dart';
@@ -19,26 +21,6 @@ import 'package:smartclass_fyp_2024/shared/widgets/pageTransition.dart';
 import 'package:smartclass_fyp_2024/features/student/views/template/student_bottom_navbar.dart';
 
 class AuthService {
-  //for WIFI Rumah
-  //BASE URL
-  // static const baseUrl = "http://192.168.0.99:3000/api";
-
-  // //Reset Password
-  // static const url = "http://192.168.0.99:3000";
-
-  // //GET USER DATA
-  // static const tokenAuthUrl = "http://192.168.0.99:3000";
-
-  //Hotspot
-  //BASE URL
-  // static const baseUrl = "http://172.20.10.2:3000/api";
-
-  // //Reset Password
-  // static const url = "http://172.20.10.2:3000";
-
-  // //GET USER DATA
-  // static const tokenAuthUrl = "http://172.20.10.2:3000";
-
   //SIGNUP
   Future<void> signUpUser({
     required BuildContext context,
@@ -57,7 +39,7 @@ class AuthService {
       User _user = User(
         // userId: userId,
         userName: userName,
-        name : name,
+        name: name,
         userEmail: userEmail,
         userPassword: userPassword,
         confirmPassword: confirmPassword,
@@ -141,6 +123,7 @@ class AuthService {
         // ignore: use_build_context_synchronously
         context: context,
         onSuccess: () async {
+          showSnackBar(context, jsonDecode(res.body)['message']);
           //Store Token Locally
           SharedPreferences prefs = await SharedPreferences.getInstance();
           final userData = jsonDecode(res.body);
@@ -293,6 +276,7 @@ class AuthService {
   Future<void> requestPasswordReset({
     required BuildContext context,
     required String userEmail,
+    required bool isChangePassword,
   }) async {
     final navigator = Navigator.of(context);
 
@@ -307,16 +291,67 @@ class AuthService {
         response: res,
         context: context,
         onSuccess: () {
-          showSnackBar(context, res.body);
+          showSnackBar(context, jsonDecode(res.body)['message']);
         },
       );
 
       if (res.statusCode == 200) {
-        //Pass email to check email page
-        //Redirect to check email page
+        //Redirect to change password page
+        if (isChangePassword) {
+          navigator.push(
+            toLeftTransition(
+              EmailSended(userEmail),
+            ),
+          );
+        } else {
+          //Pass email to check email page
+          //Redirect to check email page
+          navigator.pushAndRemoveUntil(
+            toLeftTransition(
+              CheckEmailPage(userEmail),
+            ),
+            (route) => false,
+          );
+        }
+      }
+    } catch (e) {
+      showSnackBar(context, e.toString());
+    }
+  }
+
+  //Update User Profile
+  Future<void> updateUserProfile({
+    required BuildContext context,
+    required int userId,
+    required String userName,
+    required String name,
+  }) async {
+    final navigator = Navigator.of(context);
+
+    try {
+      http.Response res = await http.put(
+        Uri.parse('${ApiConstants.baseUrl}/updateProfile'),
+        body: jsonEncode({
+          'userId': userId,
+          'userName': userName,
+          'name': name,
+        }),
+        headers: {'Content-Type': 'application/json; charset=UTF-8'},
+      );
+
+      httpErrorHandle(
+        response: res,
+        context: context,
+        onSuccess: () {
+          showSnackBar(context, jsonDecode(res.body)['message']);
+        },
+      );
+
+      if (res.statusCode == 200) {
+        //Redirect to lecturer profile page
         navigator.pushAndRemoveUntil(
           toLeftTransition(
-            CheckEmailPage(userEmail),
+            const LecturerAccountDetails(),
           ),
           (route) => false,
         );

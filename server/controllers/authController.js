@@ -188,16 +188,29 @@ exports.resetPassword = async (req, res) => {
 
 exports.updateProfile = async (req, res) => {
     try {
-        const { userId, userName, name, lecturerId , userEmail } = req.body;
+        const { userId, userName, name } = req.body;
 
-        const result = await authService.updateProfile(userId, userName, name, lecturerId, userEmail);
+        console.log("Received data:", req.body);
+
+        const result = await authService.updateProfile(userId, userName, name);
 
         // Send consistent JSON response
         res.status(result.status).json(result.json);
 
     } catch (err) {
-        console.error(err);
-        res.status(500).json({ message: "Internal Server Error" });
+        // Check if the error is user-related
+        const userErrors = ["All fields are required!","Username is already in use!"];
+        
+        // Handle different types of errors
+        //User error - 400
+        if (userErrors.includes(err.message)) {
+            res.status(400).json({ message: err.message });
+        
+        //Internal server error - 500
+        } else {
+            res.status(500).json({ message: "Internal Server Error" });
+        }
+        console.log(err);
     }
 };
 

@@ -11,10 +11,13 @@ class LecturerGreetsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       appBar: const Appbar(),
-      body: _greetsSection(context),
+      body: ListView(
+        children: [
+          _greetsSection(context),
+        ],
+      ),
     );
   }
 

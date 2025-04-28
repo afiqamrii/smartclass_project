@@ -23,6 +23,7 @@ class ResetPasswordPage extends ConsumerWidget {
     await authService.requestPasswordReset(
       context: context,
       userEmail: emailController.text,
+      isChangePassword: false,
     );
 
     ref.read(loadingProvider.notifier).state = false; //Stop loading after done

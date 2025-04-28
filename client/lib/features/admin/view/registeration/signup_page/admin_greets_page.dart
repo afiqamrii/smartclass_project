@@ -13,131 +13,136 @@ class AdminGreetsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: const Appbar(), //Appbar widget
-      body: Padding(
-        padding: const EdgeInsets.all(28.0),
-        child: Center(
-          child: Column(
-            children: [
-              //Picture of lecturer ilustration
-              SvgPicture.asset(
-                'assets/icons/admin.svg',
-                width: MediaQuery.of(context).size.width * 0.3,
-                height: MediaQuery.of(context).size.height * 0.3,
-              ),
-              const SizedBox(height: 20),
-              //Greetings
-              const Text(
-                "Hi, Admin!",
-                style: TextStyle(
-                  fontSize: 28,
-                  fontFamily: 'FigtreeExtraBold',
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              //Description
-              const SizedBox(height: 20),
-              const Text(
-                "Welcome to IntelliClass, the smart classroom management system. Login to manage your classroom utilities and devices.",
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.grey,
-                  fontFamily: 'Figtree',
-                  fontWeight: FontWeight.w400,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 30),
-              //Login button
-              SizedBox(
-                width: MediaQuery.of(context).size.width * 0.6,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color.fromARGB(255, 192, 28, 113),
+      body: ListView(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(28.0),
+            child: Center(
+              child: Column(
+                children: [
+                  //Picture of lecturer ilustration
+                  SvgPicture.asset(
+                    'assets/icons/admin.svg',
+                    width: MediaQuery.of(context).size.width * 0.3,
+                    height: MediaQuery.of(context).size.height * 0.3,
                   ),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      upTransition(
-                        PPHStaffSignInPage(),
-                      ),
-                    );
-                  },
-                  child: const Text(
-                    "Login",
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 12),
-              //Sign Up button
-              SizedBox(
-                width: MediaQuery.of(context).size.width * 0.6,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    side: const BorderSide(
-                        color: Color.fromARGB(255, 192, 28, 113)),
-                  ),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      toLeftTransition(
-                        StaffSignUpPage(),
-                      ),
-                    );
-                  },
-                  child: const Text(
-                    "Sign Up",
+                  const SizedBox(height: 20),
+                  //Greetings
+                  const Text(
+                    "Hi, Admin!",
                     style: TextStyle(
-                      color: Color.fromARGB(255, 192, 28, 113),
+                      fontSize: 28,
+                      fontFamily: 'FigtreeExtraBold',
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
-                ),
-              ),
-              SizedBox(
-                height: MediaQuery.of(context).size.height * 0.05,
-              ),
-              if (!Navigator.canPop(context))
-                //Back to choose role button
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text(
-                      "Choose another role?",
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: Colors.black54,
-                        fontFamily: 'Figtree',
-                        fontWeight: FontWeight.w800,
+                  //Description
+                  const SizedBox(height: 20),
+                  const Text(
+                    "Welcome to IntelliClass, the smart classroom management system. Login to manage your classroom utilities and devices.",
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey,
+                      fontFamily: 'Figtree',
+                      fontWeight: FontWeight.w400,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 30),
+                  //Login button
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.6,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor:
+                            const Color.fromARGB(255, 192, 28, 113),
                       ),
-                    ),
-                    const SizedBox(
-                      width: 5,
-                    ),
-                    GestureDetector(
-                      onTap: () {
+                      onPressed: () {
                         Navigator.push(
                           context,
-                          toRightTransition(
-                            const LoginAsPage(), //Direct to choose role page
+                          upTransition(
+                            PPHStaffSignInPage(),
                           ),
                         );
                       },
                       child: const Text(
-                        "Click here",
+                        "Login",
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  //Sign Up button
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.6,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        side: const BorderSide(
+                            color: Color.fromARGB(255, 192, 28, 113)),
+                      ),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          toLeftTransition(
+                            StaffSignUpPage(),
+                          ),
+                        );
+                      },
+                      child: const Text(
+                        "Sign Up",
                         style: TextStyle(
-                          fontSize: 13,
                           color: Color.fromARGB(255, 192, 28, 113),
-                          fontFamily: 'Figtree',
-                          fontWeight: FontWeight.w800,
                         ),
                       ),
                     ),
-                  ],
-                ),
-            ],
+                  ),
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.05,
+                  ),
+                  if (!Navigator.canPop(context))
+                    //Back to choose role button
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Text(
+                          "Choose another role?",
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: Colors.black54,
+                            fontFamily: 'Figtree',
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                        const SizedBox(
+                          width: 5,
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              toRightTransition(
+                                const LoginAsPage(), //Direct to choose role page
+                              ),
+                            );
+                          },
+                          child: const Text(
+                            "Click here",
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: Color.fromARGB(255, 192, 28, 113),
+                              fontFamily: 'Figtree',
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                ],
+              ),
+            ),
           ),
-        ),
+        ],
       ),
     );
   }
