@@ -41,5 +41,8 @@ authRouter.post("/tokenIsValid" , authController.checkToken);
 //Get User Data Route
 authRouter.get("/" , auth , authController.getUserData);
 
+//User update profile details route
+authRouter.put("/updateprofile" , auth , authController.updateProfile);
+
 
 module.exports = authRouter;
