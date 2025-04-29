@@ -187,40 +187,45 @@ class _LectHomepageState extends ConsumerState<LectHomepage> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              "Hello ${user.userName} & ${user.externalId}",
-              style: const TextStyle(
-                fontSize: 22,
-                color: Color.fromARGB(255, 238, 238, 238),
-                fontFamily: 'Figtree',
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 5),
-            Text.rich(
-              TextSpan(
-                text: "Welcome to ",
+        SizedBox(
+          width: MediaQuery.of(context).size.width * 0.6,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                "Hello ${user.userName} & ${user.externalId}",
                 style: const TextStyle(
-                  fontSize: 18,
+                  fontSize: 22,
                   color: Color.fromARGB(255, 238, 238, 238),
-                  fontFamily: 'FigtreeRegular',
+                  fontFamily: 'Figtree',
+                  fontWeight: FontWeight.bold,
                 ),
-                children: [
-                  TextSpan(
-                    text: user.userName,
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Color.fromARGB(255, 232, 103, 255),
-                    ),
-                  ),
-                ],
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
               ),
-            ),
-          ],
+              const SizedBox(height: 5),
+              Text.rich(
+                TextSpan(
+                  text: "Welcome to ",
+                  style: const TextStyle(
+                    fontSize: 18,
+                    color: Color.fromARGB(255, 238, 238, 238),
+                    fontFamily: 'FigtreeRegular',
+                  ),
+                  children: [
+                    TextSpan(
+                      text: user.userName,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Color.fromARGB(255, 232, 103, 255),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
         Padding(
           padding: const EdgeInsets.only(right: 5.0),
@@ -474,131 +479,139 @@ class _LectHomepageState extends ConsumerState<LectHomepage> {
     );
   }
 
-  SizedBox _classListCard(
+  Widget _classListCard(
       BuildContext context, List<ClassCreateModel> classDataItem) {
-    return SizedBox(
-      width: MediaQuery.of(context).size.width * 1.0,
-      height: 170,
+    if (classDataItem.isEmpty) {
+      return const Unavailablepage(
+        animation: "assets/animations/noClassAnimation.json",
+        message: "You have no class yet.",
+      );
+    } else {
+      return SizedBox(
+        width: MediaQuery.of(context).size.width * 1.0,
+        height: 170,
 
-      //Show all class in the card
-      child: ListView.separated(
-        scrollDirection: Axis.horizontal,
-        clipBehavior: Clip.none,
-        itemCount: classDataItem.length,
-        separatorBuilder: (context, index) => const SizedBox(width: 20),
-        itemBuilder: (context, index) {
-          final classData = classDataItem[index];
-          return GestureDetector(
-            onTap: () {
-              // Navigate to class detail page
-              Navigator.push(
-                context,
-                toLeftTransition(
-                  LecturerViewClass(
-                    classItem: classData,
-                  ),
-                ),
-              );
-            },
-            child: IntrinsicHeight(
-              child: IntrinsicWidth(
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(
-                    minWidth: 300,
-                  ),
-                  child: Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(12.0),
-                      //Give the shadow to the card
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.35),
-                          spreadRadius: 0,
-                          blurRadius: 6,
-                          offset: const Offset(0, 3),
-                        ),
-                      ],
+        //Show all class in the card
+        child: ListView.separated(
+          physics: const BouncingScrollPhysics(),
+          scrollDirection: Axis.horizontal,
+          clipBehavior: Clip.none,
+          itemCount: classDataItem.length,
+          separatorBuilder: (context, index) => const SizedBox(width: 20),
+          itemBuilder: (context, index) {
+            final classData = classDataItem[index];
+            return GestureDetector(
+              onTap: () {
+                // Navigate to class detail page
+                Navigator.push(
+                  context,
+                  toLeftTransition(
+                    LecturerViewClass(
+                      classItem: classData,
                     ),
-                    child: SizedBox(
-                      width: 200,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // Course Title
-                          Text(
-                            "${classData.courseCode} - ${classData.courseName}",
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black87,
-                            ),
+                  ),
+                );
+              },
+              child: IntrinsicHeight(
+                child: IntrinsicWidth(
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(
+                      minWidth: 300,
+                    ),
+                    child: Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12.0),
+                        //Give the shadow to the card
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.35),
+                            spreadRadius: 0,
+                            blurRadius: 6,
+                            offset: const Offset(0, 3),
                           ),
-                          const SizedBox(height: 15),
-
-                          // Location
-                          Row(
-                            children: [
-                              const Icon(Icons.location_on,
-                                  size: 16, color: Colors.grey),
-                              const SizedBox(width: 5),
-                              Text(
-                                classData.location,
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.black54,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 10),
-
-                          // Time
-                          Row(
-                            children: [
-                              const Icon(Icons.schedule,
-                                  size: 16, color: Colors.grey),
-                              const SizedBox(width: 5),
-                              Text(
-                                "${classData.startTime} - ${classData.endTime}",
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.black54,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 10),
-
-                          // Date
-                          Row(
-                            children: [
-                              const Icon(Icons.calendar_today,
-                                  size: 16, color: Colors.black54),
-                              const SizedBox(width: 5),
-                              Text(
-                                classData.date,
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.black54,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 10),
                         ],
+                      ),
+                      child: SizedBox(
+                        width: 200,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Course Title
+                            Text(
+                              "${classData.courseCode} - ${classData.courseName}",
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black87,
+                              ),
+                            ),
+                            const SizedBox(height: 15),
+
+                            // Location
+                            Row(
+                              children: [
+                                const Icon(Icons.location_on,
+                                    size: 16, color: Colors.grey),
+                                const SizedBox(width: 5),
+                                Text(
+                                  classData.location,
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.black54,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 10),
+
+                            // Time
+                            Row(
+                              children: [
+                                const Icon(Icons.schedule,
+                                    size: 16, color: Colors.grey),
+                                const SizedBox(width: 5),
+                                Text(
+                                  "${classData.startTime} - ${classData.endTime}",
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.black54,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 10),
+
+                            // Date
+                            Row(
+                              children: [
+                                const Icon(Icons.calendar_today,
+                                    size: 16, color: Colors.black54),
+                                const SizedBox(width: 5),
+                                Text(
+                                  classData.date,
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.black54,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 10),
+                          ],
+                        ),
                       ),
                     ),
                   ),
                 ),
               ),
-            ),
-          );
-        },
-      ),
-    );
+            );
+          },
+        ),
+      );
+    }
   }
 }

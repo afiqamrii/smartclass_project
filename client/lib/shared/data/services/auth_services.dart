@@ -4,8 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'package:smartclass_fyp_2024/constants/api_constants.dart';
+import 'package:smartclass_fyp_2024/features/admin/view/manage_profile/admin_email_sended.dart';
 import 'package:smartclass_fyp_2024/features/lecturer/views/manage_profile/email_sended.dart';
 import 'package:smartclass_fyp_2024/features/lecturer/views/manage_profile/lecturer_account_details.dart';
+import 'package:smartclass_fyp_2024/features/student/views/manage_profile/student_email_sended.dart';
 import 'package:smartclass_fyp_2024/shared/data/models/role.dart';
 import 'package:smartclass_fyp_2024/features/admin/view/bottom_nav/admin_bottom_navbar.dart';
 import 'package:smartclass_fyp_2024/features/admin/view/registeration/signup_page/admin_greets_page.dart';
@@ -277,6 +279,7 @@ class AuthService {
     required BuildContext context,
     required String userEmail,
     required bool isChangePassword,
+    required int roleId,
   }) async {
     final navigator = Navigator.of(context);
 
@@ -298,11 +301,25 @@ class AuthService {
       if (res.statusCode == 200) {
         //Redirect to change password page
         if (isChangePassword) {
-          navigator.push(
-            toLeftTransition(
-              EmailSended(userEmail),
-            ),
-          );
+          if (roleId == Role.lecturer) {
+            navigator.push(
+              toLeftTransition(
+                EmailSended(userEmail),
+              ),
+            );
+          } else if (roleId == Role.student) {
+            navigator.push(
+              toLeftTransition(
+                StudentEmailSended(userEmail),
+              ),
+            );
+          } else if (roleId == Role.staff) {
+            navigator.push(
+              toLeftTransition(
+                AdminEmailSended(userEmail),
+              ),
+            );
+          }
         } else {
           //Pass email to check email page
           //Redirect to check email page

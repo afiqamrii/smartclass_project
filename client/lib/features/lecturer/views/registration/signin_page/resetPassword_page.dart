@@ -24,6 +24,7 @@ class ResetPasswordPage extends ConsumerWidget {
       context: context,
       userEmail: emailController.text,
       isChangePassword: false,
+      roleId: ref.read(userProvider).roleId,
     );
 
     ref.read(loadingProvider.notifier).state = false; //Stop loading after done

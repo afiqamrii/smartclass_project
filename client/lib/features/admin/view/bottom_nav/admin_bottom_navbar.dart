@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:smartclass_fyp_2024/features/admin/view/homepage/admin_homepage.dart';
-import 'package:smartclass_fyp_2024/features/admin/view/manage_profile/admin_manage_profile.dart';
+import 'package:smartclass_fyp_2024/features/admin/view/manage_profile/admin_profile_page.dart';
 import 'package:smartclass_fyp_2024/features/admin/view/manage_report/admin_manage_report.dart';
 
 class AdminBottomNavbar extends StatefulWidget {
@@ -18,7 +18,7 @@ class _AdminBottomNavbarState extends State<AdminBottomNavbar> {
   final List<Widget> _screens = [
     const AdminHomepage(),
     const AdminManageReport(),
-    const AdminManageProfile(),
+    const AdminProfilePage(),
   ];
 
   @override
