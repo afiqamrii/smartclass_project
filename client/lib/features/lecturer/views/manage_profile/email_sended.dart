@@ -4,6 +4,7 @@ import 'package:lottie/lottie.dart';
 import 'package:smartclass_fyp_2024/features/lecturer/views/template/lecturer_bottom_navbar.dart';
 import 'package:smartclass_fyp_2024/shared/components/custom_buttom.dart';
 import 'package:smartclass_fyp_2024/shared/data/dataprovider/user_provider.dart';
+import 'package:smartclass_fyp_2024/shared/data/models/role.dart';
 import 'package:smartclass_fyp_2024/shared/widgets/pageTransition.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -25,6 +26,7 @@ class EmailSended extends ConsumerWidget {
       context: context,
       userEmail: userEmail,
       isChangePassword: true,
+      roleId: Role.lecturer,
     );
 
     ref.read(loadingProvider.notifier).state = false; //Stop loading after done

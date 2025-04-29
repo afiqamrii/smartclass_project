@@ -1,20 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lottie/lottie.dart';
+import 'package:smartclass_fyp_2024/features/admin/view/bottom_nav/admin_bottom_navbar.dart';
 import 'package:smartclass_fyp_2024/shared/components/custom_buttom.dart';
 import 'package:smartclass_fyp_2024/shared/data/dataprovider/user_provider.dart';
-import 'package:smartclass_fyp_2024/features/lecturer/views/registration/signin_page/lecturer_signin.dart';
 import 'package:smartclass_fyp_2024/shared/data/models/role.dart';
-import 'package:smartclass_fyp_2024/shared/widgets/appbar.dart';
 import 'package:smartclass_fyp_2024/shared/widgets/pageTransition.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../../shared/data/services/auth_services.dart';
 
-class CheckEmailPage extends ConsumerWidget {
+class AdminEmailSended extends ConsumerWidget {
   final String userEmail;
 
-  CheckEmailPage(this.userEmail, {super.key});
+  AdminEmailSended(this.userEmail, {super.key});
 
   //Import AuthServices
   final authService = AuthService();
@@ -26,8 +25,8 @@ class CheckEmailPage extends ConsumerWidget {
     await authService.requestPasswordReset(
       context: context,
       userEmail: userEmail,
-      isChangePassword: false,
-      roleId: Role.lecturer,
+      isChangePassword: true,
+      roleId: Role.staff,
     );
 
     ref.read(loadingProvider.notifier).state = false; //Stop loading after done
@@ -60,7 +59,35 @@ class CheckEmailPage extends ConsumerWidget {
     double screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      appBar: const Appbar(),
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        title: const Text(
+          "Change Password",
+          style: TextStyle(
+            fontSize: 15,
+            color: Colors.black,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        centerTitle: true,
+        leading: IconButton(
+          icon: const Icon(
+            Icons.arrow_back_ios,
+            size: 20,
+            color: Colors.black,
+          ),
+          onPressed: () {
+            Navigator.push(
+              context,
+              toRightTransition(
+                const AdminBottomNavbar(initialIndex: 2),
+              ),
+            );
+          },
+        ),
+      ),
       body: ListView(
         children: [
           Padding(
@@ -85,7 +112,7 @@ class CheckEmailPage extends ConsumerWidget {
                     Text(
                       "Check your email",
                       style: TextStyle(
-                        fontSize: 27,
+                        fontSize: 25,
                         fontFamily: 'FigtreeExtraBold',
                         fontWeight: FontWeight.bold,
                       ),
@@ -165,37 +192,6 @@ class CheckEmailPage extends ConsumerWidget {
                 ),
                 const SizedBox(
                   height: 30,
-                ),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      toRightTransition(
-                        LecturerLoginPage(),
-                      ),
-                    );
-                  },
-                  child: const Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.arrow_back,
-                        color: Colors.black54,
-                      ),
-                      const SizedBox(
-                        width: 5,
-                      ),
-                      Text(
-                        "Back to log in",
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.black54,
-                          fontFamily: 'Figtree',
-                          fontWeight: FontWeight.w800,
-                        ),
-                      ),
-                    ],
-                  ),
                 ),
               ],
             ),
