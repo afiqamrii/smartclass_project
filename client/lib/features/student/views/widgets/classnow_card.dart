@@ -201,9 +201,13 @@ class _ClassNowCardState extends ConsumerState<ClassNowCard> {
           child: Stack(
             fit: StackFit.expand,
             children: [
-              Image.network(
-                widget.imageUrl,
-                fit: BoxFit.cover,
+              SizedBox(
+                height: 200,
+                child: Image.network(
+                  widget.imageUrl,
+                  fit: BoxFit.cover,
+                  width: double.infinity,
+                ),
               ),
               Positioned(
                 top: 1,

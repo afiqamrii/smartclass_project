@@ -6,8 +6,8 @@ import 'package:smartclass_fyp_2024/shared/data/models/role.dart';
 
 import '../../../../../shared/data/services/auth_services.dart';
 
-class ChangePassword extends ConsumerWidget {
-  ChangePassword({super.key});
+class AdminChangePassword extends ConsumerWidget {
+  AdminChangePassword({super.key});
 
   //Import AuthServices
   final authService = AuthService();
@@ -24,7 +24,7 @@ class ChangePassword extends ConsumerWidget {
       context: context,
       userEmail: userEmail,
       isChangePassword: true,
-      roleId: Role.lecturer,
+      roleId: Role.staff,
     );
 
     ref.read(loadingProvider.notifier).state = false; //Stop loading after done

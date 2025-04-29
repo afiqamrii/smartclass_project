@@ -3,22 +3,22 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:quickalert/models/quickalert_type.dart';
 import 'package:quickalert/widgets/quickalert_dialog.dart';
-import 'package:smartclass_fyp_2024/features/student/views/manage_profile/student_account_details.dart';
-import 'package:smartclass_fyp_2024/features/student/views/manage_profile/student_change_password.dart';
+import 'package:smartclass_fyp_2024/features/admin/view/manage_profile/admin_account_details.dart';
+import 'package:smartclass_fyp_2024/features/admin/view/manage_profile/admin_change_password.dart';
 import 'package:smartclass_fyp_2024/shared/data/dataprovider/user_provider.dart';
 import 'package:smartclass_fyp_2024/shared/data/services/auth_services.dart';
 import 'package:smartclass_fyp_2024/shared/widgets/pageTransition.dart';
 
-class StudentProfilepage extends ConsumerStatefulWidget {
-  const StudentProfilepage({super.key});
+class AdminProfilePage extends ConsumerStatefulWidget {
+  const AdminProfilePage({super.key});
 
   @override
-  ConsumerState<StudentProfilepage> createState() => _StudentProfilepageState();
+  ConsumerState<AdminProfilePage> createState() => _AdminProfilePageState();
 }
 
-class _StudentProfilepageState extends ConsumerState<StudentProfilepage> {
+class _AdminProfilePageState extends ConsumerState<AdminProfilePage> {
   void signOutUser(BuildContext context) {
-    AuthService().signOut(context, 1);
+    AuthService().signOut(context, 3);
   }
 
   // ignore: unused_field
@@ -97,7 +97,7 @@ class _StudentProfilepageState extends ConsumerState<StudentProfilepage> {
                               ),
                               const SizedBox(height: 5),
                               const Text(
-                                "Student",
+                                "PPH Admin",
                                 style: TextStyle(
                                   fontSize: 12,
                                   color: Colors.white,
@@ -152,8 +152,7 @@ class _StudentProfilepageState extends ConsumerState<StudentProfilepage> {
                               onTap: () {
                                 Navigator.push(
                                   context,
-                                  toLeftTransition(
-                                      const StudentAccountDetails()),
+                                  toLeftTransition(const AdminAccountDetails()),
                                 );
                               },
                             ),
@@ -175,7 +174,7 @@ class _StudentProfilepageState extends ConsumerState<StudentProfilepage> {
                                 Navigator.push(
                                   context,
                                   toLeftTransition(
-                                    StudentChangePassword(),
+                                    AdminChangePassword(),
                                   ),
                                 );
                               },
@@ -212,7 +211,7 @@ class _StudentProfilepageState extends ConsumerState<StudentProfilepage> {
   }
 }
 
-// Add this method inside your _StudentProfilepageState class
+// Add this method inside your _AdminProfilePageState class
 Widget buildAccountOption({
   required String iconPath,
   required String title,
