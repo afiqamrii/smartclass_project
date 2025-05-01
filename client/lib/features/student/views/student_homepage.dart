@@ -7,6 +7,7 @@ import 'package:skeletonizer/skeletonizer.dart';
 import 'package:smartclass_fyp_2024/constants/color_constants.dart';
 import 'package:smartclass_fyp_2024/features/student/models/todayClass_card_models.dart';
 import 'package:smartclass_fyp_2024/features/student/providers/student_class_provider.dart';
+import 'package:smartclass_fyp_2024/features/student/views/report_utility/report_utility_page.dart';
 import 'package:smartclass_fyp_2024/features/student/views/template/student_bottom_navbar.dart';
 import 'package:smartclass_fyp_2024/features/student/views/widgets/classnow_card.dart';
 import 'package:smartclass_fyp_2024/features/student/views/widgets/student_todayclass_card.dart';
@@ -354,13 +355,16 @@ class _StudentHomePageState extends ConsumerState<StudentHomePage> {
                   ],
                 ),
               );
-            } else {
+            } else if (data.isNotEmpty) {
               return Padding(
                 padding: const EdgeInsets.only(top: 20.0),
                 child: Unavailablepage(
                     animation: "assets/animations/noClassAnimation.json",
                     message: "You only got ${data.length} class today."),
               );
+              // Or any fallback widget
+            } else {
+              return const SizedBox.shrink();
             }
           },
           error: (error, stackTrace) {
@@ -464,13 +468,16 @@ class _StudentHomePageState extends ConsumerState<StudentHomePage> {
                   ],
                 ),
               );
-            } else {
+            } else if (data.isNotEmpty) {
               return Padding(
                 padding: const EdgeInsets.only(top: 20.0),
                 child: Unavailablepage(
                     animation: "assets/animations/noClassAnimation.json",
-                    message: "You only got ${data.length} upcoming class."),
+                    message: "You only got ${data.length} class today."),
               );
+              // Or any fallback widget
+            } else {
+              return const SizedBox.shrink();
             }
           },
           error: (error, stackTrace) {
@@ -581,8 +588,16 @@ class _StudentHomePageState extends ConsumerState<StudentHomePage> {
                   ),
                 ),
               );
+            } else if (data.isNotEmpty) {
+              return Padding(
+                padding: const EdgeInsets.only(top: 20.0),
+                child: Unavailablepage(
+                    animation: "assets/animations/noClassAnimation.json",
+                    message: "You only got ${data.length} class today."),
+              );
+              // Or any fallback widget
             } else {
-              return const SizedBox.shrink(); // Or any fallback widget
+              return const SizedBox.shrink();
             }
           },
           error: (error, stackTrace) {
@@ -649,10 +664,11 @@ class _StudentHomePageState extends ConsumerState<StudentHomePage> {
     );
   }
 
+  // 2nd Card Section
   Widget _cardSection(BuildContext context) {
     return Row(
       children: [
-        // Left card (Empty or any content you want)
+        // Left card
         Expanded(
           child: Container(
             height: 70,
@@ -679,7 +695,14 @@ class _StudentHomePageState extends ConsumerState<StudentHomePage> {
         // Right card (Report Utility Problem)
         Expanded(
           child: GestureDetector(
-            onTap: () => {}, // Handle tap on the card
+            onTap: () => {
+              // Handle tap on the card here
+              Navigator.of(context).push(
+                toLeftTransition(
+                  const ReportUtilityPage(),
+                ),
+              ),
+            }, // Handle tap on the card
             child: Container(
               height: 65,
               decoration: BoxDecoration(
