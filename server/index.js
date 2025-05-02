@@ -13,15 +13,12 @@
  */
 const express = require("express");
 const cors = require("cors");
-const pool = require("./config/database");
 const authRouter = require("./routes/authRoutes");
-// const lectCreateClassRoutes = require("./routes/lectAccessClass");
 const classRoutes = require("./routes/classRoutes");
+const courseRoutes = require("./routes/courseRoutes");
 const attendanceRoutes = require("./routes/attendanceRoutes");
 const summarizationRoutes = require("./routes/summarizationRoutes");
 const generateTranscriptionTextRoutes = require("./routes/saveTranscriptionText");
-// const generateSummarizedTextRoutes = require("./routes/saveSummarizedText");
-// const lectAccessSummarizationRoutes = require("./routes/lectAccessSummarization");
 const sendCommandToMQTT = require("./routes/sendCommandToMQTT");
 const path = require("path");
 
@@ -34,7 +31,6 @@ app.use(cors());
 // Middleware to parse JSON and URL-encoded data from requests.
 app.use(express.json());
 
-
 //Static Files
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -45,6 +41,9 @@ app.use(authRouter);
 //Class Management
 // app.use("/class", lectCreateClassRoutes);
 app.use("/class", classRoutes);
+
+//Course Management
+app.use("/course", courseRoutes);
 
 //Attendance Management
 app.use("/clockInAttendance", attendanceRoutes);
