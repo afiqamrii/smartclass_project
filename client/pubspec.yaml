@@ -56,6 +56,7 @@ dependencies:
   nfc_host_card_emulation: ^1.1.0
   another_flushbar: ^1.12.30
   pull_to_refresh_flutter3: ^2.0.2
+  dropdown_search: ^6.0.2
   
   
   

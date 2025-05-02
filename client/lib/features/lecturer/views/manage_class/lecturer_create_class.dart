@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:quickalert/quickalert.dart';
 import 'package:smartclass_fyp_2024/features/lecturer/views/manage_class/lecturer_show_all_classes.dart';
+import 'package:smartclass_fyp_2024/features/lecturer/views/manage_class/models/course_model.dart';
+import 'package:smartclass_fyp_2024/features/lecturer/views/manage_class/providers/course_providers.dart';
 import 'package:smartclass_fyp_2024/shared/data/dataprovider/user_provider.dart';
 import 'package:smartclass_fyp_2024/shared/data/models/class_models.dart';
 import 'package:smartclass_fyp_2024/shared/data/models/user.dart';
@@ -17,8 +19,9 @@ class LectCreateClass extends ConsumerStatefulWidget {
 
 class _LectCreateClassState extends ConsumerState<LectCreateClass> {
   // Controllers for text fields
-  final courseCodeController = TextEditingController();
-  final titleController = TextEditingController();
+  CourseModel? selectedCourse;
+  final TextEditingController courseCodeController = TextEditingController();
+  final TextEditingController titleController = TextEditingController();
   final TextEditingController dateController = TextEditingController();
   final TextEditingController timeStartController = TextEditingController();
   final TextEditingController timeEndController = TextEditingController();
@@ -27,14 +30,16 @@ class _LectCreateClassState extends ConsumerState<LectCreateClass> {
   @override
   Widget build(BuildContext context) {
     final user = ref.watch(userProvider);
+    final courseListAsync = ref.watch(courseListProvider);
 
     return Scaffold(
         appBar: appBar(context),
-        body: _createClassSection(context, user),
+        body: _createClassSection(context, user, courseListAsync),
         resizeToAvoidBottomInset: true);
   }
 
-  Padding _createClassSection(BuildContext context, User user) {
+  Padding _createClassSection(BuildContext context, User user,
+      AsyncValue<List<CourseModel>> courseListAsync) {
     return Padding(
       padding: const EdgeInsets.only(left: 30.0, right: 30.0),
       child: ListView(
@@ -42,6 +47,9 @@ class _LectCreateClassState extends ConsumerState<LectCreateClass> {
         children: [
           //Here is the create class section , pass to the method inputField to create the input fields (title, description, date, time, location)
           // Subject Code Input
+          _courseDropdown(context, courseListAsync),
+          SizedBox(height: 10),
+
           inputField(
             'Course Code',
             'e.g : CSE3403',
@@ -313,4 +321,36 @@ class _LectCreateClassState extends ConsumerState<LectCreateClass> {
           picked.format(context); // This will now return 12-hour format
     }
   }
+}
+
+Widget _courseDropdown(
+    BuildContext context, AsyncValue<List<CourseModel>> courseListAsync) {
+  final courseCodeController = TextEditingController();
+  final titleController = TextEditingController();
+
+  return courseListAsync.when(
+    data: (courses) {
+      return DropdownButtonFormField<CourseModel>(
+        isExpanded: true,
+        items: courses
+            .map((course) => DropdownMenuItem<CourseModel>(
+                  value: course,
+                  child: Text(course.toString()),
+                ))
+            .toList(),
+        onChanged: (selectedCourse) {
+          if (selectedCourse != null) {
+            courseCodeController.text = selectedCourse.courseCode;
+            titleController.text = selectedCourse.courseName;
+          }
+        },
+        decoration: InputDecoration(
+          labelText: "Select Course",
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+        ),
+      );
+    },
+    loading: () => const CircularProgressIndicator(),
+    error: (err, _) => Text("Error loading courses: $err"),
+  );
 }
