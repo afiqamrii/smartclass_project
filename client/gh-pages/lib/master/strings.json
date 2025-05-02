@@ -1,0 +1,20 @@
+{
+    "student": {
+      "class_history_title": "Class History",
+      "bottom_nav_bar_1": "Home",
+      "bottom_nav_bar_2": "My Class",
+      "bottom_nav_bar_3": "Profile",
+      "summary_section": "Lecture Summary"
+    },
+    "lecturer": {
+
+    },
+    "technician": {
+
+    },
+    "common": {
+      "login_button": "Login",
+      "logout_button": "Logout",
+      "app_title": "IntelliClass"
+    }
+}
