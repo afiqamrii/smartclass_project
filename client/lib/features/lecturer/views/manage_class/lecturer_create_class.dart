@@ -5,9 +5,9 @@ import 'package:intl/intl.dart';
 import 'package:quickalert/quickalert.dart';
 import 'package:smartclass_fyp_2024/features/lecturer/views/manage_class/lecturer_show_all_classes.dart';
 import 'package:smartclass_fyp_2024/features/lecturer/views/manage_class/models/course_model.dart';
+import 'package:smartclass_fyp_2024/features/lecturer/views/manage_class/models/create_class_model.dart';
 import 'package:smartclass_fyp_2024/features/lecturer/views/manage_class/providers/course_providers.dart';
 import 'package:smartclass_fyp_2024/shared/data/dataprovider/user_provider.dart';
-import 'package:smartclass_fyp_2024/shared/data/models/class_models.dart';
 import 'package:smartclass_fyp_2024/shared/data/models/user.dart';
 import '../../../../shared/data/services/classApi.dart';
 
@@ -21,12 +21,15 @@ class LectCreateClass extends ConsumerStatefulWidget {
 class _LectCreateClassState extends ConsumerState<LectCreateClass> {
   // Controllers for text fields
   CourseModel? selectedCourse;
-  final TextEditingController courseCodeController = TextEditingController();
+  final TextEditingController courseController = TextEditingController();
   final TextEditingController titleController = TextEditingController();
   final TextEditingController dateController = TextEditingController();
   final TextEditingController timeStartController = TextEditingController();
   final TextEditingController timeEndController = TextEditingController();
   final locationController = TextEditingController();
+
+  final _formKey = GlobalKey<FormState>();
+  bool _isSubmitted = false;
 
   @override
   Widget build(BuildContext context) {
@@ -43,162 +46,172 @@ class _LectCreateClassState extends ConsumerState<LectCreateClass> {
       AsyncValue<List<CourseModel>> courseListAsync) {
     return Padding(
       padding: const EdgeInsets.only(left: 30.0, right: 30.0),
-      child: ListView(
-        padding: const EdgeInsets.only(bottom: 50, top: 10),
-        children: [
-          //Here is the create class section , pass to the method inputField to create the input fields (title, description, date, time, location)
-          // Subject Code Input
-          _courseDropdown(context, courseListAsync),
-          SizedBox(height: 10),
+      child: Form(
+        key: _formKey,
+        autovalidateMode:
+            _isSubmitted ? AutovalidateMode.always : AutovalidateMode.disabled,
+        child: ListView(
+          padding: const EdgeInsets.only(bottom: 50, top: 10),
+          children: [
+            //Here is the create class section , pass to the method inputField to create the input fields (title, description, date, time, location)
+            // Subject Code Input
+            _courseDropdown(
+                context, courseListAsync, courseController, titleController),
+            const SizedBox(height: 10),
 
-          inputField(
-            'Course Code',
-            'e.g : CSE3403',
-            10,
-            null,
-            textCapitalization: TextCapitalization.characters,
-            controller: courseCodeController,
-          ),
-          const SizedBox(height: 5),
+            // inputField(
+            //   'Course Code',
+            //   'e.g : CSE3403',
+            //   10,
+            //   null,
+            //   textCapitalization: TextCapitalization.characters,
+            //   controller: courseCodeController,
+            // ),
+            // const SizedBox(height: 5),
 
-          // Title Input
-          inputField(
-            'Class Name',
-            'e.g : Programming (K1) , Max 50 words',
-            50,
-            null,
-            textCapitalization: TextCapitalization.words,
-            controller: titleController,
-          ),
-          const SizedBox(height: 5),
+            // // Title Input
+            // inputField(
+            //   'Class Name',
+            //   'e.g : Programming (K1) , Max 50 words',
+            //   50,
+            //   null,
+            //   textCapitalization: TextCapitalization.words,
+            //   controller: titleController,
+            // ),
+            // const SizedBox(height: 5),
 
-          // Date Input
-          inputField(
-            'Date',
-            'e.g 20 October 2023',
-            null,
-            textCapitalization: TextCapitalization.none,
-            () => pickDate(
-              context,
-              dateController,
-            ),
-            controller: dateController,
-          ),
-          const SizedBox(height: 20),
-
-          // Time Start Input
-          inputField(
-            'Time Start',
-            'e.g 11.00 a.m',
-            null,
-            textCapitalization: TextCapitalization.none,
-            () => pickTime(
-              timeStartController,
-            ),
-            controller: timeStartController,
-          ),
-          const SizedBox(height: 20),
-
-          // Time End Input
-          inputField(
-            'Time End',
-            'e.g 1.00 p.m',
-            null,
-            textCapitalization: TextCapitalization.none,
-            () => pickTime(
-              timeEndController,
-            ),
-            controller: timeEndController,
-          ),
-          const SizedBox(height: 20),
-
-          // Location Input
-          inputField(
-            'Location',
-            'e.g BK-01',
-            25,
-            null,
-            textCapitalization: TextCapitalization.words,
-            controller: locationController,
-          ),
-          const SizedBox(height: 5),
-
-          // Create Class Button
-          Center(
-            child: ElevatedButton.icon(
-              onPressed: () async {
-                final classData = ClassCreateModel(
-                  classId: 0,
-                  courseCode: courseCodeController.text,
-                  courseName: titleController.text,
-                  date: dateController.text,
-                  startTime: timeStartController.text,
-                  endTime: timeEndController.text,
-                  location: locationController.text,
-                  lecturerId: user.externalId,
-                  imageUrl: "",
-                );
-                // var data = {
-                //   'courseCode': courseCodeController.text,
-                //   'className': titleController.text,
-                //   'date': dateController.text,
-                //   'timeStart': timeStartController.text,
-                //   'timeEnd': timeEndController.text,
-                //   'classLocation': locationController.text,
-                // };
-
-                final response = await Api.addClass(classData);
-
-                if (response != null && response['Status_Code'] == 200) {
-                  //Shows a success message using QuickAlert for create class is successfull
-                  QuickAlert.show(
-                    // ignore: use_build_context_synchronously
-                    context: context,
-                    type: QuickAlertType.success,
-                    text: "Class Created Successfully",
-                    onConfirmBtnTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const LectViewAllClass()),
-                      );
-                    },
-                  );
-                } else {
-                  //Shows an error message using QuickAlert for create class is not successfull
-                  QuickAlert.show(
-                    // ignore: use_build_context_synchronously
-                    context: context,
-                    type: QuickAlertType.error,
-                    text: "Missing Required Fields, Try Again!",
-                    onConfirmBtnTap: () {
-                      Navigator.pop(context);
-                    },
-                  );
-                }
-              },
-              icon: const Icon(
-                Icons.check,
-                color: Color.fromARGB(255, 255, 255, 255),
+            // Date Input
+            inputField(
+              'Date',
+              'e.g 20 October 2023',
+              null,
+              textCapitalization: TextCapitalization.none,
+              () => pickDate(
+                context,
+                dateController,
               ),
-              label: const Text(
-                "Saves Class",
-                style: TextStyle(
-                  fontSize: 16.0,
+              controller: dateController,
+            ),
+            const SizedBox(height: 20),
+
+            // Time Start Input
+            inputField(
+              'Time Start',
+              'e.g 11.00 a.m',
+              null,
+              textCapitalization: TextCapitalization.none,
+              () => pickTime(
+                timeStartController,
+              ),
+              controller: timeStartController,
+            ),
+            const SizedBox(height: 20),
+
+            // Time End Input
+            inputField(
+              'Time End',
+              'e.g 1.00 p.m',
+              null,
+              textCapitalization: TextCapitalization.none,
+              () => pickTime(
+                timeEndController,
+              ),
+              controller: timeEndController,
+            ),
+            const SizedBox(height: 20),
+
+            // Location Input
+            inputField(
+              'Location',
+              'e.g BK-01',
+              25,
+              null,
+              textCapitalization: TextCapitalization.words,
+              controller: locationController,
+            ),
+            const SizedBox(height: 5),
+
+            // Create Class Button
+            Center(
+              child: ElevatedButton.icon(
+                onPressed: () async {
+                  // Basic validation
+                  if (courseController.text.isEmpty ||
+                      titleController.text.isEmpty ||
+                      dateController.text.isEmpty ||
+                      timeStartController.text.isEmpty ||
+                      timeEndController.text.isEmpty ||
+                      locationController.text.isEmpty) {
+                    QuickAlert.show(
+                      context: context,
+                      type: QuickAlertType.error,
+                      text:
+                          "All fields are required. Please fill in all the details.",
+                    );
+                    return;
+                  }
+
+                  final classData = CreateClassModel(
+                    classId: 0,
+                    courseId: int.parse(courseController.text),
+                    className: titleController.text,
+                    date: dateController.text,
+                    startTime: timeStartController.text,
+                    endTime: timeEndController.text,
+                    location: locationController.text,
+                    lecturerId: user.externalId,
+                    imageUrl: "",
+                  );
+
+                  final response = await Api.addClass(classData);
+
+                  if (response != null && response['Status_Code'] == 200) {
+                    QuickAlert.show(
+                      context: context,
+                      type: QuickAlertType.success,
+                      text: "Class Created Successfully",
+                      onConfirmBtnTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const LectViewAllClass()),
+                        );
+                      },
+                    );
+                  } else {
+                    QuickAlert.show(
+                      context: context,
+                      type: QuickAlertType.error,
+                      text: "Failed to create class. Try again!",
+                      onConfirmBtnTap: () {
+                        Navigator.pop(context);
+                      },
+                    );
+                  }
+                },
+                icon: const Icon(
+                  Icons.check,
                   color: Color.fromARGB(255, 255, 255, 255),
                 ),
-              ),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xff323232),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(54.0),
+                label: const Text(
+                  "Saves Class",
+                  style: TextStyle(
+                    fontSize: 16.0,
+                    color: Color.fromARGB(255, 255, 255, 255),
+                  ),
                 ),
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 20.0, vertical: 12.0),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xff323232),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(54.0),
+                  ),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 20.0, vertical: 12.0),
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -272,6 +285,12 @@ class _LectCreateClassState extends ConsumerState<LectCreateClass> {
           readOnly: onTap != null,
           textCapitalization: textCapitalization,
           onTap: onTap,
+          validator: (value) {
+            if (value == null || value.trim().isEmpty) {
+              return 'This field is required';
+            }
+            return null;
+          },
           decoration: InputDecoration(
             hintText: placeholder,
             hintStyle: const TextStyle(fontSize: 14, color: Colors.grey),
@@ -279,7 +298,14 @@ class _LectCreateClassState extends ConsumerState<LectCreateClass> {
                 const EdgeInsets.symmetric(vertical: 15, horizontal: 10),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8.0),
-              borderSide: const BorderSide(color: Colors.grey),
+            ),
+            errorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8.0),
+              borderSide: const BorderSide(color: Colors.red),
+            ),
+            focusedErrorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8.0),
+              borderSide: const BorderSide(color: Colors.red),
             ),
           ),
         ),
@@ -325,10 +351,10 @@ class _LectCreateClassState extends ConsumerState<LectCreateClass> {
 }
 
 Widget _courseDropdown(
-    BuildContext context, AsyncValue<List<CourseModel>> courseListAsync) {
-  final courseCodeController = TextEditingController();
-  final titleController = TextEditingController();
-
+    BuildContext context,
+    AsyncValue<List<CourseModel>> courseListAsync,
+    TextEditingController controller,
+    TextEditingController titleController) {
   return courseListAsync.when(
     data: (courses) {
       if (courses.isEmpty) {
@@ -357,7 +383,7 @@ Widget _courseDropdown(
             ),
           ),
           dialogProps: DialogProps(
-            contentPadding: const EdgeInsets.all(10),
+            contentPadding: const EdgeInsets.all(15),
             backgroundColor: Colors.white,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(20),
@@ -370,7 +396,7 @@ Widget _courseDropdown(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                const SizedBox(height: 10),
+                const SizedBox(height: 15),
                 Text(
                   item.toString(),
                   style: TextStyle(
@@ -379,7 +405,7 @@ Widget _courseDropdown(
                         isSelected ? FontWeight.bold : FontWeight.normal,
                   ),
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 15),
                 Divider(
                   color: Colors.black.withOpacity(0.2),
                   height: 1,
@@ -391,8 +417,10 @@ Widget _courseDropdown(
         itemAsString: (course) => course.toString(),
         onChanged: (selectedCourse) {
           if (selectedCourse != null) {
-            courseCodeController.text = selectedCourse.courseCode;
+            controller.text = selectedCourse.courseId.toString();
             titleController.text = selectedCourse.courseName;
+          } else {
+            controller.clear(); // Clear the text field if no course is selected
           }
         },
         dropdownDecoratorProps: DropDownDecoratorProps(
