@@ -3,13 +3,13 @@ const moment = require("moment");
 
 const ClassModel = {
     // Add a class to the database
-    async addClass(courseCode, className, date, timeStart, timeEnd, classLocation , lecturerId , imageUrl) {
+    async addClass(courseId , classLocation , timeStart, timeEnd, date  , lecturerId , imageUrl) {
         try {
             const query = `
-            INSERT INTO ClassSession (courseCode, className, date, timeStart, timeEnd, classLocation ,lecturerId , imageUrl)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO ClassSession (date , timeStart , timeEnd , classLocation  , lecturerId , imageUrl , courseId)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
             `;
-            const values = [courseCode, className, date, timeStart, timeEnd, classLocation , lecturerId , imageUrl];
+            const values = [date , timeStart , timeEnd , classLocation  , lecturerId , imageUrl , courseId];
             const [result] = await pool.query(query, values);
             console.log("Class added successfully:", result);
             return result.insertId;
@@ -24,7 +24,19 @@ const ClassModel = {
     async getAllClasses(lecturerId){
         try{
             const query = `
-            SELECT * FROM ClassSession
+            SELECT 
+                cs.classId,
+                c.courseCode,
+                c.courseName AS className,
+                cs.date,
+                cs.timeStart,
+                cs.timeEnd,
+                cs.classLocation,
+                cs.imageUrl,
+                cs.courseId
+
+            FROM ClassSession cs
+            JOIN Course c ON cs.courseId = c.courseId
             WHERE lecturerId = ?
             ORDER BY date DESC, timeStart DESC;
             `;
@@ -40,7 +52,22 @@ const ClassModel = {
     // Retrieve a class by its ID
     async getClassById(id) {    
         try {
-            const query = `SELECT * FROM ClassSession WHERE classId = ?`;
+            const query = ` 
+            SELECT 
+                cs.classId,
+                c.courseCode,
+                c.courseName AS className,
+                cs.date,
+                cs.timeStart,
+                cs.timeEnd,
+                cs.classLocation,
+                cs.imageUrl,
+                cs.courseId
+
+            FROM ClassSession cs
+            JOIN Course c ON cs.courseId = c.courseId
+            WHERE classId = ?
+        `;
             const [rows] = await pool.query(query, [id]);
             return rows[0] || null;
         }
@@ -57,8 +84,8 @@ const ClassModel = {
             const query = `
             SELECT 
                 cs.classId,
-                cs.courseCode,
-                cs.className,
+                c.courseCode,
+                c.courseName AS className,
                 cs.date,
                 cs.timeStart,
                 cs.timeEnd,
@@ -70,6 +97,10 @@ const ClassModel = {
                 ClassSession cs
             JOIN 
                 User u ON cs.lecturerId = u.externalId
+            
+            JOIN 
+                Course c ON cs.courseId = c.courseId
+
             LEFT JOIN 
                 ClassRecording cr ON cs.classId = cr.classId
 
@@ -92,8 +123,8 @@ const ClassModel = {
             const query = `
             SELECT 
                 cs.classId,
-                cs.courseCode,
-                cs.className,
+                c.courseCode,
+                c.courseName AS className,
                 cs.date,
                 cs.timeStart,
                 cs.timeEnd,
@@ -105,6 +136,10 @@ const ClassModel = {
                 ClassSession cs
             JOIN 
                 User u ON cs.lecturerId = u.externalId
+            
+            JOIN
+                Course c ON cs.courseId = c.courseId
+
             LEFT JOIN 
                 ClassRecording cr ON cs.classId = cr.classId
 
@@ -127,8 +162,8 @@ const ClassModel = {
             const query = `
             SELECT 
                 cs.classId,
-                cs.courseCode,
-                cs.className,
+                c.courseCode,
+                c.courseName AS className,
                 cs.date,
                 cs.timeStart,
                 cs.timeEnd,
@@ -140,6 +175,10 @@ const ClassModel = {
                 ClassSession cs
             JOIN 
                 User u ON cs.lecturerId = u.externalId
+            
+            JOIN
+                Course c ON cs.courseId = c.courseId
+
             LEFT JOIN 
                 ClassRecording cr ON cs.classId = cr.classId
 
@@ -163,8 +202,8 @@ const ClassModel = {
             const query = `
             SELECT 
                 cs.classId,
-                cs.courseCode,
-                cs.className,
+                c.courseCode,
+                c.courseName AS className,
                 cs.date,
                 cs.timeStart,
                 cs.timeEnd,
@@ -176,6 +215,10 @@ const ClassModel = {
                 ClassSession cs
             JOIN 
                 User u ON cs.lecturerId = u.externalId
+            
+            JOIN
+                Course c ON cs.courseId = c.courseId
+
             LEFT JOIN 
                 ClassRecording cr ON cs.classId = cr.classId
 

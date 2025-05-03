@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 import 'package:smartclass_fyp_2024/constants/api_constants.dart';
+import 'package:smartclass_fyp_2024/features/lecturer/views/manage_class/models/create_class_model.dart';
 import '../models/class_models.dart'; // HTTP package for making API requests.
 
 /// A class to handle API interactions for the application.
@@ -11,8 +12,8 @@ class Api {
   //GET API Using provider to all classes data
   Stream<List<ClassCreateModel>> getClasses(String lecturerId) async* {
     while (true) {
-      Response response =
-          await get(Uri.parse("${ApiConstants.baseUrl}/class/viewclass/$lecturerId"));
+      Response response = await get(
+          Uri.parse("${ApiConstants.baseUrl}/class/viewclass/$lecturerId"));
       if (response.statusCode == 200) {
         final List result = jsonDecode(response.body)['Data'];
         //Tokenize the data and convert it to ClassCreateModel
@@ -56,7 +57,7 @@ class Api {
   ///   'classLocation': 'Room 101'
   /// }
   /// ```
-  static addClass(ClassCreateModel data) async {
+  static addClass(CreateClassModel data) async {
     // Print the input data for debugging purposes.
     // ignore: avoid_print
     print(data);
