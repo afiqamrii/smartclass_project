@@ -49,9 +49,12 @@ class _StudentTodayclassCardState extends State<StudentTodayclassCard> {
               SizedBox(
                 height: 200,
                 child: Image.network(
-                  errorBuilder: (context, error, stackTrace) => const Center(
-                    child: Text("Image not found"),
-                  ),
+                  errorBuilder: (_, __, ___) {
+                    return Image.asset(
+                      'assets/pictures/compPicture.jpg',
+                      fit: BoxFit.cover,
+                    );
+                  },
                   widget.imageUrl,
                   fit: BoxFit.cover,
                   width: double.infinity,
