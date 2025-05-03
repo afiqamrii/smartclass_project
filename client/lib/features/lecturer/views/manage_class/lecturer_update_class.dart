@@ -27,6 +27,7 @@ class _LectUpdateClassState extends ConsumerState<LectUpdateClass> {
   late TextEditingController _timeStartController;
   late TextEditingController _timeEndController;
   late TextEditingController _classLocationController;
+  late TextEditingController _mergedCourseInfoController;
 
   @override
   void initState() {
@@ -41,6 +42,10 @@ class _LectUpdateClassState extends ConsumerState<LectUpdateClass> {
     _timeEndController = TextEditingController(text: widget.classItem.endTime);
     _classLocationController =
         TextEditingController(text: widget.classItem.location);
+
+    _mergedCourseInfoController = TextEditingController(
+      text: "${widget.classItem.courseCode} - ${widget.classItem.courseName}",
+    );
   }
 
   @override
@@ -52,6 +57,7 @@ class _LectUpdateClassState extends ConsumerState<LectUpdateClass> {
     _timeStartController.dispose();
     _timeEndController.dispose();
     _classLocationController.dispose();
+    _mergedCourseInfoController.dispose();
     super.dispose();
   }
 
@@ -124,20 +130,51 @@ class _LectUpdateClassState extends ConsumerState<LectUpdateClass> {
           key: _formKey,
           child: ListView(
             children: [
-              _buildInputField('Course Code', _courseCodeController),
+              _buildInputField(
+                'Class Name',
+                '',
+                null,
+                null,
+                controller: _mergedCourseInfoController,
+                textCapitalization: TextCapitalization.none,
+                readOnlyOverride: true,
+              ),
               const SizedBox(height: 16),
-              _buildInputField('Class Title', _titleController),
+              _buildInputField(
+                'Date',
+                'Select a date',
+                null,
+                () => pickDate(context, _dateController),
+                controller: _dateController,
+                textCapitalization: TextCapitalization.none,
+              ),
               const SizedBox(height: 16),
-              _buildInputField('Date', _dateController,
-                  onTap: () => pickDate(context, _dateController)),
+              _buildInputField(
+                'Time Start',
+                'Enter start time',
+                null,
+                () => _pickTime(_timeStartController),
+                controller: _timeStartController,
+                textCapitalization: TextCapitalization.none,
+              ),
               const SizedBox(height: 16),
-              _buildInputField('Time Start', _timeStartController,
-                  onTap: () => _pickTime(_timeStartController)),
+              _buildInputField(
+                'Time End',
+                'Enter end time',
+                null,
+                () => _pickTime(_timeEndController),
+                controller: _timeEndController,
+                textCapitalization: TextCapitalization.none,
+              ),
               const SizedBox(height: 16),
-              _buildInputField('Time End', _timeEndController,
-                  onTap: () => _pickTime(_timeEndController)),
-              const SizedBox(height: 16),
-              _buildInputField('Class Location', _classLocationController),
+              _buildInputField(
+                'Class Location',
+                'Enter class location',
+                null,
+                null,
+                controller: _classLocationController,
+                textCapitalization: TextCapitalization.words,
+              ),
               const SizedBox(height: 16),
               Padding(
                 padding: const EdgeInsets.all(30.0),
@@ -215,22 +252,57 @@ class _LectUpdateClassState extends ConsumerState<LectUpdateClass> {
     );
   }
 
-  Widget _buildInputField(String label, TextEditingController controller,
-      {VoidCallback? onTap}) {
-    return TextFormField(
-      controller: controller,
-      readOnly: onTap != null,
-      onTap: onTap,
-      decoration: InputDecoration(
-        labelText: label,
-        border: const OutlineInputBorder(),
-      ),
-      validator: (value) {
-        if (value == null || value.isEmpty) {
-          return 'Please enter $label';
-        }
-        return null;
-      },
+  Widget _buildInputField(
+    String label,
+    String placeholder,
+    int? maxLength,
+    VoidCallback? onTap, {
+    TextEditingController? controller,
+    required TextCapitalization textCapitalization,
+    bool readOnlyOverride = false,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: const TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        const SizedBox(height: 8),
+        TextFormField(
+          controller: controller,
+          maxLength: maxLength,
+          readOnly: readOnlyOverride || onTap != null,
+          textCapitalization: textCapitalization,
+          onTap: onTap,
+          validator: (value) {
+            if (value == null || value.trim().isEmpty) {
+              return 'This field is required';
+            }
+            return null;
+          },
+          decoration: InputDecoration(
+            hintText: placeholder,
+            hintStyle: const TextStyle(fontSize: 14, color: Colors.grey),
+            contentPadding:
+                const EdgeInsets.symmetric(vertical: 15, horizontal: 10),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8.0),
+            ),
+            errorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8.0),
+              borderSide: const BorderSide(color: Colors.red),
+            ),
+            focusedErrorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8.0),
+              borderSide: const BorderSide(color: Colors.red),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

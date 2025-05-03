@@ -104,6 +104,12 @@ class _LecturerViewClassState extends ConsumerState<LecturerViewClass> {
                               child: Image.network(
                                 classItem.imageUrl,
                                 fit: BoxFit.cover,
+                                errorBuilder: (_, __, ___) {
+                                  return Image.asset(
+                                    'assets/pictures/compPicture.jpg',
+                                    fit: BoxFit.cover,
+                                  );
+                                },
                               ),
                             ),
                             Positioned(
