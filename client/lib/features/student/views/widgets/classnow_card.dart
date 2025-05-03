@@ -207,6 +207,12 @@ class _ClassNowCardState extends ConsumerState<ClassNowCard> {
                   widget.imageUrl,
                   fit: BoxFit.cover,
                   width: double.infinity,
+                  errorBuilder: (_, __, ___) {
+                    return Image.asset(
+                      'assets/pictures/compPicture.jpg',
+                      fit: BoxFit.cover,
+                    );
+                  },
                 ),
               ),
               Positioned(

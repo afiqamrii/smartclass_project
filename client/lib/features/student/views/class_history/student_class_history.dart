@@ -34,7 +34,6 @@ class _StudentMyclassState extends ConsumerState<StudentMyclass> {
     // Invalidate the provider to trigger loading state
     ref.refresh(pastClassProviders.future);
 
-    
     await Future.delayed(const Duration(seconds: 3));
     setState(() => _isRefreshing = false);
   }
