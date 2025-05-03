@@ -1,3 +1,4 @@
+import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -330,23 +331,81 @@ Widget _courseDropdown(
 
   return courseListAsync.when(
     data: (courses) {
-      return DropdownButtonFormField<CourseModel>(
-        isExpanded: true,
-        items: courses
-            .map((course) => DropdownMenuItem<CourseModel>(
-                  value: course,
-                  child: Text(course.toString()),
-                ))
-            .toList(),
+      if (courses.isEmpty) {
+        return const Text("No courses available.");
+      }
+
+      return DropdownSearch<CourseModel>(
+        asyncItems: (String filter) async {
+          return courses
+              .where((course) => course
+                  .toString()
+                  .toLowerCase()
+                  .contains(filter.toLowerCase()))
+              .toList();
+        },
+        popupProps: PopupProps.dialog(
+          showSearchBox: true,
+          searchFieldProps: TextFieldProps(
+            decoration: InputDecoration(
+              hintText: "Search course...",
+              contentPadding:
+                  const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+          ),
+          dialogProps: DialogProps(
+            contentPadding: const EdgeInsets.all(10),
+            backgroundColor: Colors.white,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
+            elevation: 10,
+          ),
+          itemBuilder: (context, item, isSelected) => Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                const SizedBox(height: 10),
+                Text(
+                  item.toString(),
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight:
+                        isSelected ? FontWeight.bold : FontWeight.normal,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Divider(
+                  color: Colors.black.withOpacity(0.2),
+                  height: 1,
+                ),
+              ],
+            ),
+          ),
+        ),
+        itemAsString: (course) => course.toString(),
         onChanged: (selectedCourse) {
           if (selectedCourse != null) {
             courseCodeController.text = selectedCourse.courseCode;
             titleController.text = selectedCourse.courseName;
           }
         },
-        decoration: InputDecoration(
-          labelText: "Select Course",
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+        dropdownDecoratorProps: DropDownDecoratorProps(
+          dropdownSearchDecoration: InputDecoration(
+            labelText: "Select Course",
+            labelStyle: const TextStyle(fontWeight: FontWeight.w500),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            filled: true,
+            fillColor: Colors.grey[100],
+            // contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          ),
         ),
       );
     },
