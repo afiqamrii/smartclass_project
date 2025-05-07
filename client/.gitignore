@@ -10,6 +10,7 @@
 .svn/
 migrate_working_dir/
 node_modules
+server/gcs-service-account.json
 
 # Environment variables
 .env
