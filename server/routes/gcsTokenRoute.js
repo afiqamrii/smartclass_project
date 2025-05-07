@@ -20,6 +20,8 @@ router.get("/gcs-token", async (req, res) => {
       token: accessTokenResponse.token,
       expires_in: 3600,
     });
+
+    console.log("GCS token:", accessTokenResponse.token);
   } catch (error) {
     console.error("GCS token error:", error);
     res.status(500).json({ error: 'Internal Server Error' });
