@@ -57,6 +57,12 @@ dependencies:
   another_flushbar: ^1.12.30
   pull_to_refresh_flutter3: ^2.0.2
   dropdown_search: ^5.0.6
+  image_field: ^0.0.12
+  image_picker: ^1.0.4
+  mime: ^2.0.0
+  http_parser: ^4.0.0
+  path_provider: ^2.0.8
+  flutter_dotenv: 
   
   
   

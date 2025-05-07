@@ -13,6 +13,7 @@
  */
 const express = require("express");
 const cors = require("cors");
+const bodyParser = require('body-parser');
 const authRouter = require("./routes/authRoutes");
 const classRoutes = require("./routes/classRoutes");
 const courseRoutes = require("./routes/courseRoutes");
@@ -27,16 +28,32 @@ const app = express();
 
 // Enable CORS to allow requests from different origins.
 app.use(cors());
-
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 // Middleware to parse JSON and URL-encoded data from requests.
 app.use(express.json());
+
+// Import routes
+const reportRoutes = require('./routes/reportRoutes');
+
+
+
 
 //Static Files
 app.use(express.static(path.join(__dirname, 'public')));
 
+//GCS Token Route
+// This route is used to get a token for Google Cloud Storage (GCS) authentication.
+const gcsTokenRoute = require("./routes/gcsTokenRoute");
+app.use("/gcs", gcsTokenRoute);
+
 //Routes
 //Authentication
 app.use(authRouter);
+
+//Report Management
+// Use routes
+app.use('/report', reportRoutes);
 
 //Class Management
 // app.use("/class", lectCreateClassRoutes);
