@@ -8,5 +8,6 @@ const reportController = require('../controllers/reportController');
 
 // Define routes
 router.post('/create', upload.single('image'), reportController.submitReport);
+router.get('/getreport', reportController.getReport); // Get all reports
 
 module.exports = router;

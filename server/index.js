@@ -17,6 +17,7 @@ const bodyParser = require('body-parser');
 const authRouter = require("./routes/authRoutes");
 const classRoutes = require("./routes/classRoutes");
 const courseRoutes = require("./routes/courseRoutes");
+const classroomRoutes = require("./routes/classroomRoutes");
 const attendanceRoutes = require("./routes/attendanceRoutes");
 const summarizationRoutes = require("./routes/summarizationRoutes");
 const generateTranscriptionTextRoutes = require("./routes/saveTranscriptionText");
@@ -35,9 +36,6 @@ app.use(express.json());
 
 // Import routes
 const reportRoutes = require('./routes/reportRoutes');
-
-
-
 
 //Static Files
 app.use(express.static(path.join(__dirname, 'public')));
@@ -61,6 +59,9 @@ app.use("/class", classRoutes);
 
 //Course Management
 app.use("/course", courseRoutes);
+
+//Classroom Management
+app.use("/classroom", classroomRoutes);
 
 //Attendance Management
 app.use("/clockInAttendance", attendanceRoutes);

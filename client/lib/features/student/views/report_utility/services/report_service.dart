@@ -1,30 +1,45 @@
 import 'dart:io';
+import 'package:another_flushbar/flushbar.dart';
 import 'package:http/http.dart' as http;
 import 'package:mime/mime.dart'; // For detecting mime type
 import 'package:http_parser/http_parser.dart'; // For MediaType
 import 'package:flutter/material.dart';
+import 'package:smartclass_fyp_2024/constants/api_constants.dart';
+import 'package:smartclass_fyp_2024/features/student/views/template/student_bottom_navbar.dart';
 
 Future<void> submitReports(BuildContext context, String title,
-    String description, File? selectedImage) async {
+    String description, String userId, int classroomId, File? selectedImage) async {
   if (title.isEmpty || description.isEmpty) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("Title and Description are required")),
-    );
+    // Show error Flushbar
+    Flushbar(
+      message: 'Please fill in both title and description',
+      duration: const Duration(seconds: 3),
+      backgroundColor: Colors.red.shade600,
+      margin: const EdgeInsets.all(8),
+      borderRadius: BorderRadius.circular(8),
+      flushbarPosition: FlushbarPosition.TOP,
+      icon: const Icon(
+        Icons.error,
+        color: Colors.white,
+      ),
+    ).show(context);
     return;
   }
 
   if (selectedImage != null) {
     // Send the title, description, and image to your backend
-    final uri = Uri.parse("https://your-api-url.com/report");
+    final uri = Uri.parse("${ApiConstants.baseUrl}/report/create");
     final request = http.MultipartRequest("POST", uri)
       ..fields['title'] = title
-      ..fields['description'] = description;
+      ..fields['description'] = description
+      ..fields['classroomId'] = classroomId.toString()
+      ..fields['userId'] = userId;
 
     // Add the image file to the request
     var fileBytes = await selectedImage.readAsBytes();
     String mimeType = lookupMimeType(selectedImage.path) ?? 'image/jpeg';
     request.files.add(http.MultipartFile.fromBytes(
-      'file',
+      'image',
       fileBytes,
       filename: 'report_image.jpg', // Provide a filename
       contentType: MediaType.parse(mimeType),
@@ -34,32 +49,57 @@ Future<void> submitReports(BuildContext context, String title,
     final response = await request.send();
 
     if (response.statusCode == 200) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Report submitted successfully")),
+      // Show success Flushbar
+      await Flushbar(
+        message: 'Report submitted successfully!',
+        duration: const Duration(seconds: 3),
+        backgroundColor: Colors.green.shade600,
+        margin: const EdgeInsets.all(8),
+        borderRadius: BorderRadius.circular(8),
+        flushbarPosition: FlushbarPosition.TOP,
+        icon: const Icon(
+          Icons.check_circle,
+          color: Colors.white,
+        ),
+      ).show(context);
+
+      // Redirect to the report page
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const StudentBottomNavbar(
+            initialIndex: 0,
+          ),
+        ),
       );
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Failed to submit report")),
-      );
+      // Show error Flushbar
+      Flushbar(
+        message: 'Failed to submit report: ${response.statusCode}',
+        duration: const Duration(seconds: 3),
+        backgroundColor: Colors.red.shade600,
+        margin: const EdgeInsets.all(8),
+        borderRadius: BorderRadius.circular(8),
+        flushbarPosition: FlushbarPosition.TOP,
+        icon: const Icon(
+          Icons.error,
+          color: Colors.white,
+        ),
+      ).show(context);
     }
   } else {
-    // If no image selected, submit just the title and description
-    final uri = Uri.parse("https://your-api-url.com/report");
-    final response = await http.post(
-      uri,
-      body: {
-        'title': title,
-        'description': description,
-      },
-    );
-    if (response.statusCode == 200) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Report submitted successfully")),
-      );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Failed to submit report")),
-      );
-    }
+    // Show error Flushbar
+    Flushbar(
+      message: 'Please select an image to upload',
+      duration: const Duration(seconds: 3),
+      backgroundColor: Colors.red.shade600,
+      margin: const EdgeInsets.all(8),
+      borderRadius: BorderRadius.circular(8),
+      flushbarPosition: FlushbarPosition.TOP,
+      icon: const Icon(
+        Icons.error,
+        color: Colors.white,
+      ),
+    ).show(context);
   }
 }

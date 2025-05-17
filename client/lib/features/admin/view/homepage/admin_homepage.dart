@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:smartclass_fyp_2024/constants/color_constants.dart';
+import 'package:smartclass_fyp_2024/features/admin/view/manage_report/models/report_models.dart';
+import 'package:smartclass_fyp_2024/features/admin/view/manage_report/providers/report_provider.dart';
 
 import 'package:smartclass_fyp_2024/shared/data/dataprovider/user_provider.dart';
 
@@ -34,7 +36,11 @@ class _AdminHomepageState extends ConsumerState<AdminHomepage> {
 
   @override
   Widget build(BuildContext context) {
+    // Get the user data from the provider
     final user = ref.watch(userProvider);
+
+    //Get report data from the provider
+    final reportList = ref.watch(reportListProvider);
 
     return Scaffold(
       backgroundColor: const Color(0xFF0d1116),
@@ -44,6 +50,7 @@ class _AdminHomepageState extends ConsumerState<AdminHomepage> {
         springAnimationDurationInMilliseconds: 350,
         showChildOpacityTransition: false,
         child: CustomScrollView(
+          physics: const BouncingScrollPhysics(),
           slivers: [
             SliverAppBar(
               pinned: false,
@@ -97,7 +104,7 @@ class _AdminHomepageState extends ConsumerState<AdminHomepage> {
                             ),
                           ),
                           const SizedBox(height: 10),
-                          _maintainanceCardSection(context),
+                          _maintainanceCardSection(context, reportList),
                           const SizedBox(height: 20),
                           const Text(
                             'Classroom Status',
@@ -147,7 +154,8 @@ class _AdminHomepageState extends ConsumerState<AdminHomepage> {
     );
   }
 
-  SizedBox _maintainanceCardSection(BuildContext context) {
+  SizedBox _maintainanceCardSection(BuildContext context,
+      AsyncValue<List<UtilityIssueModel>> reportListProvider) {
     return SizedBox(
       height: MediaQuery.of(context).size.height * 0.2,
       child: ListView(
@@ -155,21 +163,20 @@ class _AdminHomepageState extends ConsumerState<AdminHomepage> {
         padding: const EdgeInsets.only(right: 5),
         clipBehavior: Clip.none,
         physics: const BouncingScrollPhysics(),
-        children: const [
-          MaintenanceCard(
-            title: "Front lamp not working",
-            description:
-                "Front lamp not working and also the back lamp. without any sound.",
-            date: "21 June 2023",
-            status: "Pending",
-          ),
-          const MaintenanceCard(
-            title: "Aircond leaking",
-            description: "The aircond in Lab B1 is leaking.",
-            date: "21 June 2023",
-            status: "In Progress",
-          ),
-        ],
+        children: reportListProvider.when(
+          data: (reportList) {
+            return reportList.map((report) {
+              return MaintenanceCard(
+                title: report.issueTitle,
+                description: report.issueDescription,
+                date: "21/10/2023",
+                status: report.issueStatus,
+              );
+            }).toList();
+          },
+          error: (error, stackTrace) => [Text('Error: $error')],
+          loading: () => [const Center(child: CircularProgressIndicator())],
+        ),
       ),
     );
   }
