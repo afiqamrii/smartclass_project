@@ -5,7 +5,9 @@ import 'package:skeletonizer/skeletonizer.dart';
 import 'package:smartclass_fyp_2024/features/admin/view/constants/maintainance_card.dart';
 import 'package:smartclass_fyp_2024/features/admin/view/manage_report/models/report_models.dart';
 import 'package:smartclass_fyp_2024/features/admin/view/manage_report/providers/report_provider.dart';
+import 'package:smartclass_fyp_2024/features/admin/view/manage_report/views/view_report_details.dart';
 import 'package:smartclass_fyp_2024/shared/data/dataprovider/user_provider.dart';
+import 'package:smartclass_fyp_2024/shared/widgets/pageTransition.dart';
 
 class AdminViewReport extends ConsumerStatefulWidget {
   const AdminViewReport({super.key});
@@ -25,7 +27,8 @@ class _AdminViewReportState extends ConsumerState<AdminViewReport> {
     });
 
     await ref.read(userProvider.notifier).refreshUserData();
-    await ref.read(reportListProvider);
+    // ignore: unused_result
+    ref.refresh(reportListProvider);
 
     await Future.delayed(const Duration(seconds: 3));
 
@@ -105,24 +108,37 @@ SizedBox _maintainanceCardSection(BuildContext context,
     AsyncValue<List<UtilityIssueModel>> reportListProvider) {
   return SizedBox(
     height: MediaQuery.of(context).size.height * 0.5,
-    child: ListView(
-      scrollDirection: Axis.vertical,
-      shrinkWrap: true,
-      physics: const BouncingScrollPhysics(),
-      children: reportListProvider.when(
-        data: (reportList) {
-          return reportList.map((report) {
-            return MaintenanceCard(
-              title: report.issueTitle,
-              description: report.issueDescription,
-              date: "21/10/2023",
-              status: report.issueStatus,
+    child: reportListProvider.when(
+      data: (reportList) {
+        return ListView.separated(
+          shrinkWrap: true,
+          physics: const BouncingScrollPhysics(),
+          itemCount: reportList.length,
+          separatorBuilder: (context, index) => const SizedBox(height: 10),
+          itemBuilder: (context, index) {
+            final report = reportList[index];
+            return GestureDetector(
+              onTap: () {
+                // Navigate to the report details page
+                Navigator.push(
+                  context,
+                  toLeftTransition(
+                    ViewReportDetails(reportId: reportList[index].issueId),
+                  ),
+                );
+              },
+              child: MaintenanceCard(
+                title: report.issueTitle,
+                description: report.issueDescription,
+                date: "21/10/2023",
+                status: report.issueStatus,
+              ),
             );
-          }).toList();
-        },
-        error: (error, stackTrace) => [Text('Error: $error')],
-        loading: () => [const Center(child: CircularProgressIndicator())],
-      ),
+          },
+        );
+      },
+      error: (error, stackTrace) => Center(child: Text('Error: $error')),
+      loading: () => const Center(child: CircularProgressIndicator()),
     ),
   );
 }

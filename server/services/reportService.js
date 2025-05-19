@@ -105,8 +105,21 @@ const getAllReports = async () => {
   }
 };
 
+//Function to get report by ID
+// This function retrieves a specific report by its ID from the database
+const getReportById = async (reportId) => {
+  try {
+    const result = await reportModel.getReportById(reportId);
+    return result;
+  } catch (error) {
+    console.error('Error fetching report by ID:', error);
+    throw new Error('Failed to fetch report by ID');
+  }
+};
+
 module.exports = {
   uploadImageToGCS,
   saveReportToDB,
-  getAllReports
+  getAllReports,
+  getReportById
 };

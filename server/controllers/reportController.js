@@ -38,7 +38,34 @@ const getReport = async (req, res) => {
   }
 };
 
+//Function to get report by ID
+// This function retrieves a specific report by its ID from the database
+const getReportById = async (req, res) => {
+  const reportId = req.params.id;
+
+  console.log('Received report ID:', reportId);
+
+  if (!reportId) {
+    return res.status(400).send('Report ID is required');
+  }
+
+  try {
+    const report = await reportService.getReportById(reportId);
+    if (!report) {
+      return res.status(404).send('Report not found');
+    }
+
+    console.log('Fetched report:', report);
+    return res.status(200).json({ message: 'Report fetched successfully', report });
+    
+  } catch (error) {
+    console.error('Error in getReportById:', error);
+    return res.status(500).send('Error fetching report');
+  }
+}
+
 module.exports = {
   submitReport, 
-  getReport
+  getReport,
+  getReportById
 };

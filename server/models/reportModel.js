@@ -42,7 +42,35 @@ const reportModel = {
             console.error("Error retrieving reports:", error.message);
             throw new Error("Failed to retrieve reports");
         }
+    },
+
+    // Function to get report by ID
+    async getReportById(reportId) {
+        try {
+            const query = `
+                SELECT 
+                    ui.issueId,
+                    ui.issueTitle,
+                    ui.issueDescription,
+                    ui.userId,
+                    ui.issueStatus,
+                    ui.imageUrl,
+                    ui.classroomId,
+                    u.userName,
+                    c.classroomName
+                FROM UtilityIssue ui
+                JOIN User u ON ui.userId = u.externalId
+                JOIN Classroom c ON ui.classroomId = c.classroomId
+                WHERE ui.issueId = ?
+            `;
+            const [rows] = await pool.query(query, [reportId]);
+            return rows[0]; // Return the first report found
+        } catch (error) {
+            console.error("Error retrieving report by ID:", error.message);
+            throw new Error("Failed to retrieve report by ID");
+        }
     }
 };
+
 
 module.exports = reportModel;
