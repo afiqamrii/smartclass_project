@@ -30,6 +30,8 @@ class _UnavailablepageState extends State<Unavailablepage> {
                 widget.animation,
                 width: 150,
                 fit: BoxFit.fill,
+                frameRate: FrameRate.max,
+                repeat: false,
               ),
               const SizedBox(height: 10),
               Text(

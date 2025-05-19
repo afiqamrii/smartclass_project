@@ -15,6 +15,7 @@ class Intropage3 extends StatelessWidget {
               "assets/animations/introPage3.json",
               frameRate: FrameRate.max,
               width: 250,
+              repeat: false,
               fit: BoxFit.contain,
             ),
           ),

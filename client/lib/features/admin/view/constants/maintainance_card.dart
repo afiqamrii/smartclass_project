@@ -17,7 +17,8 @@ class MaintenanceCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: MediaQuery.of(context).size.width * 0.8,
+      width: MediaQuery.of(context).size.width,
+      height: 150,
       margin: const EdgeInsets.only(right: 15),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -25,9 +26,9 @@ class MaintenanceCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(12.0),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.35),
+            color: Colors.grey.withOpacity(0.5),
             blurRadius: 6,
-            offset: const Offset(0, 3),
+            offset: const Offset(2, 3),
           ),
         ],
       ),

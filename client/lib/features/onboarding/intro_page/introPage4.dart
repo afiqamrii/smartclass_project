@@ -18,6 +18,8 @@ class Intropage4 extends StatelessWidget {
                 "assets/animations/introPage4.json",
                 frameRate: FrameRate.max,
                 width: 250,
+                repeat: false,
+                animate: false,
                 fit: BoxFit.contain,
               ),
             ),

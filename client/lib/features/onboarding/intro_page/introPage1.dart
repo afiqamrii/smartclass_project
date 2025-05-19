@@ -14,7 +14,7 @@ class Intropage1 extends StatelessWidget {
             child: LottieBuilder.asset(
               "assets/animations/welcomepage.json",
               frameRate: FrameRate.max,
-              repeat: true,
+              animate: false,
               width: 250,
               fit: BoxFit.contain,
             ),

@@ -13,7 +13,7 @@ class LoginAsPage extends StatelessWidget {
     return Scaffold(
       appBar: const Appbar(),
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 20.0),
+        padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
         child: _selectRoleSection(context),
       ),
     );
@@ -26,12 +26,12 @@ class LoginAsPage extends StatelessWidget {
         const Text(
           "Select Your Role",
           style: TextStyle(
-            fontSize: 32,
+            fontSize: 25,
             fontFamily: 'FigtreeExtraBold',
             fontWeight: FontWeight.bold,
           ),
         ),
-        const SizedBox(height: 20), // Give spacing between text and buttons
+        const SizedBox(height: 10), // Give spacing between text and buttons
         //Card for lecturer
         _lecturerSection(context),
         const SizedBox(height: 20), // Give spacing between buttons

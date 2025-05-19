@@ -5,11 +5,11 @@ import 'package:skeletonizer/skeletonizer.dart';
 import 'package:smartclass_fyp_2024/constants/color_constants.dart';
 import 'package:smartclass_fyp_2024/features/admin/view/manage_report/models/report_models.dart';
 import 'package:smartclass_fyp_2024/features/admin/view/manage_report/providers/report_provider.dart';
-
 import 'package:smartclass_fyp_2024/shared/data/dataprovider/user_provider.dart';
-
 import 'package:smartclass_fyp_2024/shared/data/models/user.dart';
 import 'package:smartclass_fyp_2024/features/admin/view/constants/maintainance_card.dart';
+import 'package:smartclass_fyp_2024/shared/widgets/pageTransition.dart';
+import '../manage_report/views/admin_view_report.dart';
 
 class AdminHomepage extends ConsumerStatefulWidget {
   const AdminHomepage({super.key});
@@ -27,6 +27,8 @@ class _AdminHomepageState extends ConsumerState<AdminHomepage> {
     });
 
     await ref.read(userProvider.notifier).refreshUserData();
+    // ignore: await_only_futures
+    await ref.read(reportListProvider);
     await Future.delayed(const Duration(seconds: 3));
 
     setState(() {
@@ -85,7 +87,7 @@ class _AdminHomepageState extends ConsumerState<AdminHomepage> {
                       ),
                     ),
                     child: Padding(
-                      padding: const EdgeInsets.all(18.0),
+                      padding: const EdgeInsets.all(15.0),
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -93,6 +95,18 @@ class _AdminHomepageState extends ConsumerState<AdminHomepage> {
                           _searchBarSection(),
                           const SizedBox(height: 20),
                           _consumptionSection(context),
+                          const SizedBox(height: 20),
+                          const Text(
+                            'Features',
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontFamily: 'Figtree',
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                            ),
+                          ),
+                          const SizedBox(height: 5),
+                          _featuresSection(context),
                           const SizedBox(height: 20),
                           const Text(
                             'Maintenance',
@@ -105,42 +119,6 @@ class _AdminHomepageState extends ConsumerState<AdminHomepage> {
                           ),
                           const SizedBox(height: 10),
                           _maintainanceCardSection(context, reportList),
-                          const SizedBox(height: 20),
-                          const Text(
-                            'Classroom Status',
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontFamily: 'Figtree',
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black,
-                            ),
-                          ),
-                          const SizedBox(height: 10),
-                          Container(
-                            width: double.infinity,
-                            color: Colors.yellowAccent,
-                            child: Wrap(
-                              spacing: 3.0, // Horizontal space between cards
-                              runSpacing:
-                                  3.0, // Vertical space between rows of cards
-
-                              children: List.generate(10, (index) {
-                                return Card(
-                                  elevation: 5,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  child: Container(
-                                    width: MediaQuery.of(context).size.width *
-                                        0.41, // Set the card width
-                                    height: 170, // Set the card height
-                                    alignment: Alignment.center,
-                                    child: Text('Card $index'),
-                                  ),
-                                );
-                              }),
-                            ),
-                          ),
                         ],
                       ),
                     ),
@@ -150,6 +128,89 @@ class _AdminHomepageState extends ConsumerState<AdminHomepage> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  // Function to create a card with a specific width, height, and child widget
+  Card _featureCard({
+    required String imagePath,
+    required String title,
+    required Color color,
+    VoidCallback? onTap,
+  }) {
+    return Card(
+      elevation: 4,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+      ),
+      color: Colors.grey[100],
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16),
+        onTap: onTap,
+        child: Container(
+          width: MediaQuery.of(context).size.width * 0.43,
+          height: 150,
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              CircleAvatar(
+                radius: 29,
+                backgroundColor: color,
+                child: Image.asset(
+                  imagePath,
+                  width: 30,
+                  height: 30,
+                  color: Colors.white,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black87,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Container _featuresSection(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      child: Wrap(
+        spacing: 3.0,
+        runSpacing: 3.0,
+        children: [
+          _featureCard(
+            imagePath: 'assets/icons/remote.png',
+            title: 'Control Utilities',
+            color: Colors.blue,
+          ),
+          _featureCard(
+            imagePath: 'assets/icons/maintainance.png',
+            title: 'Reports',
+            color: Colors.orange,
+            onTap: () => Navigator.push(
+              context,
+              toLeftTransition(
+                const AdminViewReport(),
+              ),
+            ),
+          ),
+          _featureCard(
+            imagePath: 'assets/icons/remote.png',
+            title: 'Smart Lighting',
+            color: Colors.green,
+          ),
+        ],
       ),
     );
   }
