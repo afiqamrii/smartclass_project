@@ -7,7 +7,8 @@ import 'package:skeletonizer/skeletonizer.dart';
 import 'package:smartclass_fyp_2024/constants/color_constants.dart';
 import 'package:smartclass_fyp_2024/features/student/models/todayClass_card_models.dart';
 import 'package:smartclass_fyp_2024/features/student/providers/student_class_provider.dart';
-import 'package:smartclass_fyp_2024/features/student/views/report_utility/report_utility_page.dart';
+import 'package:smartclass_fyp_2024/features/student/views/report_utility/views/report_utility_page.dart';
+import 'package:smartclass_fyp_2024/features/student/views/report_utility/views/view_reports_history.dart';
 import 'package:smartclass_fyp_2024/features/student/views/template/student_bottom_navbar.dart';
 import 'package:smartclass_fyp_2024/features/student/views/widgets/classnow_card.dart';
 import 'package:smartclass_fyp_2024/features/student/views/widgets/student_todayclass_card.dart';
@@ -699,7 +700,7 @@ class _StudentHomePageState extends ConsumerState<StudentHomePage> {
               // Handle tap on the card here
               Navigator.of(context).push(
                 toLeftTransition(
-                  const ReportUtilityPage(),
+                  const ViewReportsHistory(),
                 ),
               ),
             }, // Handle tap on the card

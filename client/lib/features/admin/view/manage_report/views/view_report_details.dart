@@ -1,8 +1,11 @@
+import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:smartclass_fyp_2024/features/admin/view/manage_report/providers/report_provider.dart';
+import 'package:smartclass_fyp_2024/features/admin/view/manage_report/services/report_api.dart';
 import 'package:smartclass_fyp_2024/features/admin/view/manage_report/views/report_pic_fullscreen.dart';
+import 'package:smartclass_fyp_2024/shared/components/custom_buttom.dart';
 import 'package:smartclass_fyp_2024/shared/data/dataprovider/user_provider.dart';
 
 class ViewReportDetails extends ConsumerStatefulWidget {
@@ -43,10 +46,29 @@ class _ViewReportDetailsState extends ConsumerState<ViewReportDetails> {
     _refreshController.loadComplete();
   }
 
-  Future<void> _updateStatus(WidgetRef ref, String newStatus) async {
-    // TODO: Call your backend API to update the status here
-    // Example:
-    // await http.patch(...);
+  Future<void> _updateStatus(WidgetRef ref, int reportId) async {
+    // Update the status of the report
+    await Future.any(
+      [
+        ReportApi.updateReportStatus(
+          reportId,
+        ),
+      ],
+    );
+
+    // Show a success message
+    Flushbar(
+      message: 'Report updated successfully!',
+      duration: const Duration(seconds: 3),
+      backgroundColor: Colors.green.shade600,
+      margin: const EdgeInsets.all(8),
+      borderRadius: BorderRadius.circular(8),
+      flushbarPosition: FlushbarPosition.TOP,
+      icon: const Icon(
+        Icons.check_circle,
+        color: Colors.white,
+      ),
+    ).show(context);
 
     // Force refresh after status update
     // ignore: unused_result
@@ -97,7 +119,9 @@ class _ViewReportDetailsState extends ConsumerState<ViewReportDetails> {
                         vertical: 6,
                       ),
                       decoration: BoxDecoration(
-                        color: Colors.deepOrange,
+                        color: report.issueStatus == "Resolved"
+                            ? Colors.green
+                            : Colors.deepOrange,
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Text(
@@ -253,27 +277,21 @@ class _ViewReportDetailsState extends ConsumerState<ViewReportDetails> {
                 const SizedBox(height: 30),
 
                 /// Solved Button
-                Center(
-                  child: ElevatedButton(
-                    onPressed: () async {
-                      await _updateStatus(ref, "Resolved");
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Status updated to Solved'),
-                        ),
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.black,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
-                      ),
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 40, vertical: 14),
+                if (report.issueStatus != "Resolved")
+                  Padding(
+                    padding: const EdgeInsets.only(
+                      right: 50.0,
+                      left: 50,
+                      bottom: 50,
                     ),
-                    child: const Text("Solved"),
+                    child: CustomButton(
+                      text: "Mark as Solved",
+                      onTap: () {
+                        _updateStatus(ref, report.issueId);
+                        Navigator.pop(context);
+                      },
+                    ),
                   ),
-                ),
               ],
             );
           },

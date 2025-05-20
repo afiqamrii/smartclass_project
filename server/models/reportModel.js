@@ -6,10 +6,10 @@ const reportModel = {
     async createReport(reportData) {
         try {
         const query = `
-            INSERT INTO UtilityIssue (issueTitle , issueDescription , userId, classroomId , imageUrl)
-            VALUES (?, ?, ?, ?, ?)
+            INSERT INTO UtilityIssue (issueTitle , issueDescription , userId, classroomId , imageUrl , timestamp)
+            VALUES (?, ?, ?, ?, ? , ?)
         `;
-        const values = [reportData.title, reportData.description, reportData.userId , reportData.classroomId , reportData.imageUrl];
+        const values = [reportData.title, reportData.description, reportData.userId , reportData.classroomId , reportData.imageUrl , reportData.timeStamp];
         const [result] = await pool.query(query, values);
         return result.insertId; // Return the ID of the newly created report
         } catch (error) {
@@ -68,6 +68,22 @@ const reportModel = {
         } catch (error) {
             console.error("Error retrieving report by ID:", error.message);
             throw new Error("Failed to retrieve report by ID");
+        }
+    },
+
+    // Function to update report by ID
+    async updateReportStatus(reportId) {
+        try {
+            const query = `
+                UPDATE UtilityIssue
+                SET issueStatus = 'Resolved'
+                WHERE issueId = ?
+            `;
+            const [result] = await pool.query(query, [reportId]);
+            return result.affectedRows > 0; // Return true if the report was updated
+        } catch (error) {
+            console.error("Error updating report status:", error.message);
+            throw new Error("Failed to update report status");
         }
     }
 };

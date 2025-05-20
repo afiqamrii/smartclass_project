@@ -10,5 +10,6 @@ const reportController = require('../controllers/reportController');
 router.post('/create', upload.single('image'), reportController.submitReport);
 router.get('/getreport', reportController.getReport); // Get all reports
 router.get('/getreport/:id', reportController.getReportById); // Get report by ID
+router.put('/updatereportstatus/:id', reportController.updateReportStatus); // Update report by ID
 
 module.exports = router;

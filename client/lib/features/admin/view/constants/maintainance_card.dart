@@ -95,7 +95,7 @@ class MaintenanceCard extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             decoration: BoxDecoration(
-              color: status == "Completed" ? Colors.green : Colors.red,
+              color: status == "Resolved" ? Colors.green : Colors.red,
               borderRadius: BorderRadius.circular(12),
             ),
             child: Text(

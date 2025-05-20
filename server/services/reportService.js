@@ -117,9 +117,22 @@ const getReportById = async (reportId) => {
   }
 };
 
+// Function to update report by ID
+// This function updates the status of a specific report by its ID in the database
+const updateReportStatus = async (reportId) => {
+  try {
+    const result = await reportModel.updateReportStatus(reportId);
+    return result;
+  } catch (error) {
+    console.error('Error updating report status:', error);
+    throw new Error('Failed to update report status');
+  }
+};
+
 module.exports = {
   uploadImageToGCS,
   saveReportToDB,
   getAllReports,
-  getReportById
+  getReportById,
+  updateReportStatus,
 };

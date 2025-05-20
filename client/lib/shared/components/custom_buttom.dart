@@ -51,7 +51,7 @@ class CustomButton extends StatelessWidget {
                         text,
                         style: const TextStyle(
                           color: Colors.white,
-                          fontSize: 16,
+                          fontSize: 15,
                           fontFamily: 'Figtree',
                         ),
                       ),

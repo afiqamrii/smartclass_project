@@ -4,6 +4,7 @@ import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:smartclass_fyp_2024/constants/color_constants.dart';
 import 'package:smartclass_fyp_2024/features/student/views/report_utility/services/report_service.dart';
 import 'package:smartclass_fyp_2024/shared/data/dataprovider/classroom_provider.dart';
@@ -25,6 +26,7 @@ class _ReportUtilityPageState extends ConsumerState<ReportUtilityPage> {
   final int maxChars = 100;
   int charCount = 0;
   File? selectedImage;
+  bool _isSubmitting = false;
 
   @override
   void initState() {
@@ -93,6 +95,11 @@ class _ReportUtilityPageState extends ConsumerState<ReportUtilityPage> {
   }
 
   Future<void> submitReport(BuildContext context, String userId) async {
+    setState(() {
+      _isSubmitting = true;
+    });
+
+    // Validate the form fields
     String title = reportTitleController.text;
     String description = reportDescriptionController.text;
     int classroomId = int.tryParse(classroomController.text) ?? 0;
@@ -128,6 +135,10 @@ class _ReportUtilityPageState extends ConsumerState<ReportUtilityPage> {
           color: Colors.white,
         ),
       ).show(context);
+    } finally {
+      setState(() {
+        _isSubmitting = false;
+      });
     }
   }
 
@@ -174,6 +185,7 @@ class _ReportUtilityPageState extends ConsumerState<ReportUtilityPage> {
 
           TextFormField(
             controller: reportTitleController,
+            textCapitalization: TextCapitalization.words,
             decoration: InputDecoration(
               hintText: "e.g : Lamp not working",
               hintStyle: const TextStyle(fontSize: 12, color: Colors.grey),
@@ -281,27 +293,44 @@ class _ReportUtilityPageState extends ConsumerState<ReportUtilityPage> {
           // Submit Button
           SizedBox(
             width: double.infinity,
-            child: ElevatedButton.icon(
+            child: ElevatedButton(
               onPressed: () => submitReport(context, user.externalId),
-              icon: const Icon(
-                Icons.send,
-                size: 15,
-              ),
-              label: const Text(
-                "Submit Report",
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
               style: ElevatedButton.styleFrom(
                 backgroundColor: ColorConstants.primaryColor,
                 foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(vertical: 14),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
+                    borderRadius: BorderRadius.circular(12)),
               ),
+              child: _isSubmitting
+                  ? Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: LoadingAnimationWidget.staggeredDotsWave(
+                            color: Colors.white,
+                            size: 25,
+                          ),
+                        ),
+                      ],
+                    )
+                  : const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.send, size: 15),
+                        SizedBox(width: 8),
+                        Text(
+                          "Submit Report",
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
             ),
           ),
         ],

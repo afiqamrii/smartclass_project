@@ -10,13 +10,24 @@ const submitReport = async (req, res) => {
     return res.status(400).send('Title and description are required');
   }
 
+  // Get current date in UTC+8
+  const currentDate = new Date();
+  const offsetMs = 8 * 60 * 60 * 1000; // 8 hours in ms
+  const localDate = new Date(currentDate.getTime() + offsetMs);
+
+  const formattedDate = localDate.toISOString().split('T')[0];
+  const formattedTime = localDate.toISOString().split('T')[1].split('.')[0];
+  const timeStamp = `${formattedDate} ${formattedTime}`;
+
+  console.log('Current date and time:', timeStamp);
+
   try {
     // Call service layer to handle image upload and saving data
     const imageUrl = await reportService.uploadImageToGCS(imageFile);
     if (!imageUrl) {
       return res.status(500).send('Failed to upload image');
     }
-    const reportData = { title, description , classroomId, userId ,  imageUrl };
+    const reportData = { title, description , classroomId, userId ,  imageUrl , timeStamp };
 
     const result = await reportService.saveReportToDB(reportData);
     return res.status(200).json({ message: 'Report saved successfully', result });
@@ -64,8 +75,35 @@ const getReportById = async (req, res) => {
   }
 }
 
+// Function to update report by ID
+// This function updates a specific report by its ID in the database
+const updateReportStatus = async (req, res) => {
+  // Implement the logic to update a report by ID
+  const reportId = req.params.id;
+  
+  console.log('Received report ID for update:', reportId);
+  if (!reportId) {
+    return res.status(400).send('Report ID is required');
+  }
+
+  try {
+    const updatedReport = await reportService.updateReportStatus(reportId);
+    if (!updatedReport) {
+      return res.status(404).send('Report not found');
+    }
+
+    console.log('Updated report:', updatedReport);
+    return res.status(200).json({ message: 'Report updated successfully', updatedReport });
+  }
+  catch (error) {
+    console.error('Error in updateReportStatus:', error);
+    return res.status(500).send('Error updating report');
+  }
+};
+
 module.exports = {
   submitReport, 
   getReport,
-  getReportById
+  getReportById,
+  updateReportStatus
 };

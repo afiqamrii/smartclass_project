@@ -46,4 +46,23 @@ class ReportApi {
       throw Exception('Failed to load courses');
     }
   }
+
+  //Update report status
+  static Future<void> updateReportStatus(int reportId) async {
+    final response = await http.put(
+      Uri.parse('${ApiConstants.baseUrl}/report/updatereportstatus/$reportId'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(
+        <String, String>{
+          'status': 'completed',
+        },
+      ),
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to update report status');
+    }
+  }
 }
