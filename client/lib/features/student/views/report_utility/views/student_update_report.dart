@@ -227,8 +227,34 @@ class _StudentUpdateReportState extends ConsumerState<StudentUpdateReport> {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: () =>
-                    submitReport(context, user.externalId, widget.imageUrl),
+                onPressed: () => showDialog(
+                  context: context,
+                  builder: (ctx) {
+                    return AlertDialog(
+                      title: const Text("Confirm Update"),
+                      content: const Text(
+                        "Are you sure you want to update this report?",
+                      ),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(ctx),
+                          child: const Text("Cancel"),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            Navigator.pop(ctx);
+                            submitReport(
+                              context,
+                              user.externalId,
+                              widget.imageUrl,
+                            );
+                          },
+                          child: const Text("Update"),
+                        ),
+                      ],
+                    );
+                  },
+                ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: ColorConstants.primaryColor,
                   foregroundColor: Colors.white,

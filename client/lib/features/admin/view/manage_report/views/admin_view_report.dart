@@ -247,7 +247,16 @@ SizedBox _maintainanceCardSection(
                   Navigator.push(
                     context,
                     toLeftTransition(
-                      ViewReportDetails(reportId: report.issueId),
+                      ViewReportDetails(reportId: report.issueId,
+                        issueTitle: report.issueTitle,
+                        issueDescription: report.issueDescription,
+                        userId: report.userId,
+                        issueStatus: report.issueStatus,
+                        imageUrl: report.imageUrl,
+                        classroomId: report.classroomId,
+                        userName: report.userName,
+                        classroomName: report.classroomName,
+                        createdAt: report.createdAt,),
                     ),
                   );
                 },

@@ -165,6 +165,51 @@ const updateReportWithImage = async (reportId, reportData) => {
   }
 }
 
+// Report notification
+const getNewReportCount = async () => {
+  try {
+    const result = await reportModel.getNewReportCount();
+    return result;
+  } catch (error) {
+    console.error('Error fetching new report count:', error);
+    throw new Error('Failed to fetch new report count');
+  }
+};
+
+// Get latest report id
+const getLatestReportId = async () => {
+  try {
+    const result = await reportModel.getLatestReportId();
+    return result;
+  } catch (error) {
+    console.error('Error fetching latest report ID:', error);
+    throw new Error('Failed to fetch latest report ID');
+  }
+};
+
+//Function to count report by user id
+const getNewReportCountByUser = async (userId) => {
+  try {
+    const result = await reportModel.getNewReportCountByUser(userId);
+    return result;
+  } catch (error) {
+    console.error('Error fetching new report count by user ID:', error);
+    throw new Error('Failed to fetch new report count by user ID');
+  }
+  
+};
+
+// Function to mark reports as read
+const markAsRead = async (reportIds) => {
+  try {
+    const result = await reportModel.markAsRead(reportIds);
+    return result;
+  } catch (error) {
+    console.error('Error marking reports as read:', error);
+    throw new Error('Failed to mark reports as read');
+  }
+};
+
 // Exporting the functions to be used in other parts of the application
 module.exports = {
   uploadImageToGCS,
@@ -175,4 +220,8 @@ module.exports = {
   getReportByUserId,
   updateReport,
   updateReportWithImage,
+  getNewReportCount,
+  markAsRead,
+  getLatestReportId,
+  getNewReportCountByUser
 };

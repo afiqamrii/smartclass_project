@@ -30,6 +30,14 @@ const submitReport = async (req, res) => {
     const reportData = { title, description , classroomId, userId ,  imageUrl , timeStamp };
 
     const result = await reportService.saveReportToDB(reportData);
+
+    // Emit updated new report count after adding new report
+    const count = await reportService.getNewReportCount();
+    if (global._io) {
+      global._io.emit('new_report_count', { count });
+      console.log('📡 Emitted updated new_report_count after submitReport:', count);
+    }
+    
     return res.status(200).json({ message: 'Report saved successfully', result });
   } catch (error) {
     console.error('Error in submitReport:', error);
@@ -78,9 +86,8 @@ const getReportById = async (req, res) => {
 // Function to update report by ID
 // This function updates a specific report by its ID in the database
 const updateReportStatus = async (req, res) => {
-  // Implement the logic to update a report by ID
   const reportId = req.params.id;
-  
+  const userId = req.params.userId;
   console.log('Received report ID for update:', reportId);
   if (!reportId) {
     return res.status(400).send('Report ID is required');
@@ -92,14 +99,53 @@ const updateReportStatus = async (req, res) => {
       return res.status(404).send('Report not found');
     }
 
-    console.log('Updated report:', updatedReport);
+    // Emit updated new report count to all (optional)
+    const count = await reportService.getNewReportCountByUser(userId);
+    if (global._io) {
+      global._io.emit('new_report_count', { count });
+      console.log(' Emitted updated new_report_count after updateReportStatus:', count);
+    }
+
+    // Notify the student whose report was updated (solved)
+    const socketId = global.connectedUsers && userId ? global.connectedUsers[userId] : undefined;
+    if (socketId) {
+      global._io.to(socketId).emit('report_solved', {
+        reportId,
+        message: 'Your reported issue has been solved!',
+      });
+      console.log(` Notified user ${userId} that report ${reportId} is solved`);
+    }
+
     return res.status(200).json({ message: 'Report updated successfully', updatedReport });
-  }
-  catch (error) {
+  } catch (error) {
     console.error('Error in updateReportStatus:', error);
     return res.status(500).send('Error updating report');
   }
 };
+
+// const updateReportStatus = async (req, res) => {
+//   // Implement the logic to update a report by ID
+//   const reportId = req.params.id;
+  
+//   console.log('Received report ID for update:', reportId);
+//   if (!reportId) {
+//     return res.status(400).send('Report ID is required');
+//   }
+
+//   try {
+//     const updatedReport = await reportService.updateReportStatus(reportId);
+//     if (!updatedReport) {
+//       return res.status(404).send('Report not found');
+//     }
+
+//     console.log('Updated report:', updatedReport);
+//     return res.status(200).json({ message: 'Report updated successfully', updatedReport });
+//   }
+//   catch (error) {
+//     console.error('Error in updateReportStatus:', error);
+//     return res.status(500).send('Error updating report');
+//   }
+// };
 
 // Function to get report by user ID
 // This function retrieves all reports submitted by a specific user from the database
@@ -177,6 +223,33 @@ const updateReportWithoutImage = async (req, res) => {
   }
 }
 
+const getNewReportCount = async (req, res) => {
+  try {
+    const count = await reportService.getNewReportCount();
+    res.json({ count });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+const markAsRead = async (req, res) => {
+  try {
+    await reportService.markAsRead();
+
+    // Emit updated count
+    const count = await reportService.getNewReportCount();
+    if (global._io) {
+      global._io.emit('new_report_count', { count });
+      console.log('📡 Emitted updated new_report_count after markAsRead:', count);
+    }
+
+    res.json({ success: true });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+
 
 
 // Exporting the functions to be used in routes
@@ -188,4 +261,6 @@ module.exports = {
   getReportByUserId,
   updateReport,
   updateReportWithoutImage,
+  getNewReportCount,
+  markAsRead
 };
