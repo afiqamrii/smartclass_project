@@ -1,3 +1,5 @@
+import 'package:intl/intl.dart';
+
 class UtilityIssueModel {
   final int issueId;
   final String issueTitle;
@@ -8,6 +10,7 @@ class UtilityIssueModel {
   final int classroomId;
   final String userName;
   final String classroomName;
+  final String createdAt;
 
   UtilityIssueModel({
     required this.issueId,
@@ -19,10 +22,13 @@ class UtilityIssueModel {
     required this.classroomId,
     required this.userName,
     required this.classroomName,
+    required this.createdAt,
   });
 
   // Convert JSON object to UtilityIssueModel
   factory UtilityIssueModel.fromJson(Map<String, dynamic> json) {
+    final rawTimestamp = json['timestamp'];
+    final formattedTimestamp = _formatTimestamp(rawTimestamp);
     return UtilityIssueModel(
       issueId: json['issueId'],
       issueTitle: json['issueTitle'],
@@ -33,6 +39,7 @@ class UtilityIssueModel {
       classroomId: json['classroomId'],
       userName: json['userName'],
       classroomName: json['classroomName'],
+      createdAt: formattedTimestamp,
     );
   }
 
@@ -49,5 +56,15 @@ class UtilityIssueModel {
       'userName': userName,
       'classroomName': classroomName,
     };
+  }
+
+  static String _formatTimestamp(String timestamp) {
+    try {
+      final dateTime = DateTime.parse(timestamp);
+      final formatter = DateFormat('dd MMM yyyy, h:mm a');
+      return formatter.format(dateTime);
+    } catch (e) {
+      return timestamp; // fallback if parsing fails
+    }
   }
 }

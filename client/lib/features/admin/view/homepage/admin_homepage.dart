@@ -3,11 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:smartclass_fyp_2024/constants/color_constants.dart';
-import 'package:smartclass_fyp_2024/features/admin/view/manage_report/models/report_models.dart';
 import 'package:smartclass_fyp_2024/features/admin/view/manage_report/providers/report_provider.dart';
 import 'package:smartclass_fyp_2024/shared/data/dataprovider/user_provider.dart';
 import 'package:smartclass_fyp_2024/shared/data/models/user.dart';
-import 'package:smartclass_fyp_2024/features/admin/view/constants/maintainance_card.dart';
 import 'package:smartclass_fyp_2024/shared/widgets/pageTransition.dart';
 import '../manage_report/views/admin_view_report.dart';
 
@@ -42,6 +40,7 @@ class _AdminHomepageState extends ConsumerState<AdminHomepage> {
     final user = ref.watch(userProvider);
 
     //Get report data from the provider
+    // ignore: unused_local_variable
     final reportList = ref.watch(reportListProvider);
 
     return Scaffold(
@@ -80,6 +79,7 @@ class _AdminHomepageState extends ConsumerState<AdminHomepage> {
                   padding: const EdgeInsets.only(top: 15),
                   child: Container(
                     width: double.infinity,
+                    height: MediaQuery.of(context).size.height * 0.75,
                     decoration: const BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.vertical(
@@ -87,12 +87,16 @@ class _AdminHomepageState extends ConsumerState<AdminHomepage> {
                       ),
                     ),
                     child: Padding(
-                      padding: const EdgeInsets.all(15.0),
+                      padding: const EdgeInsets.only(
+                        left: 15.0,
+                        right: 15.0,
+                        top: 5,
+                      ),
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          _searchBarSection(),
+                          // _searchBarSection(),
                           const SizedBox(height: 20),
                           _consumptionSection(context),
                           const SizedBox(height: 20),
@@ -108,17 +112,6 @@ class _AdminHomepageState extends ConsumerState<AdminHomepage> {
                           const SizedBox(height: 5),
                           _featuresSection(context),
                           const SizedBox(height: 20),
-                          const Text(
-                            'Maintenance',
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontFamily: 'Figtree',
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black,
-                            ),
-                          ),
-                          const SizedBox(height: 10),
-                          _maintainanceCardSection(context, reportList),
                         ],
                       ),
                     ),
@@ -211,33 +204,6 @@ class _AdminHomepageState extends ConsumerState<AdminHomepage> {
             color: Colors.green,
           ),
         ],
-      ),
-    );
-  }
-
-  SizedBox _maintainanceCardSection(BuildContext context,
-      AsyncValue<List<UtilityIssueModel>> reportListProvider) {
-    return SizedBox(
-      height: MediaQuery.of(context).size.height * 0.2,
-      child: ListView(
-        scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.only(right: 5),
-        clipBehavior: Clip.none,
-        physics: const BouncingScrollPhysics(),
-        children: reportListProvider.when(
-          data: (reportList) {
-            return reportList.map((report) {
-              return MaintenanceCard(
-                title: report.issueTitle,
-                description: report.issueDescription,
-                date: "21/10/2023",
-                status: report.issueStatus,
-              );
-            }).toList();
-          },
-          error: (error, stackTrace) => [Text('Error: $error')],
-          loading: () => [const Center(child: CircularProgressIndicator())],
-        ),
       ),
     );
   }

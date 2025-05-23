@@ -287,8 +287,33 @@ class _ViewReportDetailsState extends ConsumerState<ViewReportDetails> {
                     child: CustomButton(
                       text: "Mark as Solved",
                       onTap: () {
-                        _updateStatus(ref, report.issueId);
-                        Navigator.pop(context);
+                        // Show a confirmation dialog
+                        showDialog(
+                          context: context,
+                          builder: (ctx) {
+                            return AlertDialog(
+                              title: const Text("Confirmation"),
+                              content: const Text(
+                                  "Are you sure you want to mark this issue as solved?"),
+                              actions: [
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.of(ctx).pop();
+                                  },
+                                  child: const Text("No"),
+                                ),
+                                TextButton(
+                                  onPressed: () {
+                                    _updateStatus(ref, report.issueId);
+                                    Navigator.pop(ctx);
+                                    Navigator.pop(context);
+                                  },
+                                  child: const Text("Yes"),
+                                ),
+                              ],
+                            );
+                          },
+                        );
                       },
                     ),
                   ),

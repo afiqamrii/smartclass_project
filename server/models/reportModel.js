@@ -31,7 +31,8 @@ const reportModel = {
                     ui.imageUrl,
                     ui.classroomId,
                     u.userName,
-                    c.classroomName
+                    c.classroomName,
+                    ui.timestamp
                 FROM UtilityIssue ui
                 JOIN User u ON ui.userId = u.externalId
                 JOIN Classroom c ON ui.classroomId = c.classroomId
@@ -57,7 +58,8 @@ const reportModel = {
                     ui.imageUrl,
                     ui.classroomId,
                     u.userName,
-                    c.classroomName
+                    c.classroomName,
+                    ui.timestamp
                 FROM UtilityIssue ui
                 JOIN User u ON ui.userId = u.externalId
                 JOIN Classroom c ON ui.classroomId = c.classroomId

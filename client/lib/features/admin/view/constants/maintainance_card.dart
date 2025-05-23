@@ -18,7 +18,7 @@ class MaintenanceCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: MediaQuery.of(context).size.width,
-      height: 150,
+      height: 140,
       margin: const EdgeInsets.only(right: 15),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
