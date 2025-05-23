@@ -6,7 +6,7 @@ import 'package:smartclass_fyp_2024/features/admin/view/constants/maintainance_c
 import 'package:smartclass_fyp_2024/features/admin/view/manage_report/models/report_models.dart';
 import 'package:smartclass_fyp_2024/features/admin/view/manage_report/providers/report_provider.dart';
 import 'package:smartclass_fyp_2024/features/admin/view/manage_report/views/view_report_details.dart';
-import 'package:smartclass_fyp_2024/features/student/views/report_utility/views/report_utility_page.dart';
+import 'package:smartclass_fyp_2024/features/student/views/report_utility/views/student_report_utility_page.dart';
 import 'package:smartclass_fyp_2024/shared/data/dataprovider/user_provider.dart';
 import 'package:smartclass_fyp_2024/shared/widgets/pageTransition.dart';
 
