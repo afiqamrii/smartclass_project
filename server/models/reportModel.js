@@ -87,6 +87,70 @@ const reportModel = {
             console.error("Error updating report status:", error.message);
             throw new Error("Failed to update report status");
         }
+    },
+
+    // Function to get report by user ID
+    async getReportByUserId(userId) {
+        try {
+            const query = `
+                SELECT 
+                    ui.issueId,
+                    ui.issueTitle,
+                    ui.issueDescription,
+                    ui.userId,
+                    ui.issueStatus,
+                    ui.imageUrl,
+                    ui.classroomId,
+                    u.userName,
+                    c.classroomName,
+                    ui.timestamp
+                FROM UtilityIssue ui
+                JOIN User u ON ui.userId = u.externalId
+                JOIN Classroom c ON ui.classroomId = c.classroomId
+                WHERE ui.userId = ?
+            `;
+            const [rows] = await pool.query(query, [userId]);
+            return rows;
+        } catch (error) {
+            console.error("Error retrieving report by user ID:", error.message);
+            throw new Error("Failed to retrieve report by user ID");
+        }
+    },
+
+    // Function to update report by ID
+    async updateReport(reportId, reportData) {
+        try {
+            
+            const query = `
+                UPDATE UtilityIssue
+                SET issueTitle = ?, issueDescription = ?, imageUrl = ? , classroomId = ? 
+                WHERE issueId = ?
+            `;
+            const values = [reportData.title, reportData.description, reportData.imageUrl, reportData.classroomId, reportId];
+            const [result] = await pool.query(query, values);
+            return result.affectedRows > 0; // Return true if the report was updated
+        } catch (error) {
+            console.error("Error updating report:", error.message);
+            throw new Error("Failed to update report");
+        }
+    },
+
+    //Funciton to update report by ID without image
+    async updateReportWithoutIMage(reportId,reportData){
+        try{
+            const query = `
+                UPDATE UtilityIssue
+                SET issueTitle = ?, issueDescription = ? , classroomId = ? 
+                WHERE issueId = ?
+            `;
+            const values = [reportData.title, reportData.description, reportData.classroomId, reportId];
+            const [result] = await pool.query(query, values);
+            return result.affectedRows > 0; // Return true if the report was updated
+
+        } catch(error){
+            console.error("Error updating report:", error.message);
+            throw new Error("Failed to update report");
+        }
     }
 };
 

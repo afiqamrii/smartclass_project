@@ -129,10 +129,50 @@ const updateReportStatus = async (reportId) => {
   }
 };
 
+// Function to get report by user ID
+// This function retrieves all reports submitted by a specific user from the database
+const getReportByUserId = async (userId) => {
+  try {
+    const result = await reportModel.getReportByUserId(userId);
+    return result;
+  } catch (error) {
+    console.error('Error fetching report by user ID:', error);
+    throw new Error('Failed to fetch report by user ID');
+  }
+};
+
+//Function to update report by ID
+// This function updates a specific report by its ID in the database
+const updateReport = async (reportId, reportData) => {
+  try {
+    const result = await reportModel.updateReport(reportId, reportData);
+    return result;
+  } catch (error) {
+    console.error('Error updating report:', error);
+    throw new Error('Failed to update report');
+  }
+};
+
+//Function to update report by ID with image
+// This function updates a specific report by its ID in the database
+const updateReportWithImage = async (reportId, reportData) => {
+  try {
+    const result = await reportModel.updateReportWithoutIMage(reportId, reportData);
+    return result;
+  } catch (error) {
+    console.error('Error updating report with image:', error);
+    throw new Error('Failed to update report with image');
+  }
+}
+
+// Exporting the functions to be used in other parts of the application
 module.exports = {
   uploadImageToGCS,
   saveReportToDB,
   getAllReports,
   getReportById,
   updateReportStatus,
+  getReportByUserId,
+  updateReport,
+  updateReportWithImage,
 };

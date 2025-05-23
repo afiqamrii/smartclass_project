@@ -196,7 +196,10 @@ class _AdminViewReportState extends ConsumerState<AdminViewReport> {
                     ),
                     const SizedBox(height: 10),
                     _maintainanceCardSection(
-                        context, reportList, selectedFilters),
+                      context,
+                      reportList,
+                      selectedFilters,
+                    ),
                   ],
                 ),
               ),

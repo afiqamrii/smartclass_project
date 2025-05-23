@@ -101,9 +101,91 @@ const updateReportStatus = async (req, res) => {
   }
 };
 
+// Function to get report by user ID
+// This function retrieves all reports submitted by a specific user from the database
+const getReportByUserId = async (req, res) => {
+  const userId = req.params.userId;
+
+  console.log('Received user ID:', userId);
+
+  if (!userId) {
+    return res.status(400).send('User ID is required');
+  }
+
+  try {
+    const reports = await reportService.getReportByUserId(userId);
+    if (!reports || reports.length === 0) {
+      return res.status(404).send('No reports found for this user');
+    }
+
+    console.log('Fetched reports for user:', reports);
+    return res.status(200).json({ message: 'Reports fetched successfully', reports });
+    
+  } catch (error) {
+    console.error('Error in getReportByUserId:', error);
+    return res.status(500).send('Error fetching reports');
+  }
+}
+
+//Function to update report by ID
+// This function updates the status of a specific report by its ID in the database
+const updateReport = async (req, res) => {
+  const { title, description , classroomId ,  userId } = req.body;
+  const imageFile = req.file;
+
+  console.log('Received data:', req.body, req.file);
+
+  if (!title || !description ) {
+    return res.status(400).send('Title and description are requireds');
+  }
+
+  try {
+    // Call service layer to handle image upload and saving data
+    const imageUrl = await reportService.uploadImageToGCS(imageFile);
+    if (!imageUrl) {
+      return res.status(500).send('Failed to upload image');
+    }
+    const reportData = { title, description , classroomId, userId ,  imageUrl };
+
+    const result = await reportService.updateReport(req.params.id,reportData);
+    return res.status(200).json({ message: 'Report saved successfully', result });
+  } catch (error) {
+    console.error('Error in submitReport:', error);
+    return res.status(500).send('Error saving report');
+  }
+};
+
+//Function to update report without image
+// This function updates a specific report by its ID in the database
+const updateReportWithoutImage = async (req, res) => {
+  const { title, description, classroomId, userId } = req.body;
+
+  console.log('Received data for update no image:', req.body);
+
+  if (!title || !description) {
+    return res.status(400).send('Title and description are required');
+  }
+
+  try {
+    const reportData = { title, description, classroomId, userId };
+    const result = await reportService.updateReportWithImage(req.params.id, reportData);
+
+    return res.status(200).json({ message: 'Report updated successfully', result });
+  } catch (error) {
+    console.error('Error in updateReport:', error);
+    return res.status(500).send('Error updating report');
+  }
+}
+
+
+
+// Exporting the functions to be used in routes
 module.exports = {
   submitReport, 
   getReport,
   getReportById,
-  updateReportStatus
+  updateReportStatus,
+  getReportByUserId,
+  updateReport,
+  updateReportWithoutImage,
 };

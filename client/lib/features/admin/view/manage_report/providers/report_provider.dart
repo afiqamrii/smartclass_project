@@ -12,3 +12,9 @@ final reportByIdProvider =
     FutureProvider.family<UtilityIssueModel, int>((ref, id) async {
   return await ReportApi.fetchReportById(id);
 });
+
+// THis provider use to fetch the report by userId
+final reportByUserIdProvider =
+    FutureProvider.family<List<UtilityIssueModel>, String>((ref, userId) async {
+  return await ReportApi.fetchReportByUserId(userId);
+});

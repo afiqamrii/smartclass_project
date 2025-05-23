@@ -51,6 +51,12 @@ app.use(authRouter);
 
 //Report Management
 // Use routes
+app.use((req, res, next) => {
+  if (req.method === 'PUT' && req.headers['content-type']?.includes('multipart/form-data')) {
+    req.method = 'POST';
+  }
+  next();
+});
 app.use('/report', reportRoutes);
 
 //Class Management

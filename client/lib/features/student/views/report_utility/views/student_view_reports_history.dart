@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:smartclass_fyp_2024/features/admin/view/constants/maintainance_card.dart';
 import 'package:smartclass_fyp_2024/features/admin/view/manage_report/models/report_models.dart';
 import 'package:smartclass_fyp_2024/features/admin/view/manage_report/providers/report_provider.dart';
-import 'package:smartclass_fyp_2024/features/admin/view/manage_report/views/view_report_details.dart';
 import 'package:smartclass_fyp_2024/features/student/views/report_utility/views/student_report_utility_page.dart';
+import 'package:smartclass_fyp_2024/features/student/views/report_utility/views/student_view_report_details.dart';
 import 'package:smartclass_fyp_2024/shared/data/dataprovider/user_provider.dart';
 import 'package:smartclass_fyp_2024/shared/widgets/pageTransition.dart';
 
@@ -22,14 +23,18 @@ class _ViewReportsHistoryState extends ConsumerState<ViewReportsHistory> {
   final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
 
-  Future<void> _handleRefresh(WidgetRef ref) async {
+  Set<String> selectedFilters = {'All'};
+  final List<String> dateFilters = ['All', 'Last 7 Days', 'Last 30 Days'];
+  final List<String> statusFilters = ['Pending', 'Resolved'];
+
+  Future<void> _handleRefresh(WidgetRef ref, String externalId) async {
     setState(() {
       _isRefreshing = true;
     });
 
     await ref.read(userProvider.notifier).refreshUserData();
     // ignore: unused_result
-    ref.refresh(reportListProvider);
+    ref.refresh(reportByUserIdProvider(externalId));
 
     await Future.delayed(const Duration(seconds: 3));
 
@@ -56,7 +61,7 @@ class _ViewReportsHistoryState extends ConsumerState<ViewReportsHistory> {
     final user = ref.watch(userProvider);
 
     // Get report data from the provider
-    final reportList = ref.watch(reportListProvider);
+    final reportList = ref.watch(reportByUserIdProvider(user.externalId));
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -70,7 +75,7 @@ class _ViewReportsHistoryState extends ConsumerState<ViewReportsHistory> {
             color: Colors.grey,
           ),
         ),
-        onRefresh: () => _handleRefresh(ref),
+        onRefresh: () => _handleRefresh(ref, user.externalId),
         onLoading: _onLoading,
         physics: const BouncingScrollPhysics(),
         child: ListView(
@@ -79,21 +84,121 @@ class _ViewReportsHistoryState extends ConsumerState<ViewReportsHistory> {
               enabled: _isRefreshing,
               effect: const ShimmerEffect(),
               child: Padding(
-                padding: const EdgeInsets.only(left: 15.0, top: 10.0),
+                padding: const EdgeInsets.only(
+                  left: 15.0,
+                  top: 5.0,
+                  bottom: 10,
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const SizedBox(height: 5),
                     const Text(
-                      "All Reported Issues",
+                      "Report History",
                       style: TextStyle(
                         fontSize: 18,
                         fontFamily: 'FigtreeExtraBold',
                         fontWeight: FontWeight.bold,
                       ),
                     ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 1.0),
+                      child: Wrap(
+                        spacing: 5,
+                        runSpacing: 1,
+                        children: [
+                          ...dateFilters.map((filter) {
+                            final isSelected = selectedFilters.contains(filter);
+                            return ChoiceChip(
+                              label: Text(
+                                filter,
+                                style: TextStyle(
+                                  color: isSelected
+                                      ? Colors.white
+                                      : Colors.black87,
+                                  fontSize: 11,
+                                  fontWeight: isSelected
+                                      ? FontWeight.bold
+                                      : FontWeight.normal,
+                                ),
+                              ),
+                              selected: isSelected,
+                              onSelected: (selected) {
+                                setState(() {
+                                  if (selected) {
+                                    selectedFilters
+                                      ..removeAll(
+                                          dateFilters) // only allow 1 date filter
+                                      ..add(filter);
+                                  } else {
+                                    selectedFilters.remove(filter);
+                                  }
+                                });
+                              },
+                              selectedColor:
+                                  Theme.of(context).colorScheme.primary,
+                              backgroundColor: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20),
+                                side: isSelected
+                                    ? BorderSide.none
+                                    : BorderSide(color: Colors.grey.shade400),
+                              ),
+                              elevation: isSelected ? 3 : 0,
+                              pressElevation: 5,
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 7, vertical: 5),
+                            );
+                          }),
+                          ...statusFilters.map((filter) {
+                            final isSelected = selectedFilters.contains(filter);
+                            return ChoiceChip(
+                              label: Text(
+                                filter,
+                                style: TextStyle(
+                                  color: isSelected
+                                      ? Colors.white
+                                      : Colors.black87,
+                                  fontSize: 11,
+                                  fontWeight: isSelected
+                                      ? FontWeight.bold
+                                      : FontWeight.normal,
+                                ),
+                              ),
+                              selected: isSelected,
+                              onSelected: (selected) {
+                                setState(() {
+                                  if (selected) {
+                                    selectedFilters.add(filter);
+                                  } else {
+                                    selectedFilters.remove(filter);
+                                  }
+                                });
+                              },
+                              selectedColor:
+                                  Theme.of(context).colorScheme.primary,
+                              backgroundColor: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20),
+                                side: isSelected
+                                    ? BorderSide.none
+                                    : BorderSide(color: Colors.grey.shade400),
+                              ),
+                              elevation: isSelected ? 3 : 0,
+                              pressElevation: 5,
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 7, vertical: 5),
+                            );
+                          }),
+                        ],
+                      ),
+                    ),
                     const SizedBox(height: 10),
-                    _maintainanceCardSection(context, reportList),
+                    _maintainanceCardSection(
+                      context,
+                      reportList,
+                      selectedFilters,
+                    ),
                   ],
                 ),
               ),
@@ -105,43 +210,115 @@ class _ViewReportsHistoryState extends ConsumerState<ViewReportsHistory> {
   }
 }
 
-SizedBox _maintainanceCardSection(BuildContext context,
-    AsyncValue<List<UtilityIssueModel>> reportListProvider) {
+SizedBox _maintainanceCardSection(
+  BuildContext context,
+  AsyncValue<List<UtilityIssueModel>> reportListProvider,
+  Set<String> selectedFilters,
+) {
   return SizedBox(
-    height: MediaQuery.of(context).size.height * 0.5,
     child: reportListProvider.when(
       data: (reportList) {
-        return ListView.separated(
-          shrinkWrap: true,
-          physics: const BouncingScrollPhysics(),
-          itemCount: reportList.length,
-          separatorBuilder: (context, index) => const SizedBox(height: 10),
-          itemBuilder: (context, index) {
-            final report = reportList[index];
-            return GestureDetector(
-              onTap: () {
-                // Navigate to the report details page
-                Navigator.push(
-                  context,
-                  toLeftTransition(
-                    ViewReportDetails(reportId: reportList[index].issueId),
-                  ),
-                );
-              },
-              child: MaintenanceCard(
-                title: report.issueTitle,
-                description: report.issueDescription,
-                date: "21/10/2023",
-                status: report.issueStatus,
+        final filteredList = _filterIssues(reportList, selectedFilters);
+
+        if (filteredList.isEmpty) {
+          return const Center(
+            child: Padding(
+              padding: EdgeInsets.only(top: 50.0),
+              child: Text(
+                'No reports found for this filter.',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
               ),
-            );
-          },
+            ),
+          );
+        }
+
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 40.0),
+          child: ListView.separated(
+            shrinkWrap: true,
+            physics: const BouncingScrollPhysics(),
+            itemCount: filteredList.length,
+            separatorBuilder: (context, index) => const SizedBox(height: 10),
+            itemBuilder: (context, index) {
+              final report = filteredList[index];
+              return GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    toLeftTransition(
+                      StudentViewReportDetails(
+                        reportId: report.issueId,
+                        issueTitle: report.issueTitle,
+                        issueDescription: report.issueDescription,
+                        userId: report.userId,
+                        issueStatus: report.issueStatus,
+                        imageUrl: report.imageUrl,
+                        classroomId: report.classroomId,
+                        userName: report.userName,
+                        classroomName: report.classroomName,
+                        createdAt: report.createdAt,
+                      ),
+                    ),
+                  );
+                },
+                child: MaintenanceCard(
+                  title: report.issueTitle,
+                  description: report.issueDescription,
+                  date: report.createdAt,
+                  status: report.issueStatus,
+                ),
+              );
+            },
+          ),
         );
       },
       error: (error, stackTrace) => Center(child: Text('Error: $error')),
       loading: () => const Center(child: CircularProgressIndicator()),
     ),
   );
+}
+
+List<UtilityIssueModel> _filterIssues(
+    List<UtilityIssueModel> data, Set<String> filters) {
+  final now = DateTime.now();
+  String? selectedDateFilter = filters
+      .intersection({'Yesterday', 'Last 7 Days', 'Last 30 Days'}).firstOrNull;
+
+  final selectedStatusFilters = filters.intersection({'Pending', 'Resolved'});
+
+  return data.where((item) {
+    try {
+      final parsed = DateFormat('dd MMM yyyy, h:mm a').parse(item.createdAt);
+
+      // Date filter check
+      bool matchesDate = true;
+      if (selectedDateFilter != null) {
+        switch (selectedDateFilter) {
+          case 'Yesterday':
+            matchesDate =
+                parsed.day == now.subtract(const Duration(days: 1)).day &&
+                    parsed.month == now.month &&
+                    parsed.year == now.year;
+            break;
+          case 'Last 7 Days':
+            matchesDate = parsed.isAfter(now.subtract(const Duration(days: 7)));
+            break;
+          case 'Last 30 Days':
+            matchesDate =
+                parsed.isAfter(now.subtract(const Duration(days: 30)));
+            break;
+        }
+      }
+
+      // Status filter check
+      bool matchesStatus = selectedStatusFilters.isEmpty ||
+          selectedStatusFilters.contains(item.issueStatus);
+
+      return matchesDate && matchesStatus;
+    } catch (_) {
+      return false;
+    }
+  }).toList();
 }
 
 AppBar _appBar(BuildContext context) {
@@ -166,21 +343,27 @@ AppBar _appBar(BuildContext context) {
       onPressed: () => Navigator.pop(context),
     ),
     actions: [
-      IconButton(
-        icon: const Icon(
-          Icons.add,
-          size: 20,
-          color: Colors.black,
+      Padding(
+        padding: const EdgeInsets.only(
+          right: 5.0,
+          top: 5,
         ),
-        onPressed: () {
-          // Navigate to the add report page
-          Navigator.push(
-            context,
-            toLeftTransition(
-              const ReportUtilityPage(), // Replace with your add report page
-            ),
-          );
-        },
+        child: IconButton(
+          icon: const Icon(
+            Icons.add,
+            size: 25,
+            color: Colors.black,
+          ),
+          onPressed: () {
+            // Navigate to the add report page
+            Navigator.push(
+              context,
+              toLeftTransition(
+                const ReportUtilityPage(), // Replace with your add report page
+              ),
+            );
+          },
+        ),
       ),
     ],
   );

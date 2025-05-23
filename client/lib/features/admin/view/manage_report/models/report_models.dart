@@ -46,15 +46,15 @@ class UtilityIssueModel {
   // Convert UtilityIssueModel to JSON
   Map<String, dynamic> toJson() {
     return {
-      'issueId': issueId,
+      // 'issueId': issueId,
       'issueTitle': issueTitle,
       'issueDescription': issueDescription,
-      'userId': userId,
-      'issueStatus': issueStatus,
-      'imageUrl': imageUrl,
+      // 'userId': userId,
+      // 'issueStatus': issueStatus,
+      // 'imageUrl': imageUrl,
       'classroomId': classroomId,
-      'userName': userName,
-      'classroomName': classroomName,
+      // 'userName': userName,
+      // 'classroomName': classroomName,
     };
   }
 
