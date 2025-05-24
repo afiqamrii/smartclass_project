@@ -40,7 +40,7 @@ class _RealTimeNotificationState extends State<RealTimeNotification> {
     socket.onError((data) => print('⚠️ Socket error: $data'));
 
     // Listen for new report count (existing feature)
-    socket.on('new_report_count', (data) {
+    socket.on('new_notification_count', (data) {
       setState(() {
         _newReports = data['count'];
       });

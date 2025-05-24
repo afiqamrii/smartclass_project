@@ -1,4 +1,6 @@
 const reportService = require('../services/reportService');
+const NotificationService = require('../services/Notifications/notificationsService');
+
 
 const submitReport = async (req, res) => {
   const { title, description , classroomId ,  userId } = req.body;
@@ -88,32 +90,48 @@ const getReportById = async (req, res) => {
 const updateReportStatus = async (req, res) => {
   const reportId = req.params.id;
   const userId = req.params.userId;
-  console.log('Received report ID for update:', reportId);
+
   if (!reportId) {
     return res.status(400).send('Report ID is required');
   }
 
   try {
+    // Update report status
     const updatedReport = await reportService.updateReportStatus(reportId);
     if (!updatedReport) {
       return res.status(404).send('Report not found');
     }
 
-    // Emit updated new report count to all (optional)
-    const count = await reportService.getNewReportCountByUser(userId);
+    // Store notification in database (via notification service)
+    await NotificationService.createNotification(
+      userId,
+      'report',
+      `Your report ID ${reportId} has been resolved!`
+    );
+
+    // Emit report count update
+    const count = await NotificationService.getUnreadCount(userId);
+
+    //Print notification count
+    console.log('Notification count:', count);
+
     if (global._io) {
-      global._io.emit('new_report_count', { count });
-      console.log(' Emitted updated new_report_count after updateReportStatus:', count);
+      global._io.emit('new_notification_count', { count });
     }
 
-    // Notify the student whose report was updated (solved)
-    const socketId = global.connectedUsers && userId ? global.connectedUsers[userId] : undefined;
+    // Emit real-time notification to the user
+    const socketId = global.connectedUsers?.[userId];
     if (socketId) {
       global._io.to(socketId).emit('report_solved', {
         reportId,
         message: 'Your reported issue has been solved!',
       });
-      console.log(` Notified user ${userId} that report ${reportId} is solved`);
+
+      // Optionally emit a real-time notification event
+      global._io.to(socketId).emit('new_notification', {
+        type: 'report',
+        message: `Your report ID ${reportId} has been resolved!`
+      });
     }
 
     return res.status(200).json({ message: 'Report updated successfully', updatedReport });
@@ -122,6 +140,7 @@ const updateReportStatus = async (req, res) => {
     return res.status(500).send('Error updating report');
   }
 };
+
 
 // const updateReportStatus = async (req, res) => {
 //   // Implement the logic to update a report by ID

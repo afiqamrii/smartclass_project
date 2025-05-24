@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+import 'package:badges/badges.dart' as badges;
 import 'package:smartclass_fyp_2024/constants/color_constants.dart';
 import 'package:smartclass_fyp_2024/features/student/models/todayClass_card_models.dart';
 import 'package:smartclass_fyp_2024/features/student/notification.dart';
@@ -14,8 +15,10 @@ import 'package:smartclass_fyp_2024/features/student/views/widgets/classnow_card
 import 'package:smartclass_fyp_2024/features/student/views/widgets/student_todayclass_card.dart';
 import 'package:smartclass_fyp_2024/features/student/views/widgets/tabs_item.dart';
 import 'package:smartclass_fyp_2024/shared/components/unavailablePage.dart';
+import 'package:smartclass_fyp_2024/shared/data/dataprovider/notifications/notification_provider.dart';
 import 'package:smartclass_fyp_2024/shared/data/dataprovider/user_provider.dart';
 import 'package:smartclass_fyp_2024/shared/data/models/user.dart';
+import 'package:smartclass_fyp_2024/shared/data/views/notification_icon.dart';
 import 'package:smartclass_fyp_2024/shared/widgets/loading.dart';
 import 'package:smartclass_fyp_2024/shared/widgets/pageTransition.dart';
 
@@ -44,12 +47,14 @@ class _StudentHomePageState extends ConsumerState<StudentHomePage> {
     ref.refresh(upcomingClassProviders.future);
     ref.refresh(pastClassProviders.future);
     ref.refresh(todayClassProviders);
+    await ref.refresh(unreadNotificationCountProvider.future);
     await Future.delayed(const Duration(seconds: 3));
 
     setState(() {
       _isRefreshing = false;
     });
   }
+  
 
   @override
   Widget build(BuildContext context) {
@@ -68,6 +73,9 @@ class _StudentHomePageState extends ConsumerState<StudentHomePage> {
 
     //Get now/current class
     final currentClassData = ref.watch(nowClassProviders);
+
+    //Get notification count
+    final notificationCount = ref.watch(unreadNotificationCountProvider);
     // final sumData = ref.watch(classDataProviderSummarizationStatus);
 
     return Scaffold(
@@ -139,22 +147,7 @@ class _StudentHomePageState extends ConsumerState<StudentHomePage> {
                             ),
                           ],
                         ),
-                        Padding(
-                          padding: const EdgeInsets.only(right: 10.0),
-                          child: IconButton(
-                            icon: const Icon(
-                              Icons.notifications,
-                              color: Color.fromARGB(255, 238, 238, 238),
-                            ),
-                            onPressed: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          RealTimeNotification(currentUserId: user.externalId,)));
-                            },
-                          ),
-                        ),
+                        const NotificationIcon(),
                       ],
                     ),
                   ),

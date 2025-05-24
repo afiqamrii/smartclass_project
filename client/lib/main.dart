@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 // import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:smartclass_fyp_2024/master/app_strings.dart';
+import 'package:smartclass_fyp_2024/shared/data/dataprovider/notifications/notification_provider.dart';
 import 'package:smartclass_fyp_2024/shared/data/dataprovider/user_provider.dart';
 import 'package:smartclass_fyp_2024/shared/data/services/auth_services.dart';
 import 'package:smartclass_fyp_2024/features/onboarding/splashscreen/splashScreen.dart';
@@ -52,21 +53,25 @@ class _MainScreenState extends ConsumerState<MainScreen> {
   }
 
   Future<void> loadUserData() async {
-    final user = await ref.read(authServiceProvider).getUserData();
+  final user = await ref.read(authServiceProvider).getUserData();
 
-    // Check if user data is null or token is invalid
-    if (user != null) {
-      ref.read(userProvider.notifier).setUserFromModel(user);
-    } else {
-      setState(() {
-        tokenExpired = true; // Mark token as expired
-      });
-    }
+  if (user != null) {
+    ref.read(userProvider.notifier).setUserFromModel(user);
 
+    // ✅ Refresh unread notifications
+    // ignore: unused_result
+    ref.refresh(unreadNotificationCountProvider);
+  } else {
     setState(() {
-      isLoading = false;
+      tokenExpired = true;
     });
   }
+
+  setState(() {
+    isLoading = false;
+  });
+}
+
 
   @override
   @override

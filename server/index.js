@@ -16,6 +16,7 @@ const generateTranscriptionTextRoutes = require("./routes/saveTranscriptionText"
 const sendCommandToMQTT = require("./routes/sendCommandToMQTT");
 const gcsTokenRoute = require("./routes/gcsTokenRoute");
 const reportRoutes = require('./routes/reportRoutes');
+const notificationRoutes = require('./routes/notificationRoutes');
 
 // Initialize app and server
 const app = express();
@@ -55,6 +56,7 @@ app.use("/clockInAttendance", attendanceRoutes);
 app.use("/summarization", summarizationRoutes);
 app.use("/classrecording", generateTranscriptionTextRoutes);
 app.use("/mqtt", sendCommandToMQTT);
+app.use("/notification", notificationRoutes);
 
 // ✅ Start WebSocket logic from socket.js
 const setupSocket = require('./socket');
