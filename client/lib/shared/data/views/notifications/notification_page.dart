@@ -10,6 +10,10 @@ class NotificationPage extends ConsumerStatefulWidget {
 }
 
 class _NotificationPageState extends ConsumerState<NotificationPage> {
+  //Declared variables
+  bool isNotificationRead = false;
+
+  // Function to get the appropriate icon based on notification type
   Widget getIcon(String type) {
     switch (type) {
       case 'UtilityIssueReport':
@@ -123,6 +127,7 @@ class _NotificationPageState extends ConsumerState<NotificationPage> {
                     // TODO: Implement mark as read logic (e.g. API call or state update)
                     setState(() {
                       // Update state to mark as read
+                      isNotificationRead = true;
                     });
 
                     ScaffoldMessenger.of(context).showSnackBar(
@@ -138,7 +143,9 @@ class _NotificationPageState extends ConsumerState<NotificationPage> {
                 },
                 child: Container(
                   decoration: BoxDecoration(
-                    color: isRead ? Colors.grey.shade100 : Colors.blue.shade50,
+                    color: isNotificationRead
+                        ? Colors.grey.shade100
+                        : Colors.blue.shade50,
                     borderRadius: BorderRadius.circular(8),
                     boxShadow: const [
                       BoxShadow(
@@ -167,7 +174,9 @@ class _NotificationPageState extends ConsumerState<NotificationPage> {
                         const SizedBox(height: 4),
                         Text(
                           notif.message,
-                          style: const TextStyle(fontSize: 12),
+                          style: const TextStyle(
+                            fontSize: 12,
+                          ),
                         ),
                         const SizedBox(height: 6),
                         Text(
@@ -177,10 +186,17 @@ class _NotificationPageState extends ConsumerState<NotificationPage> {
                         ),
                       ],
                     ),
-                    trailing: !isRead
-                        ? const Icon(Icons.fiber_manual_record,
-                            color: Colors.redAccent, size: 12)
-                        : null,
+                    trailing: !isNotificationRead
+                        ? const Icon(
+                            Icons.fiber_manual_record,
+                            color: Colors.redAccent,
+                            size: 12,
+                          )
+                        : const Icon(
+                            Icons.fiber_manual_record,
+                            color: Colors.transparent,
+                            size: 12,
+                          ),
                     onTap: () {
                       // Optional: navigation or other logic
                     },

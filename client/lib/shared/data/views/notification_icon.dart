@@ -61,13 +61,20 @@ class _NotificationIconState extends ConsumerState<NotificationIcon> {
           final total = _hasSocketUpdate ? _newSocketReports : unreadCount;
 
           return badges.Badge(
+            position: badges.BadgePosition.topEnd(top: -0, end: -0),
             showBadge: total > 0,
             badgeContent: Text(
               total.toString(),
-              style: const TextStyle(color: Colors.white, fontSize: 10),
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 10,
+              ),
             ),
             child: IconButton(
-              icon: const Icon(Icons.notifications, color: Colors.white),
+              icon: const Icon(
+                Icons.notifications,
+                color: Colors.white,
+              ),
               onPressed: () {
                 setState(() {
                   _newSocketReports = 0;
@@ -86,7 +93,9 @@ class _NotificationIconState extends ConsumerState<NotificationIcon> {
         loading: () => const SizedBox(
           width: 24,
           height: 24,
-          child: CircularProgressIndicator(strokeWidth: 2),
+          child: CircularProgressIndicator(
+            strokeWidth: 2,
+          ),
         ),
         error: (err, _) => IconButton(
           icon: const Icon(Icons.notifications, color: Colors.white),
