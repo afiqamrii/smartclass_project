@@ -5,6 +5,9 @@ const notificationController = require('../controllers/Notification/notification
 router.get('/:userId', notificationController.getUnreadNotifications);
 router.post('/read/:userId', notificationController.markAllAsRead);
 
+//Retrieve all notifications for a user
+router.get('/all/:userId', notificationController.getAllNotifications);
+
 //Get unread notification count
 router.get('/unreadcount/:userId', notificationController.getUnreadCount);
 

@@ -6,14 +6,17 @@ class SocketService extends StateNotifier<IO.Socket?> {
   SocketService() : super(null);
 
   void init(String userId) {
-    if (state != null) return; // Already initialized
+    // Allow re-initialization for robustness
+    if (state != null) {
+      print('⚠️ Socket already initialized');
+      return;
+    }
 
     final socket = IO.io(
       ApiConstants.baseUrl,
       IO.OptionBuilder()
-          .setTransports(['websocket'])
-          .enableAutoConnect()
-          .disableAutoConnect()
+          .setTransports(['websocket']) // Required for Flutter
+          .disableAutoConnect() // We'll manually connect
           .build(),
     );
 
@@ -31,8 +34,10 @@ class SocketService extends StateNotifier<IO.Socket?> {
   }
 
   void disposeSocket() {
-    state?.disconnect();
-    state?.dispose();
-    state = null;
+    if (state != null) {
+      print('🔌 Disposing socket...');
+      state!.disconnect();
+      state = null;
+    }
   }
 }

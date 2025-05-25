@@ -105,8 +105,10 @@ const updateReportStatus = async (req, res) => {
     // Store notification in database (via notification service)
     await NotificationService.createNotification(
       userId,
-      'report',
-      `Your report ID ${reportId} has been resolved!`
+      'Report Solved (Report ID: ' + reportId + ')',
+      'Your reported issue has been solved!',
+      `UtilityIssueReport`,
+      reportId
     );
 
     // Emit report count update

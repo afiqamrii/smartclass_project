@@ -1,56 +1,48 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
+import 'package:smartclass_fyp_2024/shared/WebSocket/provider/socket_provider.dart';
 import 'package:badges/badges.dart' as badges;
 
-class RealTimeNotification extends StatefulWidget {
-  final String currentUserId; // Pass this user ID when you create the widget
+class RealTimeNotification extends ConsumerStatefulWidget {
+  final String currentUserId;
 
   RealTimeNotification({required this.currentUserId});
 
   @override
-  _RealTimeNotificationState createState() => _RealTimeNotificationState();
+  ConsumerState<RealTimeNotification> createState() =>
+      _RealTimeNotificationState();
 }
 
-class _RealTimeNotificationState extends State<RealTimeNotification> {
+class _RealTimeNotificationState extends ConsumerState<RealTimeNotification> {
   int _newReports = 0;
-  late IO.Socket socket;
+  IO.Socket? socket;
 
   @override
   void initState() {
     super.initState();
+    Future.microtask(() => _setupSocket());
+  }
 
-    // Setup the Socket.IO client
-    socket = IO.io(
-      'http://192.168.0.99:3000',
-      IO.OptionBuilder()
-          .setTransports(['websocket']) // required for Flutter
-          .disableAutoConnect() // manually control connection
-          .build(),
-    );
+  void _setupSocket() {
+    final socketService = ref.read(socketServiceProvider.notifier);
+    socketService.init(widget.currentUserId);
 
-    socket.connect();
+    socket = ref.read(socketServiceProvider);
+    if (socket == null) return;
 
-    socket.onConnect((_) {
-      print('✅ Socket connected');
-      // Identify the user to the server by sending userId
-      socket.emit('identify', widget.currentUserId);
-    });
-
-    socket.onDisconnect((_) => print('❌ Socket disconnected'));
-    socket.onError((data) => print('⚠️ Socket error: $data'));
-
-    // Listen for new report count (existing feature)
-    socket.on('new_notification_count', (data) {
+    // Remove and re-add listeners (safe way to prevent duplicates)
+    socket!.off('new_notification_count');
+    socket!.on('new_notification_count', (data) {
+      if (!mounted) return;
       setState(() {
         _newReports = data['count'];
       });
     });
 
-    // Listen for 'report_solved' notifications targeted to this user
-    socket.on('report_solved', (data) {
-      print('📢 Report Solved Notification: ${data['message']}');
-
-      // Show an alert dialog to notify the user
+    socket!.off('report_solved');
+    socket!.on('report_solved', (data) {
+      if (!mounted) return;
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
@@ -69,26 +61,27 @@ class _RealTimeNotificationState extends State<RealTimeNotification> {
 
   @override
   void dispose() {
-    socket.dispose();
+    // DO NOT CALL socket.dispose() or disconnect the global socket here
+    socket?.off('new_notification_count');
+    socket?.off('report_solved');
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Real-Time Notification'),
-      ),
+      appBar: AppBar(title: Text('Real-Time Notification')),
       body: Center(
         child: IconButton(
           icon: badges.Badge(
             showBadge: _newReports > 0,
-            badgeContent: Text('$_newReports',
-                style: TextStyle(color: Colors.white, fontSize: 10)),
+            badgeContent: Text(
+              '$_newReports',
+              style: TextStyle(color: Colors.white, fontSize: 10),
+            ),
             child: Icon(Icons.notifications),
           ),
           onPressed: () {
-            // Open reports page or clear badge
             setState(() {
               _newReports = 0;
             });
