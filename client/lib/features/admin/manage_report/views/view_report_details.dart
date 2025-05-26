@@ -2,9 +2,9 @@ import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-import 'package:smartclass_fyp_2024/features/admin/view/manage_report/providers/report_provider.dart';
-import 'package:smartclass_fyp_2024/features/admin/view/manage_report/services/report_api.dart';
-import 'package:smartclass_fyp_2024/features/admin/view/manage_report/views/report_pic_fullscreen.dart';
+import 'package:smartclass_fyp_2024/features/admin/manage_report/providers/report_provider.dart';
+import 'package:smartclass_fyp_2024/features/admin/manage_report/services/report_api.dart';
+import 'package:smartclass_fyp_2024/features/admin/manage_report/views/report_pic_fullscreen.dart';
 import 'package:smartclass_fyp_2024/shared/components/custom_buttom.dart';
 import 'package:smartclass_fyp_2024/shared/data/dataprovider/user_provider.dart';
 

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-import 'package:smartclass_fyp_2024/features/admin/view/manage_report/views/report_pic_fullscreen.dart';
+import 'package:smartclass_fyp_2024/features/admin/manage_report/views/report_pic_fullscreen.dart';
 import 'package:smartclass_fyp_2024/features/student/views/report_utility/views/student_update_report.dart';
 import 'package:smartclass_fyp_2024/shared/widgets/pageTransition.dart';
 

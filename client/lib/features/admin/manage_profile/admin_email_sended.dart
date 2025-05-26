@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lottie/lottie.dart';
-import 'package:smartclass_fyp_2024/features/admin/view/bottom_nav/admin_bottom_navbar.dart';
+import 'package:smartclass_fyp_2024/features/admin/bottom_nav/admin_bottom_navbar.dart';
 import 'package:smartclass_fyp_2024/shared/components/custom_buttom.dart';
 import 'package:smartclass_fyp_2024/shared/data/dataprovider/user_provider.dart';
 import 'package:smartclass_fyp_2024/shared/data/models/role.dart';
 import 'package:smartclass_fyp_2024/shared/widgets/pageTransition.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../../../../../shared/data/services/auth_services.dart';
+import '../../../../shared/data/services/auth_services.dart';
 
 class AdminEmailSended extends ConsumerWidget {
   final String userEmail;

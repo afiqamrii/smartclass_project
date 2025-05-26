@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
-import 'package:smartclass_fyp_2024/features/admin/view/homepage/admin_homepage.dart';
-import 'package:smartclass_fyp_2024/features/admin/view/manage_profile/admin_profile_page.dart';
-import 'package:smartclass_fyp_2024/features/admin/view/manage_report/views/admin_manage_report.dart';
+import 'package:smartclass_fyp_2024/features/admin/homepage/admin_homepage.dart';
+import 'package:smartclass_fyp_2024/features/admin/manage_profile/admin_profile_page.dart';
+import 'package:smartclass_fyp_2024/features/admin/manage_report/views/admin_manage_report.dart';
 
 class AdminBottomNavbar extends StatefulWidget {
   final int initialIndex;

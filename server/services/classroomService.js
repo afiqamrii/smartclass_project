@@ -1,5 +1,15 @@
 const classroomModel = require("../models/classroomModel");
 
+//Function to add a new classroom
+const addClassroom = async (classroom) => {
+    try {
+        const newClassroom = await classroomModel.addClassroom(classroom);
+        return newClassroom;
+    } catch (error) {
+        throw new Error("Error in service while adding classroom: " + error.message);
+    }
+};
+
 // Function to view course
 const getClassroom = async () => {
     try {
@@ -11,4 +21,4 @@ const getClassroom = async () => {
 };
 
 //EXport module
-module.exports = { getClassroom };
+module.exports = { getClassroom , addClassroom };

@@ -8,7 +8,7 @@ import 'package:smartclass_fyp_2024/features/lecturer/views/registration/signin_
 import 'package:smartclass_fyp_2024/shared/widgets/appbar.dart';
 import 'package:smartclass_fyp_2024/shared/widgets/pageTransition.dart';
 
-import '../../../../../shared/data/services/auth_services.dart';
+import '../../../../shared/data/services/auth_services.dart';
 
 class PPHStaffSignInPage extends ConsumerStatefulWidget {
   PPHStaffSignInPage({super.key});

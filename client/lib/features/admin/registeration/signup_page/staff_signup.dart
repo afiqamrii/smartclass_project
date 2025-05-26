@@ -7,7 +7,7 @@ import 'package:smartclass_fyp_2024/shared/components/password_textfield.dart';
 import 'package:smartclass_fyp_2024/shared/data/dataprovider/user_provider.dart';
 import 'package:smartclass_fyp_2024/shared/widgets/appbar.dart';
 
-import '../../../../../shared/data/services/auth_services.dart';
+import '../../../../shared/data/services/auth_services.dart';
 
 class StaffSignUpPage extends ConsumerWidget {
   StaffSignUpPage({super.key});

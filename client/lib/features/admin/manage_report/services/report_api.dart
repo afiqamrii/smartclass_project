@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:smartclass_fyp_2024/constants/api_constants.dart';
-import 'package:smartclass_fyp_2024/features/admin/view/manage_report/models/report_models.dart';
+import 'package:smartclass_fyp_2024/features/admin/manage_report/models/report_models.dart';
 
 // This class is responsible for fetching reports from the API
 // It uses the http package to make GET requests and parse the JSON response

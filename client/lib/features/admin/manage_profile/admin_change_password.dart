@@ -4,7 +4,7 @@ import 'package:smartclass_fyp_2024/shared/components/custom_buttom.dart';
 import 'package:smartclass_fyp_2024/shared/data/dataprovider/user_provider.dart';
 import 'package:smartclass_fyp_2024/shared/data/models/role.dart';
 
-import '../../../../../shared/data/services/auth_services.dart';
+import '../../../../shared/data/services/auth_services.dart';
 
 class AdminChangePassword extends ConsumerWidget {
   AdminChangePassword({super.key});

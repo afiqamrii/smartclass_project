@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-import 'package:smartclass_fyp_2024/features/admin/view/bottom_nav/admin_bottom_navbar.dart';
-import 'package:smartclass_fyp_2024/features/admin/view/manage_profile/admin_edit_profile.dart';
+import 'package:smartclass_fyp_2024/features/admin/bottom_nav/admin_bottom_navbar.dart';
+import 'package:smartclass_fyp_2024/features/admin/manage_profile/admin_edit_profile.dart';
 import 'package:smartclass_fyp_2024/shared/data/dataprovider/user_provider.dart';
 import 'package:smartclass_fyp_2024/shared/data/models/user.dart';
 import 'package:smartclass_fyp_2024/shared/widgets/pageTransition.dart';

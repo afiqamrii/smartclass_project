@@ -3,7 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:smartclass_fyp_2024/constants/color_constants.dart';
-import 'package:smartclass_fyp_2024/features/admin/view/manage_report/providers/report_provider.dart';
+import 'package:smartclass_fyp_2024/features/admin/constants/features_card.dart';
+import 'package:smartclass_fyp_2024/features/admin/control_utility/views/admin_control_utilities.dart';
+import 'package:smartclass_fyp_2024/features/admin/manage_report/providers/report_provider.dart';
 import 'package:smartclass_fyp_2024/shared/data/dataprovider/user_provider.dart';
 import 'package:smartclass_fyp_2024/shared/data/models/user.dart';
 import 'package:smartclass_fyp_2024/shared/widgets/pageTransition.dart';
@@ -125,56 +127,6 @@ class _AdminHomepageState extends ConsumerState<AdminHomepage> {
     );
   }
 
-  // Function to create a card with a specific width, height, and child widget
-  Card _featureCard({
-    required String imagePath,
-    required String title,
-    required Color color,
-    VoidCallback? onTap,
-  }) {
-    return Card(
-      elevation: 4,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
-      color: Colors.grey[100],
-      child: InkWell(
-        borderRadius: BorderRadius.circular(16),
-        onTap: onTap,
-        child: Container(
-          width: MediaQuery.of(context).size.width * 0.43,
-          height: 150,
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              CircleAvatar(
-                radius: 29,
-                backgroundColor: color,
-                child: Image.asset(
-                  imagePath,
-                  width: 30,
-                  height: 30,
-                  color: Colors.white,
-                ),
-              ),
-              const SizedBox(height: 12),
-              Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.black87,
-                ),
-                textAlign: TextAlign.center,
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
   Container _featuresSection(BuildContext context) {
     return Container(
       width: double.infinity,
@@ -182,12 +134,20 @@ class _AdminHomepageState extends ConsumerState<AdminHomepage> {
         spacing: 3.0,
         runSpacing: 3.0,
         children: [
-          _featureCard(
+          featureCard(
+            context: context,
             imagePath: 'assets/icons/remote.png',
             title: 'Control Utilities',
             color: Colors.blue,
+            onTap: () => Navigator.push(
+              context,
+              toLeftTransition(
+                const AdminControlUtilities(),
+              ),
+            ),
           ),
-          _featureCard(
+          featureCard(
+            context: context,
             imagePath: 'assets/icons/maintainance.png',
             title: 'Reports',
             color: Colors.orange,
@@ -198,7 +158,8 @@ class _AdminHomepageState extends ConsumerState<AdminHomepage> {
               ),
             ),
           ),
-          _featureCard(
+          featureCard(
+            context: context,
             imagePath: 'assets/icons/remote.png',
             title: 'Smart Lighting',
             color: Colors.green,

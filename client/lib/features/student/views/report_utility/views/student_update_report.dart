@@ -6,7 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:smartclass_fyp_2024/constants/color_constants.dart';
-import 'package:smartclass_fyp_2024/features/admin/view/manage_report/views/report_pic_fullscreen.dart';
+import 'package:smartclass_fyp_2024/features/admin/manage_report/views/report_pic_fullscreen.dart';
 import 'package:smartclass_fyp_2024/features/student/views/report_utility/services/student_report_service.dart';
 import 'package:smartclass_fyp_2024/shared/data/dataprovider/classroom_provider.dart';
 import 'package:smartclass_fyp_2024/shared/data/dataprovider/user_provider.dart';

@@ -3,10 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:skeletonizer/skeletonizer.dart';
-import 'package:smartclass_fyp_2024/features/admin/view/constants/maintainance_card.dart';
-import 'package:smartclass_fyp_2024/features/admin/view/manage_report/models/report_models.dart';
-import 'package:smartclass_fyp_2024/features/admin/view/manage_report/providers/report_provider.dart';
-import 'package:smartclass_fyp_2024/features/admin/view/manage_report/views/view_report_details.dart';
+import 'package:smartclass_fyp_2024/features/admin/constants/maintainance_card.dart';
+import 'package:smartclass_fyp_2024/features/admin/manage_report/models/report_models.dart';
+import 'package:smartclass_fyp_2024/features/admin/manage_report/providers/report_provider.dart';
+import 'package:smartclass_fyp_2024/features/admin/manage_report/views/view_report_details.dart';
 import 'package:smartclass_fyp_2024/shared/data/dataprovider/user_provider.dart';
 import 'package:smartclass_fyp_2024/shared/widgets/pageTransition.dart';
 
