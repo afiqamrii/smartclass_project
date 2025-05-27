@@ -3,6 +3,7 @@ const UtilityModel = require('../../models/Utility/utilityModel');
 // Function to add a new utility
 const addUtility = async (utility) => {
     try {
+        console.log("Adding utility:", utility);
         const newUtility = await UtilityModel.addUtility(utility);
         return newUtility;
     } catch (error) {

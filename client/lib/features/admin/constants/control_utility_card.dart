@@ -1,16 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:smartclass_fyp_2024/features/admin/control_utility/services/utility_service.dart';
 
 class ControlUtilityCard extends StatefulWidget {
   final String title;
   final String subtitle;
   final String imagePath;
   final bool initialStatus;
+  final int utilityId;
+  final int classroomId;
 
   const ControlUtilityCard({
     Key? key,
     required this.title,
     required this.subtitle,
     required this.imagePath,
+    required this.utilityId,
+    required this.classroomId,
     this.initialStatus = false,
   }) : super(key: key);
 
@@ -25,6 +30,23 @@ class _ControlUtilityCardState extends State<ControlUtilityCard> {
   void initState() {
     super.initState();
     isOn = widget.initialStatus;
+  }
+
+  void sendToBackend(String newStatus, int utilityId, int classroomId) {
+    // Send the updated status to the backend
+    UtilityService.updateUtilityStatus(
+      utilityId,
+      newStatus,
+      classroomId,
+    ).then((_) {
+      setState(() {
+        //If the backend update is successful, update the local state
+        // This will ensure the UI reflects the new status
+        // Update the local state based on the new status
+        //If the new status is "ON", set isOn to true, otherwise set it to false
+        isOn = newStatus == "ON";
+      });
+    });
   }
 
   @override
@@ -94,6 +116,17 @@ class _ControlUtilityCardState extends State<ControlUtilityCard> {
                     setState(() {
                       isOn = value;
                     });
+                    //here if user manually toggles the switch
+                    //Toogle the utility status in the backend
+                    //Toggle on , send 'ON' to the backend
+                    if (isOn) {
+                      // Code to turn on the utility
+                      sendToBackend("ON", widget.utilityId, widget.classroomId);
+                    } else {
+                      // Code to turn off the utility
+                      sendToBackend(
+                          "OFF", widget.utilityId, widget.classroomId);
+                    }
                   },
                   activeColor: Colors.white,
                   inactiveThumbColor: Colors.grey,

@@ -6,6 +6,7 @@ class UtilityModels {
   final String deviceId;
   final int classroomId;
   final String topic;
+  final String utilityType;
 
   UtilityModels({
     required this.utilityId,
@@ -14,6 +15,7 @@ class UtilityModels {
     required this.deviceId,
     required this.classroomId,
     required this.topic,
+    required this.utilityType,
   });
 
   // Convert a Map to a UtilityModels object
@@ -26,6 +28,7 @@ class UtilityModels {
           "Unknown Device ID", // Maps 'device_id' from JSON
       classroomId: json['classroomId'] ?? 0,
       topic: json['topic'] ?? "No Topic",
+      utilityType: json['utilityType'] ?? "Unknown Type",
     );
   }
 
@@ -47,6 +50,7 @@ class UtilityModels {
       deviceId: deviceId ?? this.deviceId,
       classroomId: classroomId ?? this.classroomId,
       topic: topic ?? this.topic,
+      utilityType: utilityType,
     );
   }
 }

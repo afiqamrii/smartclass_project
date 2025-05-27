@@ -5,14 +5,14 @@ const { createDevice } = require("../../utils/favoriotAPI");
 const addUtility = async (req, res) => {
     try {
 
-        const { name, group_developer_id , classroomId  } = req.body;
+        const { name, group_developer_id , classroomId , utilityType  } = req.body;
 
         //Debuig
         console.log("Request body:", req.body);
 
         // Validate request body
-        if ( !name || name.trim() === "" , !group_developer_id || group_developer_id.trim() === "" , !classroomId  ) {
-            return res.status(400).json({ error: 'Utility name , classroom ID and Group Developer ID are required' });
+        if ( !name || name.trim() === "" , !group_developer_id || group_developer_id.trim() === "" , !classroomId , !utilityType ) {
+            return res.status(400).json({ error: 'Utility name , Utility Type , classroom ID and Group Developer ID are required' });
         }
 
         // Sanitize/Format the utility name for Favoriot's group_name
@@ -31,11 +31,24 @@ const addUtility = async (req, res) => {
             longitude: 0,
         };
 
-        // // Debug print to check the payload
-        // console.log("Payload to Favoriot:", payload);
+        // Debug print to check the payload
+        console.log("Payload to Favoriot:", payload);
 
-        // Send the payload to Favoriot to create the device
-        await createDevice(payload);
+        let response;
+        try {
+            response = await createDevice(payload);
+            console.log("Response from Favoriot:", response);
+        } catch (err) {
+            // Handle Favoriot duplicate device error
+            if (err.response && err.response.status === 409) {
+                return res.status(409).json({ error: "Device name already exists. Please use a different name." });
+            }
+            console.error("Error from Favoriot API:", err);
+            return res.status(500).json({ error: "Failed to create device in Favoriot" });
+        }
+
+        // // Debug print to check the response
+        // console.log("Response from Favoriot:", response);
 
         //Topic to add in the database
         const topic = `v2/streams/${favoriotDeviceName}`;
@@ -44,12 +57,25 @@ const addUtility = async (req, res) => {
         req.body.topic = topic;
         req.body.device_id = favoriotDeviceName; 
 
+        // Debug print to check the request body
+        console.log("Request body:", req.body);
+
         // If successful, proceed to add the utility in the database
         // Call service to add utility
         const utility = await UtilityService.addUtility(req.body);
-        res.status(201).json({ message: 'Utility added successfully', utility });
+
+        //Emit to WebSocket when utility status is updated
+        if (global._io) {
+            global._io.emit('utility_status_update', { classroomId  });
+            console.log('📡 Successfully emitted utility update event to WebSocket');
+        }
+
+        res.status(200).json({ message: 'Utility added successfully', utility });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+            if (error.message === "DUPLICATE_UTILITY_NAME") {
+                return res.status(409).json({ error: "Utility name already exists. Please choose a different name." });
+            }
+            res.status(500).json({ error: error.message });
     }
 };
 

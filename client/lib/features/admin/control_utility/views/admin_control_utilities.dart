@@ -1,3 +1,6 @@
+import 'package:skeletonizer/skeletonizer.dart';
+import 'package:smartclass_fyp_2024/features/admin/control_utility/views/admin_add_utility.dart';
+import 'package:smartclass_fyp_2024/shared/widgets/pageTransition.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -7,8 +10,14 @@ import 'package:smartclass_fyp_2024/shared/WebSocket/provider/socket_provider.da
 import 'package:smartclass_fyp_2024/shared/data/dataprovider/user_provider.dart';
 
 class AdminControlUtilities extends ConsumerStatefulWidget {
-  const AdminControlUtilities({super.key, required this.classroomId});
+  const AdminControlUtilities(
+      {super.key,
+      required this.classroomId,
+      required this.classroomName,
+      required this.classroomDevId});
+  final String classroomName;
   final int classroomId;
+  final String classroomDevId;
 
   @override
   ConsumerState<AdminControlUtilities> createState() =>
@@ -32,7 +41,7 @@ class _AdminControlUtilitiesState extends ConsumerState<AdminControlUtilities> {
       // Load initial utility data
       ref.read(utilityProvider.notifier).loadUtilities(widget.classroomId);
 
-// Listen for utility updates
+      // Listen for utility updates
       socket.off('utility_status_update'); // avoid duplicates
       socket.on('utility_status_update', (data) {
         final int receivedClassroomId = data['classroomId'];
@@ -42,6 +51,7 @@ class _AdminControlUtilitiesState extends ConsumerState<AdminControlUtilities> {
                 classroomId: receivedClassroomId,
                 newStatus: data['utilityStatus'],
               );
+
           ref.read(utilityProvider.notifier).loadUtilities(widget.classroomId);
         }
       });
@@ -62,29 +72,99 @@ class _AdminControlUtilitiesState extends ConsumerState<AdminControlUtilities> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: _appBar(context),
-      body: Padding(
-        padding: const EdgeInsets.only(right: 5.0, left: 10.0),
-        child: utilities.isEmpty
-            ? const Center(
-                child: Text(
-                  'No devices registered for this class yet.',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-                ),
-              )
-            : Wrap(
-                spacing: 2.0,
-                runSpacing: 8.0,
-                children: utilities.map((utility) {
-                  return ControlUtilityCard(
-                    title: utility.utilityName,
-                    subtitle: utility.deviceId,
-                    imagePath: utility.utilityStatus == 'Lighting'
-                        ? 'assets/icons/bulb.png'
-                        : 'assets/icons/fan.png',
-                    initialStatus: utility.utilityStatus == 'ON' ? true : false,
-                  );
-                }).toList(),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.only(right: 5.0, left: 10.0, bottom: 20.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              utilities.isEmpty
+                  ? Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          SizedBox(
+                            width: 300,
+                            child: Text(
+                              'No devices registered for ${widget.classroomName} yet. Register now !',
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          _addUtilitySection(context),
+                        ],
+                      ),
+                    )
+                  : Wrap(
+                      spacing: 2.0,
+                      runSpacing: 8.0,
+                      children: [
+                        ...utilities.map((utility) {
+                          return ControlUtilityCard(
+                            title: utility.utilityName,
+                            subtitle: utility.utilityType,
+                            imagePath: utility.utilityType == 'Light'
+                                ? 'assets/icons/bulb.png'
+                                : 'assets/icons/fan.png',
+                            initialStatus:
+                                utility.utilityStatus == 'ON' ? true : false,
+                            utilityId: utility.utilityId,
+                            classroomId: widget.classroomId,
+                          );
+                        }),
+                        _addUtilitySection(context),
+                      ],
+                    ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  GestureDetector _addUtilitySection(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        // Navigate to add utility screen
+        Navigator.push(
+          context,
+          toLeftTransition(
+            AdminAddUtility(
+              classroomId: widget.classroomId,
+              classroomName: widget.classroomName,
+              classroomDevId: widget.classroomDevId,
+            ),
+          ),
+        );
+        // Force refresh utilities after returning
+        ref.read(utilityProvider.notifier).loadUtilities(widget.classroomId);
+      },
+      child: const Center(
+        child: Padding(
+          padding: EdgeInsets.only(top: 20.0),
+          child: Column(
+            children: [
+              Icon(
+                Icons.add_circle_outline,
+                size: 28,
+                color: Colors.grey,
               ),
+              SizedBox(height: 6),
+              Text(
+                "Add more Utility / Device",
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.grey,
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

@@ -112,6 +112,9 @@ class _AdminSelectClassroomState extends ConsumerState<AdminSelectClassroom> {
                                     toLeftTransition(
                                       AdminControlUtilities(
                                         classroomId: classroom.classroomId,
+                                        classroomName:
+                                            classroom.classroomName,
+                                        classroomDevId : classroom.group_developer_id,
                                       ),
                                     ),
                                   );
