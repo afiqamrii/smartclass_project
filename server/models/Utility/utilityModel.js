@@ -18,16 +18,40 @@ const UtilityModel = {
     },
 
     // Get all utilities from the database
-    async getAllUtilities() {
+    async getAllUtilities(classroomId) {
+        if (!classroomId) {
+            throw new Error("Classroom ID is required to retrieve utilities");
+        }
         try {
-            const query = `SELECT * FROM Utility`;
-            const [rows] = await pool.query(query);
+            const query = `SELECT * FROM Utility WHERE classroomId = ?`;
+            const [rows] = await pool.query(query , [classroomId]);
+            if (rows.length === 0) {
+                throw new Error("No utilities found for the specified classroom");
+            }
             return rows;
         } catch (err) {
             console.error("Error retrieving data:", err.message);
             return [];
         }
     },
+
+    // Update utility status by ID
+    async updateUtilityStatus(utilityId, utilityStatus) {
+        if (!utilityId || utilityStatus === undefined) {
+            throw new Error("Utility ID and status are required to update utility");
+        }
+        try {
+            const query = `UPDATE Utility SET utilityStatus = ? WHERE utilityId = ?`;
+            const [result] = await pool.query(query, [utilityStatus, utilityId]);
+            if (result.affectedRows === 0) {
+                throw new Error("No rows affected, utility status not updated");
+            }
+            return result; // Return the result of the update operation
+        } catch (err) {
+            console.error("Error updating data:", err.message);
+            throw new Error("Error in Model: Failed to update utility status");
+        }
+    }
 };
 
 module.exports = UtilityModel;
