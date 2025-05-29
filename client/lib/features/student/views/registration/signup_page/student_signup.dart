@@ -5,6 +5,7 @@ import 'package:smartclass_fyp_2024/shared/components/login_textfield.dart';
 import 'package:smartclass_fyp_2024/shared/components/custom_buttom.dart';
 import 'package:smartclass_fyp_2024/shared/components/password_textfield.dart';
 import 'package:smartclass_fyp_2024/shared/data/dataprovider/user_provider.dart';
+import 'package:smartclass_fyp_2024/shared/data/models/role.dart';
 import 'package:smartclass_fyp_2024/shared/widgets/appbar.dart';
 
 import '../../../../../shared/data/services/auth_services.dart';
@@ -35,7 +36,7 @@ class StudentSignupPage extends ConsumerWidget {
       userEmail: emailController.text,
       userPassword: passwordController.text,
       confirmPassword: confirmPasswordController.text,
-      roleId: 1, //Set roleId to 1 (Student)
+      roleId: Role.student, //Set roleId to 1 (Student)
       externalId: studentIdController.text, //Set externalId to studentId
     );
 

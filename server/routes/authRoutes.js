@@ -17,7 +17,7 @@ authRouter.get('/verified', (req, res) => {
   });
 
 //Sign In Route
-authRouter.post("/api/signin" , authController.signIn);
+authRouter.post("/api/signin/:roleId" , authController.signIn);
 
 //Forget Password Route
 authRouter.post("/requestPasswordReset" , authController.requestPasswordReset);

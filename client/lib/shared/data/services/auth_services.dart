@@ -109,12 +109,13 @@ class AuthService {
     required WidgetRef ref,
     required String userEmail,
     required String userPassword,
+    required int roleId,
   }) async {
     try {
       final navigator = Navigator.of(context);
 
       http.Response res = await http.post(
-        Uri.parse('${ApiConstants.baseUrl}/api/signin'),
+        Uri.parse('${ApiConstants.baseUrl}/api/signin/$roleId'),
         body:
             jsonEncode({'userEmail': userEmail, 'userPassword': userPassword}),
         headers: {'Content-Type': 'application/json; charset=UTF-8'},

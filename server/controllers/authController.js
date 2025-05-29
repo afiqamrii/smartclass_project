@@ -56,12 +56,21 @@ exports.signIn = async (req, res) => {
     try {
         //Extract data from request
         const { userEmail, userPassword } = req.body;
+
+        //Extract roleId from request params
+        const roleId = req.params.roleId;
         
         //Debug
         console.log("Received data:", req.body);
 
         //Call service function with correct parameters
         const result = await authService.signIn(userEmail, userPassword);
+
+        //Check if the user is result role id is not equal to the roleId from request params
+        if (String(result.roleId) !== String(roleId)) {
+            console.log("Role ID mismatch:", result.roleId, roleId);
+            throw new Error("Invalid Email or Password!");
+        }
 
         //Send response
         res.status(200).json({ 

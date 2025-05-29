@@ -5,6 +5,7 @@ import 'package:smartclass_fyp_2024/shared/components/custom_buttom.dart';
 import 'package:smartclass_fyp_2024/shared/components/password_textfield.dart';
 import 'package:smartclass_fyp_2024/shared/data/dataprovider/user_provider.dart';
 import 'package:smartclass_fyp_2024/features/lecturer/views/registration/signin_page/resetPassword_page.dart';
+import 'package:smartclass_fyp_2024/shared/data/models/role.dart';
 import 'package:smartclass_fyp_2024/shared/widgets/appbar.dart';
 import 'package:smartclass_fyp_2024/shared/widgets/pageTransition.dart';
 
@@ -58,6 +59,7 @@ class _StudentLoginPageState extends ConsumerState<StudentLoginPage> {
           ref: ref,
           userEmail: emailController.text,
           userPassword: passwordController.text,
+          roleId: Role.student, 
         ),
         timeoutFuture,
       ]);
