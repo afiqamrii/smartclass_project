@@ -115,6 +115,7 @@ class _AdminSelectClassroomState extends ConsumerState<AdminSelectClassroom> {
                                         classroomName:
                                             classroom.classroomName,
                                         classroomDevId : classroom.group_developer_id,
+                                        esp32Id: classroom.esp32_id,
                                       ),
                                     ),
                                   );

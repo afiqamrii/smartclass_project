@@ -17,6 +17,18 @@ const ClassroomModel = {
         }
     },
 
+    //Update esp32_id in the Classroom table
+    async updateEsp32Id(classroomId, esp32_id) {
+        try {
+            const query = `UPDATE Classroom SET esp32_id = ? WHERE classroomId = ?`;
+            const [result] = await pool.query(query, [esp32_id, classroomId]);
+            return result.affectedRows > 0; // Return true if the update was successful
+        } catch (err) {
+            console.error("Error updating esp32_id:", err.message);
+            throw new Error("Error in Model : Failed to update esp32_id");
+        }
+    },
+
     //Get all courses from the database
     async getAllClassroom() {
         try {

@@ -86,6 +86,7 @@ class _ControlUtilityCardState extends State<ControlUtilityCard> {
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 16,
+                    overflow: TextOverflow.ellipsis,
                     color: isOn ? activeText : inactiveText,
                   ),
                 ),

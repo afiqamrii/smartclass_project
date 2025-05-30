@@ -10,14 +10,17 @@ import 'package:smartclass_fyp_2024/shared/WebSocket/provider/socket_provider.da
 import 'package:smartclass_fyp_2024/shared/data/dataprovider/user_provider.dart';
 
 class AdminControlUtilities extends ConsumerStatefulWidget {
-  const AdminControlUtilities(
-      {super.key,
-      required this.classroomId,
-      required this.classroomName,
-      required this.classroomDevId});
+  const AdminControlUtilities({
+    super.key,
+    required this.classroomId,
+    required this.classroomName,
+    required this.classroomDevId,
+    required this.esp32Id,
+  });
   final String classroomName;
   final int classroomId;
   final String classroomDevId;
+  final String esp32Id; // This is the esp32_id from the classroom
 
   @override
   ConsumerState<AdminControlUtilities> createState() =>
@@ -128,20 +131,23 @@ class _AdminControlUtilitiesState extends ConsumerState<AdminControlUtilities> {
 
   GestureDetector _addUtilitySection(BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        // Navigate to add utility screen
-        Navigator.push(
+      onTap: () async {
+        // Navigate to add utility screen and wait for result
+        final result = await Navigator.push(
           context,
           toLeftTransition(
             AdminAddUtility(
               classroomId: widget.classroomId,
               classroomName: widget.classroomName,
               classroomDevId: widget.classroomDevId,
+              esp32Id: widget.esp32Id,
             ),
           ),
         );
         // Force refresh utilities after returning
-        ref.read(utilityProvider.notifier).loadUtilities(widget.classroomId);
+        if (result == true) {
+          ref.read(utilityProvider.notifier).loadUtilities(widget.classroomId);
+        }
       },
       child: const Center(
         child: Padding(

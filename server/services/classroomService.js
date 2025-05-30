@@ -10,6 +10,16 @@ const addClassroom = async (classroom) => {
     }
 };
 
+//Function to update esp32_id in the Classroom table
+const updateEsp32Id = async (classroomId, esp32_id) => {
+    try {
+        const updated = await classroomModel.updateEsp32Id(classroomId, esp32_id);
+        return updated;
+    } catch (error) {
+        throw new Error("Error in service while updating esp32_id: " + error.message);
+    }
+};
+
 // Function to view course
 const getClassroom = async () => {
     try {
@@ -21,4 +31,4 @@ const getClassroom = async () => {
 };
 
 //EXport module
-module.exports = { getClassroom , addClassroom };
+module.exports = { getClassroom , addClassroom , updateEsp32Id };

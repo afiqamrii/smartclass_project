@@ -1,14 +1,19 @@
 
 const UtilityService = require('../../services/Utility/utilityService');
 const { createDevice } = require("../../utils/favoriotAPI");
+const classroomService = require("../../services/classroomService");
 
 const addUtility = async (req, res) => {
     try {
 
-        const { name, group_developer_id , classroomId , utilityType  } = req.body;
+        const { name, group_developer_id , classroomId , utilityType , esp32_id  } = req.body;
 
         //Debuig
         console.log("Request body:", req.body);
+
+        console.log("Esp32 ID:", esp32_id);
+
+        
 
         // Validate request body
         if ( !name || name.trim() === "" , !group_developer_id || group_developer_id.trim() === "" , !classroomId , !utilityType ) {
@@ -63,6 +68,14 @@ const addUtility = async (req, res) => {
         // If successful, proceed to add the utility in the database
         // Call service to add utility
         const utility = await UtilityService.addUtility(req.body);
+
+        //If success add esp32_id to the Classroom table
+        if (esp32_id) {
+            const updatedClassroom = await classroomService.updateEsp32Id(classroomId, esp32_id);
+            if (!updatedClassroom) {
+                return res.status(500).json({ error: "Failed to update esp32_id in Classroom" });
+            }
+        }
 
         //Emit to WebSocket when utility status is updated
         if (global._io) {

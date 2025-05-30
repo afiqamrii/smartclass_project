@@ -7,8 +7,13 @@ import 'package:smartclass_fyp_2024/features/admin/control_utility/models/utilit
 
 class UtilityService {
   //Add new utility
-  static Future<void> addUtility(String deviceName, String selectedType,
-      int classroomId, String classdevId, BuildContext context) async {
+  static Future<void> addUtility(
+      String deviceName,
+      String selectedType,
+      int classroomId,
+      String classdevId,
+      String esp32Id,
+      BuildContext context) async {
     try {
       final response = await http.post(
         Uri.parse('${ApiConstants.baseUrl}/utility/addUtility'),
@@ -17,9 +22,18 @@ class UtilityService {
           'name': deviceName,
           'group_developer_id': classdevId,
           'classroomId': classroomId,
-          'utilityType': selectedType
+          'utilityType': selectedType,
+          'esp32_id': esp32Id,
         }),
       );
+
+      // Debugging: Print the response status code and body
+      //Print sending data
+      // print('UtilityService: Sending data to add utility');
+      // print('UtilityService: Device Name: $deviceName');
+      // print('UtilityService: Selected Type: $selectedType');
+      // print('UtilityService: Response status code: ${response.statusCode}');
+      // print('UtilityService: Response body: ${response.body}');
 
       if (response.statusCode == 200) {
         print('UtilityService: Utility added successfully');
@@ -39,7 +53,7 @@ class UtilityService {
 
         // Now pop after Flushbar is dismissed
         // ignore: use_build_context_synchronously
-        Navigator.pop(context);
+        Navigator.pop(context, true);
       } else {
         final errorMsg = jsonDecode(response.body)['error'];
         Flushbar(
@@ -56,7 +70,7 @@ class UtilityService {
         ).show(context);
       }
     } catch (e) {
-      print('Error adding utility: $e');
+      // print('Error adding utility: $e');
       Flushbar(
         message: 'Failed to add utility',
         backgroundColor: Colors.red.shade600,

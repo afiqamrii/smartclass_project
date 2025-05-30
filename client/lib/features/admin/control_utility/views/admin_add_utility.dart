@@ -8,12 +8,14 @@ class AdminAddUtility extends StatefulWidget {
   final int classroomId;
   final String classroomName;
   final String classroomDevId;
+  final String esp32Id;
 
   const AdminAddUtility({
     super.key,
     required this.classroomId,
     required this.classroomName,
     required this.classroomDevId,
+    required this.esp32Id,
   });
 
   @override
@@ -45,7 +47,7 @@ class _AdminAddUtilityState extends State<AdminAddUtility> {
       int classroomId, String classdevId) {
     if (_formKey.currentState!.validate()) {
       UtilityService.addUtility(
-          esp32Id, selectedType, classroomId, classdevId, context);
+          deviceName, selectedType, classroomId, classdevId, esp32Id, context);
     }
   }
 
@@ -142,6 +144,43 @@ class _AdminAddUtilityState extends State<AdminAddUtility> {
           key: _formKey,
           child: ListView(
             children: [
+              // const SizedBox(height: 10),
+              if (widget.esp32Id == '') ...[
+                const Text(
+                  'You haven\'t registered any ESP32 device for this classroom yet. Please scan to autofill. This one time only.',
+                  style: TextStyle(
+                    color: Colors.red,
+                    fontSize: 12,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Row(
+                  children: [
+                    _buildLabel('ESP32 ID'),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: _buildTextField(
+                        controller: _esp32IdController,
+                        hint: 'Scan to autofill ESP32 ID',
+                        validator: (value) => value == null || value.isEmpty
+                            ? 'ESP32 ID is required'
+                            : null,
+                        enabled: false,
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    IconButton(
+                      onPressed: _isScanning ? null : _scanBluetoothDevices,
+                      icon: const Icon(Icons.bluetooth_searching),
+                      tooltip: 'Scan for ESP32 device',
+                      color: ColorConstants.primaryColor,
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+              ],
+
+              // const SizedBox(height: 20),
               _buildLabel('Utility Name'),
               const SizedBox(height: 10),
               _buildTextField(
@@ -150,30 +189,6 @@ class _AdminAddUtilityState extends State<AdminAddUtility> {
                 validator: (value) => value == null || value.isEmpty
                     ? 'Please enter a name for this utility'
                     : null,
-              ),
-              const SizedBox(height: 20),
-              _buildLabel('ESP32 ID'),
-              const SizedBox(height: 10),
-              Row(
-                children: [
-                  Expanded(
-                    child: _buildTextField(
-                      controller: _esp32IdController,
-                      hint: 'Scan to autofill ESP32 ID',
-                      validator: (value) => value == null || value.isEmpty
-                          ? 'ESP32 ID is required'
-                          : null,
-                      enabled: false,
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  IconButton(
-                    onPressed: _isScanning ? null : _scanBluetoothDevices,
-                    icon: const Icon(Icons.bluetooth_searching),
-                    tooltip: 'Scan for ESP32 device',
-                    color: ColorConstants.primaryColor,
-                  ),
-                ],
               ),
               const SizedBox(height: 20),
               _buildLabel('Classroom'),
@@ -225,8 +240,13 @@ class _AdminAddUtilityState extends State<AdminAddUtility> {
                     final selectedType = isOtherSelected
                         ? _customTypeController.text.trim()
                         : _selectedType!;
-                    addUtility(esp32Id, deviceName, selectedType,
-                        widget.classroomId, widget.classroomDevId);
+                    addUtility(
+                      esp32Id,
+                      deviceName,
+                      selectedType,
+                      widget.classroomId,
+                      widget.classroomDevId,
+                    );
                   }
                 },
                 child: const Text(
@@ -245,9 +265,14 @@ class _AdminAddUtilityState extends State<AdminAddUtility> {
   }
 
   Widget _buildLabel(String text) {
-    return Text(text,
-        style: const TextStyle(
-            fontWeight: FontWeight.w600, fontSize: 14, color: Colors.black87));
+    return Text(
+      text,
+      style: const TextStyle(
+        fontWeight: FontWeight.w600,
+        fontSize: 14,
+        color: Colors.black87,
+      ),
+    );
   }
 
   Widget _buildTextField({
