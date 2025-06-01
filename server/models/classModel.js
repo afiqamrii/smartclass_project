@@ -3,13 +3,13 @@ const moment = require("moment");
 
 const ClassModel = {
     // Add a class to the database
-    async addClass(courseId , classLocation , timeStart, timeEnd, date  , lecturerId , imageUrl) {
+    async addClass(courseId , classLocation , timeStart, timeEnd, date  , lecturerId) {
         try {
             const query = `
-            INSERT INTO ClassSession (date , timeStart , timeEnd , classLocation  , lecturerId , imageUrl , courseId)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO ClassSession (date , timeStart , timeEnd , classLocation  , lecturerId , courseId)
+            VALUES (?, ?, ?, ?, ?, ?)
             `;
-            const values = [date , timeStart , timeEnd , classLocation  , lecturerId , imageUrl , courseId];
+            const values = [date , timeStart , timeEnd , classLocation  , lecturerId , courseId];
             const [result] = await pool.query(query, values);
             console.log("Class added successfully:", result);
             return result.insertId;
@@ -32,7 +32,7 @@ const ClassModel = {
                 cs.timeStart,
                 cs.timeEnd,
                 cs.classLocation,
-                cs.imageUrl,
+                c.imageUrl,
                 cs.courseId
 
             FROM ClassSession cs
@@ -61,7 +61,7 @@ const ClassModel = {
                 cs.timeStart,
                 cs.timeEnd,
                 cs.classLocation,
-                cs.imageUrl,
+                c.imageUrl,
                 cs.courseId
 
             FROM ClassSession cs
@@ -90,7 +90,7 @@ const ClassModel = {
                 cs.timeStart,
                 cs.timeEnd,
                 cs.classLocation,
-                cs.imageUrl,
+                c.imageUrl,
                 cr.publishStatus,
                 u.name
             FROM 
@@ -129,7 +129,7 @@ const ClassModel = {
                 cs.timeStart,
                 cs.timeEnd,
                 cs.classLocation,
-                cs.imageUrl,
+                c.imageUrl,
                 cr.publishStatus,
                 u.name
             FROM 
@@ -168,7 +168,7 @@ const ClassModel = {
                 cs.timeStart,
                 cs.timeEnd,
                 cs.classLocation,
-                cs.imageUrl,
+                c.imageUrl,
                 cr.publishStatus,
                 u.name
             FROM 
@@ -208,7 +208,7 @@ const ClassModel = {
                 cs.timeStart,
                 cs.timeEnd,
                 cs.classLocation,
-                cs.imageUrl,
+                c.imageUrl,
                 cr.publishStatus,
                 u.name
             FROM 
@@ -237,18 +237,18 @@ const ClassModel = {
     },
 
     //Update Class
-    async updateClass(id, courseCode, className, date, timeStart, timeEnd, classLocation , imageUrl) {
+    async updateClass(id, courseCode, className, date, timeStart, timeEnd, classLocation ) {
 
         //Debugging
         console.log("Update Class ID:", id);
-        console.log("Update Class Data:", { courseCode, className, date, timeStart, timeEnd, classLocation , imageUrl });
+        console.log("Update Class Data:", { courseCode, className, date, timeStart, timeEnd, classLocation });
         
         const query = `
             UPDATE ClassSession
-            SET courseCode = ?, className = ?, date = ?, timeStart = ?, timeEnd = ?, classLocation = ? , imageUrl = ?
+            SET courseCode = ?, className = ?, date = ?, timeStart = ?, timeEnd = ?, classLocation = ? 
             WHERE classId = ?
         `;
-        const values = [courseCode, className, date, timeStart, timeEnd, classLocation , imageUrl , id];
+        const values = [courseCode, className, date, timeStart, timeEnd, classLocation , id];
     
         console.log("Executing SQL:", query);
         console.log("With values:", values);

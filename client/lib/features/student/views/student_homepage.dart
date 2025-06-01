@@ -7,6 +7,7 @@ import 'package:skeletonizer/skeletonizer.dart';
 import 'package:smartclass_fyp_2024/constants/color_constants.dart';
 import 'package:smartclass_fyp_2024/features/student/models/todayClass_card_models.dart';
 import 'package:smartclass_fyp_2024/features/student/providers/student_class_provider.dart';
+import 'package:smartclass_fyp_2024/features/student/views/enroll_course/views/student_enroll_course.dart';
 import 'package:smartclass_fyp_2024/features/student/views/report_utility/views/student_view_reports_history.dart';
 import 'package:smartclass_fyp_2024/features/student/views/template/student_bottom_navbar.dart';
 import 'package:smartclass_fyp_2024/features/student/views/widgets/classnow_card.dart';
@@ -660,22 +661,56 @@ class _StudentHomePageState extends ConsumerState<StudentHomePage> {
   Widget _cardSection(BuildContext context) {
     return Row(
       children: [
-        // Left card
+        // Left card (Enroll Course)
         Expanded(
-          child: Container(
-            height: 70,
-            decoration: BoxDecoration(
-              color: Colors.grey[200],
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Center(
-              child: Text(
-                "Left Card",
-                style: TextStyle(
-                  fontSize: 13,
-                  fontFamily: 'FigtreeRegular',
-                  fontWeight: FontWeight.w600,
-                  color: Colors.grey[700],
+          child: GestureDetector(
+            onTap: () => {
+              // Handle tap on the card here
+              Navigator.of(context).push(
+                toLeftTransition(
+                  const StudentEnrollCourse(),
+                ),
+              ),
+            }, // Handle tap on the card
+            child: Container(
+              height: 65,
+              decoration: BoxDecoration(
+                color: const Color.fromARGB(255, 250, 250, 250),
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.2),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Row(
+                  children: [
+                    Center(
+                      child: Image.asset(
+                        "assets/icons/enroll.png",
+                        width: 22,
+                        height: 22,
+                        fit: BoxFit.contain,
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    const Expanded(
+                      child: Text(
+                        'Enroll Course',
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontFamily: 'FigtreeRegular',
+                          fontWeight: FontWeight.w600,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),

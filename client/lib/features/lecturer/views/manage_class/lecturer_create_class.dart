@@ -383,7 +383,7 @@ Widget _courseDropdown(
             ),
           ),
           dialogProps: DialogProps(
-            contentPadding: const EdgeInsets.all(15),
+            contentPadding: const EdgeInsets.all(5),
             backgroundColor: Colors.white,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(20),
