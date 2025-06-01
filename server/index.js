@@ -9,6 +9,7 @@ const path = require("path");
 const authRouter = require("./routes/authRoutes");
 const classRoutes = require("./routes/classRoutes");
 const courseRoutes = require("./routes/courseRoutes");
+const enrollmentRoutes = require("./routes/enrollmentRoutes");
 const classroomRoutes = require("./routes/classroomRoutes");
 const attendanceRoutes = require("./routes/attendanceRoutes");
 const summarizationRoutes = require("./routes/summarizationRoutes");
@@ -52,6 +53,7 @@ app.use((req, res, next) => {
 app.use('/report', reportRoutes);
 app.use("/class", classRoutes);
 app.use("/course", courseRoutes);
+app.use("/enrollment", enrollmentRoutes);
 app.use("/classroom", classroomRoutes);
 app.use("/clockInAttendance", attendanceRoutes);
 app.use("/summarization", summarizationRoutes);

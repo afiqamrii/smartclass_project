@@ -1,10 +1,14 @@
+import 'package:another_flushbar/flushbar.dart';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:smartclass_fyp_2024/constants/color_constants.dart';
 import 'package:smartclass_fyp_2024/features/lecturer/views/manage_class/models/course_model.dart';
 import 'package:smartclass_fyp_2024/features/lecturer/views/manage_class/providers/course_providers.dart';
+import 'package:smartclass_fyp_2024/features/student/views/enroll_course/services/student_course_enrollment_services.dart';
 import 'package:smartclass_fyp_2024/shared/data/dataprovider/user_provider.dart';
+import 'package:smartclass_fyp_2024/shared/data/models/user.dart';
 
 class StudentEnrollCourse extends ConsumerStatefulWidget {
   const StudentEnrollCourse({super.key});
@@ -16,17 +20,27 @@ class StudentEnrollCourse extends ConsumerStatefulWidget {
 
 class _StudentEnrollCourseState extends ConsumerState<StudentEnrollCourse> {
   final _formKey = GlobalKey<FormState>();
+  // ignore: unused_field
   CourseModel? _selectedCourse;
   final TextEditingController courseController = TextEditingController();
   final TextEditingController titleController = TextEditingController();
+  bool isLoading = false;
 
-  // void _enrollCourse(int studentId, int courseId) {
-  //   EnrollService.enrollToCourse(
-  //     studentId: studentId,
-  //     courseId: courseId,
-  //     context: context,
-  //   );
-  // }
+  Future<void> _enrollCourse(
+      String studentId, int courseId, String courseName) async {
+    setState(() => isLoading = true);
+
+    // Call the service to enroll the course
+    await CourseEnrollmentService.enrollCourse(
+      context,
+      courseId,
+      studentId.toString(),
+      courseName,
+    );
+
+    // After enrollment, clear the controllers
+    setState(() => isLoading = false);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -62,6 +76,31 @@ class _StudentEnrollCourseState extends ConsumerState<StudentEnrollCourse> {
                 const SizedBox(height: 30),
                 // Enroll button
                 ElevatedButton(
+                  onPressed: isLoading
+                      ? null
+                      : () {
+                          if (courseController.text.isEmpty) {
+                            Flushbar(
+                              message: 'Please select a course to enroll.',
+                              duration: const Duration(seconds: 3),
+                              backgroundColor: Colors.red.shade600,
+                              margin: const EdgeInsets.all(8),
+                              borderRadius: BorderRadius.circular(8),
+                              flushbarPosition: FlushbarPosition.TOP,
+                              icon:
+                                  const Icon(Icons.error, color: Colors.white),
+                            ).show(context);
+                            return;
+                          }
+
+                          // Confirmation dialog
+                          showDialog(
+                            context: context,
+                            barrierDismissible: false,
+                            builder: (context) =>
+                                _buildConfirmationDialog(context, user),
+                          );
+                        },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: ColorConstants.primaryColor,
                     elevation: 3,
@@ -70,20 +109,23 @@ class _StudentEnrollCourseState extends ConsumerState<StudentEnrollCourse> {
                     ),
                     padding: const EdgeInsets.symmetric(vertical: 16),
                   ),
-                  onPressed: () {
-                    //  the following lines to enable course enrollment
-                    // if (_formKey.currentState!.validate()) {
-                    //   _enrollCourse(user.studentId, _selectedCourse!.courseId);
-                    // }
-                  },
-                  child: const Text(
-                    'Enroll Course',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14,
-                      color: Colors.white,
-                    ),
-                  ),
+                  child: isLoading
+                      ? SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: LoadingAnimationWidget.staggeredDotsWave(
+                            color: ColorConstants.primaryColor,
+                            size: 25,
+                          ),
+                        )
+                      : const Text(
+                          'Enroll Course',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                            color: Colors.white,
+                          ),
+                        ),
                 ),
               ],
             ),
@@ -91,6 +133,105 @@ class _StudentEnrollCourseState extends ConsumerState<StudentEnrollCourse> {
           loading: () => const Center(child: CircularProgressIndicator()),
           error: (err, stack) =>
               Center(child: Text('Error loading courses: $err')),
+        ),
+      ),
+    );
+  }
+
+  Dialog _buildConfirmationDialog(BuildContext context, User user) {
+    return Dialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      insetPadding: const EdgeInsets.symmetric(horizontal: 30, vertical: 24),
+      child: Padding(
+        padding: const EdgeInsets.all(24.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(
+              Icons.info_outline_rounded,
+              color: Colors.blueAccent,
+              size: 40,
+            ),
+            const SizedBox(height: 16),
+            const Text(
+              'Confirm Enrollment',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+              ),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              'Are you sure you want to enroll for',
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.grey.shade800,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 6),
+            Text(
+              '"${titleController.text}"',
+              style: const TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w600,
+                color: Colors.black,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 24),
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: () => Navigator.pop(context),
+                    style: OutlinedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      side: BorderSide(
+                        color: Colors.grey.shade400,
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 14,
+                      ),
+                    ),
+                    child: const Text(
+                      'Cancel',
+                      style: TextStyle(color: Colors.black87),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      if (_formKey.currentState!.validate()) {
+                        _enrollCourse(
+                          user.externalId,
+                          int.parse(courseController.text),
+                          titleController.text,
+                        );
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: ColorConstants.primaryColor,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                    ),
+                    child: const Text(
+                      'Enroll',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );
