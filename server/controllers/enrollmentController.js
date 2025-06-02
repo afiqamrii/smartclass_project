@@ -135,27 +135,31 @@ const getAllEnrollment = async (req, res) => {
 const lecturerGetEnrollment = async (req, res) => {
     try {
         const lecturerId = req.params.lecturerId;
+        const courseId = req.params.courseId;
 
-        // Log the received request for debugging
-        console.log("Received get all enrollments request:", { lecturerId });
+        console.log("Received get all enrollments request:", { lecturerId , courseId });
 
-        // Validate input
-        if (!lecturerId ) {
-            console.error("Error: Lecturer ID is required");
-            return res.status(400).json({ error: "Lecturer ID is required" });
+        if (!lecturerId || !courseId || lecturerId.trim() === "" || courseId.trim() === "") {
+            console.warn("Missing lecturerId or courseId");
+            return res.status(400).json({ error: "Lecturer ID and Course ID are required." });
         }
 
-        //Pass the lecturerId to the service
-        const result = await enrollmentService.lecturerGetEnrollment(lecturerId);
+        const result = await enrollmentService.lecturerGetEnrollment(lecturerId, courseId);
+
         if (!result || result.length === 0) {
-            return res.status(404).json({ message: "No enrollments found for this course" });
+            console.warn("No students have requested to enroll in this course yet.");
+            return res.status(404).json({ message: "No students have requested to enroll in this course yet." });
         }
+
         res.status(200).json({ message: "Enrollment data fetched successfully", result });
     } catch (error) {
-        console.error("Controller Error:", error);
-        res.status(500).json({ error: error.message });
+        console.error("Controller Error:", error); // Keep this in backend logs
+        res.status(500).json({
+            error: "Something went wrong while retrieving enrollment data. Please try again later.",
+        });
     }
-}
+};
+
 
 module.exports = { enrollStudent , getStudentEnrollment , getAllEnrollment, lecturerGetEnrollment };
 

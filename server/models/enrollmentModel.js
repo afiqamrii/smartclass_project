@@ -81,30 +81,37 @@ const EnrollmentModel = {
     },
 
     // Get all enrollments for a course for a lecturer to verify
-    async lecturerGetEnrollment(lecturerId) {
-        // Validate input
-        if (!lecturerId) {
-            throw new Error("Lecturer ID is required");
+    async lecturerGetEnrollment(lecturerId, courseId) {
+        if (!lecturerId || !courseId) {
+            throw new Error("Lecturer ID and Course ID are required");
         }
 
         try {
             console.log("Fetching enrollments for lecturer:", lecturerId);
+
             const query = `
-                SELECT ce.enrollment_id, ce.student_id, ce.courseId, ce.requested_at, c.courseName, c.courseCode, c.imageUrl, ce.status , u.name AS studentName
+                SELECT ce.enrollment_id, ce.student_id, ce.courseId, ce.requested_at,
+                    c.courseName, c.courseCode, c.imageUrl, ce.status,
+                    u.name AS studentName
                 FROM CourseEnrollment ce
                 JOIN Course c ON ce.courseId = c.courseId
                 JOIN User u ON ce.student_id = u.externalId
-                WHERE c.lecturerId = ?
+                WHERE c.lecturerId = ? AND ce.courseId = ?
                 ORDER BY ce.requested_at DESC;
             `;
-            const [rows] = await pool.query(query, [lecturerId]);
-            return rows; // Return the list of enrollments
+
+            const [rows] = await pool.query(query, [lecturerId, courseId]);
+
+            if (rows.length === 0) {
+                return []; // Let controller handle empty response nicely
+            }
+
+            return rows;
         } catch (err) {
-            console.error("Error retrieving data:", err.message);
-            throw new Error(`Error in Model: Failed to fetch course enrollments for lecturer: ${err.message}`);
+            console.error("Model Error:", err.message);
+            throw new Error("Database query failed while fetching enrollments.");
         }
     }
-
 
 };
 

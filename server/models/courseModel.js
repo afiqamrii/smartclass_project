@@ -32,6 +32,24 @@ const CourseModel = {
             return [];
         }
     },
+
+    // Get courses by lecturer ID
+    async getCourseByLecturerId(lecturerId) {
+        // Validate input
+        if (!lecturerId) {
+            throw new Error("Lecturer ID is required");
+        }
+
+        try {
+            console.log("Fetching courses for lecturer:", lecturerId);
+            const query = `SELECT * FROM Course WHERE lecturerId = ?`;
+            const [rows] = await pool.query(query, [lecturerId]);
+            return rows; // Return the list of courses
+        } catch (err) {
+            console.error("Error retrieving data:", err.message);
+            throw new Error(`Error in Model: Failed to fetch courses: ${err.message}`);
+        }
+    }
 };
 
 module.exports = CourseModel;

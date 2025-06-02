@@ -4,18 +4,27 @@ import 'package:smartclass_fyp_2024/features/lecturer/views/course_enrollment/pr
 
 class LecturerViewEnrollRequest extends ConsumerWidget {
   final String lecturerId;
-  const LecturerViewEnrollRequest({super.key, required this.lecturerId});
+  final int courseId;
+
+  const LecturerViewEnrollRequest(
+      {super.key, required this.lecturerId, required this.courseId});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final asyncRequests = ref.watch(enrollmentRequestListProvider(lecturerId));
+    final args = EnrollmentRequestArgs(lecturerId, courseId);
+    final asyncRequests = ref.watch(enrollmentRequestListProvider(args));
 
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: _appBar(context),
       body: asyncRequests.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, _) => Center(child: Text('Error: $error')),
+        error: (error, _) => const Center(
+          child: Text(
+            'No enrollment requests for this course yet.',
+            style: TextStyle(fontSize: 14, color: Colors.grey),
+          ),
+        ),
         data: (requests) {
           if (requests.isEmpty) {
             return const Center(

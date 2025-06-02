@@ -4,30 +4,44 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class CourseEnrollmentRequestApi {
-  //Get enrolled requested courses for a student
+  // Get enrolled requested courses for a student
   static Future<List<CourseEnrollmentRequest>> getEnrolledRequests(
-      String lecturerId) async {
+      String lecturerId, int courseId) async {
     try {
       final response = await http.get(
         Uri.parse(
-            '${ApiConstants.baseUrl}/enrollment/courseenrollment/$lecturerId'),
+            '${ApiConstants.baseUrl}/enrollment/courseenrollment/$lecturerId/$courseId'),
       );
 
+      // Debug: print status and body
+      print('Status: ${response.statusCode}, Body: ${response.body}');
+
+      final Map<String, dynamic> jsonData = jsonDecode(response.body);
+
       if (response.statusCode == 200) {
-        final Map<String, dynamic> jsonData = jsonDecode(response.body);
         if (jsonData.containsKey('result') && jsonData['result'] is List) {
           return (jsonData['result'] as List<dynamic>)
               .map((course) => CourseEnrollmentRequest.fromJson(course))
               .toList();
         } else {
-          throw Exception(
-              'Invalid JSON structure: "enrolledCourses" key not found or not a list');
+          throw Exception('Invalid data received from server.');
         }
+      } else if (response.statusCode == 404) {
+        final message = jsonData['message'] ??
+            'No students have enrolled in this course yet.';
+        throw Exception(message);
       } else {
-        throw Exception('Failed to load enrolled courses');
+        final error = jsonData['error'] ??
+            jsonData['message'] ??
+            'Failed to load enrollment requests. Please try again.';
+        throw Exception(error);
       }
     } catch (e) {
-      throw Exception('Error fetching enrolled courses: $e');
+      // Print the error for debugging
+      print('Error in getEnrolledRequests: $e');
+      throw Exception(e is Exception
+          ? e.toString().replaceFirst('Exception: ', '')
+          : 'Could not fetch enrollment requests. Please try again later.');
     }
   }
 }

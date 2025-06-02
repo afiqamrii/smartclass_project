@@ -36,3 +36,24 @@ exports.viewCourse = async (req, res) => {
         res.status(500).json({ message: "Failed to fetch course data" });
     }
 };
+
+// Function to get course by lecturer ID
+exports.getCourseByLecturerId = async (req, res) => {
+    try {
+        const lecturerId = req.params.lecturerId;
+
+        // Validate input
+        if (!lecturerId) {
+            return res.status(400).json({ message: "Lecturer ID is required" });
+        }
+
+        const courses = await courseService.getCourseByLecturerId(lecturerId);
+        res.status(200).json({
+            message: "Courses fetched successfully",
+            Data: courses ?? [],
+        });
+    } catch (error) {
+        console.error("Controller Error:", error);
+        res.status(500).json({ message: "Failed to fetch courses for lecturer" });
+    }
+};

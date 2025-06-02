@@ -9,4 +9,7 @@ const router = express.Router();
 router.post("/addcourse", courseController.addCourse); //Add a course
 router.get("/viewcourse", courseController.viewCourse); //Get all course
 
+//Get course by lecturer ID
+router.get("/viewcourse/:lecturerId", courseController.getCourseByLecturerId); //Get course by lecturer ID
+
 module.exports = router;

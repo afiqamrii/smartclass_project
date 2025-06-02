@@ -57,5 +57,19 @@ const viewCourse = async () => {
     }
 };
 
+//Get course by lecturer ID
+const getCourseByLecturerId = async (lecturerId) => {
+    try {
+        // Validate input
+        if (!lecturerId) {
+            throw new Error("Lecturer ID is required");
+        }
+        const courses = await courseModel.getCourseByLecturerId(lecturerId);
+        return courses || [];
+    } catch (error) {
+        throw new Error("Error in service while fetching courses for lecturer: " + error.message);
+    }
+};
+
 //EXport module
-module.exports = { viewCourse , addCourse, fetchImageFromGoogle };
+module.exports = { viewCourse , addCourse, fetchImageFromGoogle, getCourseByLecturerId };

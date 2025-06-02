@@ -5,3 +5,9 @@ import 'package:smartclass_fyp_2024/features/lecturer/views/manage_class/service
 final courseListProvider = FutureProvider<List<CourseModel>>((ref) async {
   return await CourseApi.fetchCourses();
 });
+
+// Provider for fetching courses by lecturer ID
+final courseListByLecturerIdProvider =
+    FutureProvider.family<List<CourseModel>, String>((ref, lecturerId) async {
+  return await CourseApi.fetchCoursesByLecturerId(lecturerId);
+});

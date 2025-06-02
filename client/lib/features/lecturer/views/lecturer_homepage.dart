@@ -5,7 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:smartclass_fyp_2024/constants/color_constants.dart';
-import 'package:smartclass_fyp_2024/features/lecturer/views/course_enrollment/views/lecturer_view_enroll_request.dart';
+import 'package:smartclass_fyp_2024/features/lecturer/views/course_enrollment/views/lecturer_select_course.dart';
 import 'package:smartclass_fyp_2024/features/student/views/widgets/student_todayclass_card.dart';
 import 'package:smartclass_fyp_2024/shared/components/unavailablePage.dart';
 import 'package:smartclass_fyp_2024/shared/data/dataprovider/data_provider.dart';
@@ -529,9 +529,7 @@ Widget _cardSection(BuildContext context, User user) {
             Navigator.of(context).push(
               toLeftTransition(
                 // const StudentEnrollCourse(),
-                LecturerViewEnrollRequest(
-                  lecturerId: user.externalId,
-                ),
+                const LecturerSelectCourse(),
               ),
             ),
           }, // Handle tap on the card
