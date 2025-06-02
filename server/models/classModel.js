@@ -23,6 +23,8 @@ const ClassModel = {
     // Retrieve all classes from the database
     async getAllClasses(lecturerId){
         try{
+            // Debugging: Log the lecturerId being used
+            // console.log("Retrieving classes for lecturerId:", lecturerId);
             const query = `
             SELECT 
                 cs.classId,
@@ -37,7 +39,7 @@ const ClassModel = {
 
             FROM ClassSession cs
             JOIN Course c ON cs.courseId = c.courseId
-            WHERE lecturerId = ?
+            WHERE c.lecturerId = ?
             ORDER BY date DESC, timeStart DESC;
             `;
             const [rows] = await pool.query(query,[lecturerId]);

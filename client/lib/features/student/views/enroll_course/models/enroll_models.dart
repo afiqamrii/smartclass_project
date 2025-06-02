@@ -9,6 +9,8 @@ class EnrollModels {
   final String courseCode;
   final String courseImageUrl;
   final String status;
+  final String lecturerId;
+  final String lecturerName;
 
   EnrollModels({
     required this.enrollmentId,
@@ -19,6 +21,8 @@ class EnrollModels {
     required this.courseCode,
     required this.courseImageUrl,
     required this.status,
+    required this.lecturerId,
+    required this.lecturerName,
   });
 
   // Convert JSON object to EnrollModels
@@ -35,6 +39,8 @@ class EnrollModels {
       courseCode: json['courseCode'] ?? "Unknown Code",
       courseImageUrl: json['imageUrl'] ?? "Image Not Available",
       status: json['status'] ?? "Pending",
+      lecturerId: json['lecturerId'] ?? "Unknown Lecturer",
+      lecturerName: json['lecturerName'] ?? "Unknown Lecturer Name",
     );
   }
 

@@ -26,8 +26,8 @@ class _StudentEnrollCourseState extends ConsumerState<StudentEnrollCourse> {
   final TextEditingController titleController = TextEditingController();
   bool isLoading = false;
 
-  Future<void> _enrollCourse(
-      String studentId, int courseId, String courseName) async {
+  Future<void> _enrollCourse(String studentId, int courseId, String courseName,
+      String lecturerId) async {
     setState(() => isLoading = true);
 
     // Call the service to enroll the course
@@ -36,6 +36,7 @@ class _StudentEnrollCourseState extends ConsumerState<StudentEnrollCourse> {
       courseId,
       studentId.toString(),
       courseName,
+      lecturerId,
     );
 
     // After enrollment, clear the controllers
@@ -97,8 +98,8 @@ class _StudentEnrollCourseState extends ConsumerState<StudentEnrollCourse> {
                           showDialog(
                             context: context,
                             barrierDismissible: false,
-                            builder: (context) =>
-                                _buildConfirmationDialog(context, user),
+                            builder: (context) => _buildConfirmationDialog(
+                                context, user, courseListAsync),
                           );
                         },
                   style: ElevatedButton.styleFrom(
@@ -138,7 +139,8 @@ class _StudentEnrollCourseState extends ConsumerState<StudentEnrollCourse> {
     );
   }
 
-  Dialog _buildConfirmationDialog(BuildContext context, User user) {
+  Dialog _buildConfirmationDialog(BuildContext context, User user,
+      AsyncValue<List<CourseModel>> courseListAsync) {
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       insetPadding: const EdgeInsets.symmetric(horizontal: 30, vertical: 24),
@@ -208,11 +210,13 @@ class _StudentEnrollCourseState extends ConsumerState<StudentEnrollCourse> {
                   child: ElevatedButton(
                     onPressed: () {
                       Navigator.pop(context);
-                      if (_formKey.currentState!.validate()) {
+                      if (_formKey.currentState!.validate() &&
+                          _selectedCourse != null) {
                         _enrollCourse(
                           user.externalId,
-                          int.parse(courseController.text),
-                          titleController.text,
+                          _selectedCourse!.courseId,
+                          _selectedCourse!.courseName,
+                          _selectedCourse!.lecturerId,
                         );
                       }
                     },
@@ -305,12 +309,13 @@ class _StudentEnrollCourseState extends ConsumerState<StudentEnrollCourse> {
           itemAsString: (course) => course.toString(),
           onChanged: (selectedCourse) {
             if (selectedCourse != null) {
+              _selectedCourse = selectedCourse; // store selected course
               controller.text = selectedCourse.courseId.toString();
-
               titleController.text = selectedCourse.courseName;
             } else {
-              controller
-                  .clear(); // Clear the text field if no course is selected
+              _selectedCourse = null;
+              controller.clear();
+              titleController.clear();
             }
           },
           dropdownDecoratorProps: DropDownDecoratorProps(

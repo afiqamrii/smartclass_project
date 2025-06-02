@@ -4,14 +4,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+import 'package:smartclass_fyp_2024/constants/color_constants.dart';
+import 'package:smartclass_fyp_2024/features/lecturer/views/course_enrollment/views/lecturer_view_enroll_request.dart';
+import 'package:smartclass_fyp_2024/features/student/views/widgets/student_todayclass_card.dart';
 import 'package:smartclass_fyp_2024/shared/components/unavailablePage.dart';
 import 'package:smartclass_fyp_2024/shared/data/dataprovider/data_provider.dart';
+import 'package:smartclass_fyp_2024/shared/data/dataprovider/notifications/notification_provider.dart';
 import 'package:smartclass_fyp_2024/shared/data/dataprovider/user_provider.dart';
 import 'package:smartclass_fyp_2024/features/lecturer/views/manage_summarization/lecturer_viewSummarization.dart';
 import 'package:smartclass_fyp_2024/features/lecturer/views/manage_class/lecturer_view_class.dart';
 import 'package:smartclass_fyp_2024/shared/data/models/classSum_model.dart';
 import 'package:smartclass_fyp_2024/shared/data/models/user.dart';
 import 'package:smartclass_fyp_2024/shared/widgets/pageTransition.dart';
+import '../../../shared/data/views/notification_icon.dart';
 import 'manage_class/lecturer_show_all_classes.dart';
 import '../../../shared/data/models/class_models.dart';
 
@@ -37,6 +42,8 @@ class _LectHomepageState extends ConsumerState<LectHomepage> {
     await ref.read(classDataProviderSummarizationStatus(externalId));
     await ref.read(userProvider);
     await ref.read(classDataProvider(externalId));
+    // ignore: unused_result
+    await ref.refresh(unreadNotificationCountProvider);
 
     // Wait for new data to load
     await Future.delayed(
@@ -57,98 +64,140 @@ class _LectHomepageState extends ConsumerState<LectHomepage> {
     final data = ref.watch(classDataProvider(user.externalId));
 
     return Scaffold(
+      backgroundColor: const Color(0xFF0d1116),
       body: LiquidPullToRefresh(
         onRefresh: () => _handleRefresh(ref, user.externalId),
-        color: Colors.deepPurple,
-        backgroundColor: Colors.deepPurple,
+        color: const Color(0xFF0d1116),
+        backgroundColor: Colors.white,
         animSpeedFactor: 3,
         showChildOpacityTransition: false,
-        height: 50,
+        height: 100,
         child: CustomScrollView(
+          physics: const BouncingScrollPhysics(),
           slivers: [
+            // Header (same as before)
             SliverAppBar(
               pinned: false,
-              expandedHeight: MediaQuery.of(context).size.height * 0.14,
-              toolbarHeight: 0,
-              leading: null,
+              expandedHeight: 90,
+              backgroundColor: ColorConstants.backgroundColor,
               automaticallyImplyLeading: false,
-              backgroundColor: Colors.deepPurple,
-              shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(20),
-                  bottomRight: Radius.circular(20),
-                ),
-              ),
+              elevation: 0,
               flexibleSpace: FlexibleSpaceBar(
-                background: ClipRRect(
-                  borderRadius: const BorderRadius.only(
-                    bottomLeft: Radius.circular(30),
-                    bottomRight: Radius.circular(30),
+                collapseMode: CollapseMode.pin,
+                background: Container(
+                  color: const Color(0xFF0d1116),
+                  padding: const EdgeInsets.only(
+                    top: 60,
+                    left: 20,
+                    right: 20,
                   ),
-                  child: Container(
-                    color: Colors.deepPurple,
-                    padding: EdgeInsets.only(
-                      top: MediaQuery.of(context).size.height * 0.05,
-                      left: 20,
-                      right: 20,
-                    ),
-                    child: Skeletonizer(
-                      enabled: _isRefreshing,
-                      effect: const ShimmerEffect(),
-                      child: _headerSection(user, context),
+                  child: Skeletonizer(
+                    enabled: _isRefreshing,
+                    effect: const ShimmerEffect(),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            const CircleAvatar(
+                              radius: 20,
+                              backgroundImage:
+                                  AssetImage('assets/pictures/compPicture.jpg'),
+                            ),
+                            const SizedBox(width: 15),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  user.userName,
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontFamily: 'Figtree',
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                const SizedBox(height: 1),
+                                Text(
+                                  user.roleId == 1
+                                      ? "Student"
+                                      : user.roleId == 2
+                                          ? "Lecturer "
+                                          : "PPH Staff",
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                    fontFamily: 'FigtreeRegular',
+                                    fontWeight: FontWeight.w400,
+                                    color: Colors.white,
+                                  ),
+                                )
+                              ],
+                            ),
+                          ],
+                        ),
+                        const NotificationIcon(),
+                      ],
                     ),
                   ),
                 ),
               ),
             ),
-            SliverList(
-              delegate: SliverChildListDelegate(
-                [
-                  data.when(
-                    data: (classData) {
-                      return sumData.when(
-                        data: (sumClassData) => Skeletonizer(
-                          enabled: _isRefreshing,
-                          effect: const ShimmerEffect(),
-                          child: Column(
-                            children: [
-                              Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 18),
-                                child: _todayClass(context),
-                              ),
-                              const SizedBox(height: 8),
-                              Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 18),
-                                child: _classListCard(context, classData),
-                              ),
-                              const SizedBox(height: 25),
-                              Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 20),
-                                child: _summarizationSection(
-                                    context, sumClassData),
-                              ),
-                              const SizedBox(height: 40),
-                            ],
-                          ),
-                        ),
+
+            // Main Content Section
+            SliverToBoxAdapter(
+              child: Skeletonizer(
+                enabled: _isRefreshing,
+                effect: const ShimmerEffect(),
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 15),
+                  child: Container(
+                    width: double.infinity,
+                    decoration: const BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.vertical(
+                        top: Radius.circular(20),
+                      ),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.only(
+                        left: 12,
+                        right: 12,
+                      ),
+                      child: data.when(
+                        data: (classData) {
+                          return sumData.when(
+                            data: (sumClassData) => Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const SizedBox(height: 20),
+                                _cardSection(context, user),
+                                const SizedBox(height: 10),
+                                _todayClass(context),
+                                const SizedBox(height: 0),
+                                _classListCard(context, classData, user),
+                                const SizedBox(height: 25),
+                                _summarizationSection(context, sumClassData),
+                              ],
+                            ),
+                            error: (err, s) => Padding(
+                              padding: const EdgeInsets.all(16),
+                              child: Text(err.toString()),
+                            ),
+                            loading: () =>
+                                _buildSkeletonLoader(count: classData.length),
+                          );
+                        },
                         error: (err, s) => Padding(
                           padding: const EdgeInsets.all(16),
                           child: Text(err.toString()),
                         ),
-                        loading: () =>
-                            _buildSkeletonLoader(count: classData.length),
-                      );
-                    },
-                    error: (err, s) => Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Text(err.toString()),
+                        loading: () => _buildSkeletonLoader(count: 5),
+                      ),
                     ),
-                    loading: () => _buildSkeletonLoader(count: 5),
                   ),
-                ],
+                ),
               ),
             ),
           ],
@@ -179,68 +228,6 @@ class _LectHomepageState extends ConsumerState<LectHomepage> {
           ),
         ),
       ),
-    );
-  }
-
-  Row _headerSection(User user, BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        SizedBox(
-          width: MediaQuery.of(context).size.width * 0.6,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                "Hello ${user.userName} & ${user.externalId}",
-                style: const TextStyle(
-                  fontSize: 22,
-                  color: Color.fromARGB(255, 238, 238, 238),
-                  fontFamily: 'Figtree',
-                  fontWeight: FontWeight.bold,
-                ),
-                overflow: TextOverflow.ellipsis,
-                maxLines: 1,
-              ),
-              const SizedBox(height: 5),
-              Text.rich(
-                TextSpan(
-                  text: "Welcome to ",
-                  style: const TextStyle(
-                    fontSize: 18,
-                    color: Color.fromARGB(255, 238, 238, 238),
-                    fontFamily: 'FigtreeRegular',
-                  ),
-                  children: [
-                    TextSpan(
-                      text: user.userName,
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Color.fromARGB(255, 232, 103, 255),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.only(right: 5.0),
-          child: IconButton(
-            icon: const Icon(
-              Icons.notifications,
-              color: Color.fromARGB(255, 238, 238, 238),
-            ),
-            onPressed: () {
-              // Navigator.push(context,
-              //     MaterialPageRoute(builder: (context) => const MyWidget()));
-            },
-          ),
-        ),
-      ],
     );
   }
 
@@ -480,7 +467,7 @@ class _LectHomepageState extends ConsumerState<LectHomepage> {
   }
 
   Widget _classListCard(
-      BuildContext context, List<ClassCreateModel> classDataItem) {
+      BuildContext context, List<ClassCreateModel> classDataItem, User user) {
     if (classDataItem.isEmpty) {
       return const Unavailablepage(
         animation: "assets/animations/noClassAnimation.json",
@@ -488,124 +475,39 @@ class _LectHomepageState extends ConsumerState<LectHomepage> {
       );
     } else {
       return SizedBox(
-        width: MediaQuery.of(context).size.width * 1.0,
-        height: 170,
-
-        //Show all class in the card
+        height: 200, // fixed height for horizontal cards
         child: ListView.separated(
-          physics: const BouncingScrollPhysics(),
           scrollDirection: Axis.horizontal,
+          // padding: const EdgeInsets.symmetric(horizontal: 16),
+          physics: const BouncingScrollPhysics(),
           clipBehavior: Clip.none,
           itemCount: classDataItem.length,
-          separatorBuilder: (context, index) => const SizedBox(width: 20),
+          separatorBuilder: (context, index) => const SizedBox(width: 1),
           itemBuilder: (context, index) {
             final classData = classDataItem[index];
-            return GestureDetector(
-              onTap: () {
-                // Navigate to class detail page
-                Navigator.push(
-                  context,
-                  toLeftTransition(
-                    LecturerViewClass(
-                      classItem: classData,
+            return SizedBox(
+              width: MediaQuery.of(context).size.width *
+                  0.8, // set width for each card
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    toLeftTransition(
+                      LecturerViewClass(classItem: classData),
                     ),
-                  ),
-                );
-              },
-              child: IntrinsicHeight(
-                child: IntrinsicWidth(
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(
-                      minWidth: 300,
-                    ),
-                    child: Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(12.0),
-                        //Give the shadow to the card
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withOpacity(0.35),
-                            spreadRadius: 0,
-                            blurRadius: 6,
-                            offset: const Offset(0, 3),
-                          ),
-                        ],
-                      ),
-                      child: SizedBox(
-                        width: 200,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            // Course Title
-                            Text(
-                              "${classData.courseCode} - ${classData.courseName}",
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black87,
-                              ),
-                            ),
-                            const SizedBox(height: 15),
-
-                            // Location
-                            Row(
-                              children: [
-                                const Icon(Icons.location_on,
-                                    size: 16, color: Colors.grey),
-                                const SizedBox(width: 5),
-                                Text(
-                                  classData.location,
-                                  style: const TextStyle(
-                                    fontSize: 12,
-                                    color: Colors.black54,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 10),
-
-                            // Time
-                            Row(
-                              children: [
-                                const Icon(Icons.schedule,
-                                    size: 16, color: Colors.grey),
-                                const SizedBox(width: 5),
-                                Text(
-                                  "${classData.startTime} - ${classData.endTime}",
-                                  style: const TextStyle(
-                                    fontSize: 12,
-                                    color: Colors.black54,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 10),
-
-                            // Date
-                            Row(
-                              children: [
-                                const Icon(Icons.calendar_today,
-                                    size: 16, color: Colors.black54),
-                                const SizedBox(width: 5),
-                                Text(
-                                  classData.date,
-                                  style: const TextStyle(
-                                    fontSize: 12,
-                                    color: Colors.black54,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 10),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
+                  );
+                },
+                child: StudentTodayclassCard(
+                  className: classData.courseName,
+                  lecturerName: user.name,
+                  courseCode: classData.courseCode,
+                  classLocation: classData.location,
+                  date: classData.date,
+                  timeStart: classData.startTime,
+                  timeEnd: classData.endTime,
+                  publishStatus: "",
+                  imageUrl: classData.imageUrl,
+                  isClassHistory: false,
                 ),
               ),
             );
@@ -614,4 +516,127 @@ class _LectHomepageState extends ConsumerState<LectHomepage> {
       );
     }
   }
+}
+
+Widget _cardSection(BuildContext context, User user) {
+  return Row(
+    children: [
+      // Left card (Course Enroll Request)
+      Expanded(
+        child: GestureDetector(
+          onTap: () => {
+            // Handle tap on the card here
+            Navigator.of(context).push(
+              toLeftTransition(
+                // const StudentEnrollCourse(),
+                LecturerViewEnrollRequest(
+                  lecturerId: user.externalId,
+                ),
+              ),
+            ),
+          }, // Handle tap on the card
+          child: Container(
+            height: 65,
+            decoration: BoxDecoration(
+              color: const Color.fromARGB(255, 250, 250, 250),
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.2),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Row(
+                children: [
+                  Center(
+                    child: Image.asset(
+                      "assets/icons/enroll.png",
+                      width: 22,
+                      height: 22,
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  const Expanded(
+                    child: Text(
+                      'Course Enroll Request',
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontFamily: 'FigtreeRegular',
+                        fontWeight: FontWeight.w600,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+
+      const SizedBox(width: 12),
+
+      // Right card (Report Utility Problem)
+      Expanded(
+        child: GestureDetector(
+          onTap: () => {
+            // Handle tap on the card here
+            // Navigator.of(context).push(
+            //   toLeftTransition(
+            //     const ViewReportsHistory(),
+            //   ),
+            // ),
+          }, // Handle tap on the card
+          child: Container(
+            height: 65,
+            decoration: BoxDecoration(
+              color: const Color.fromARGB(255, 250, 250, 250),
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.2),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Row(
+                children: [
+                  Center(
+                    child: Image.asset(
+                      "assets/icons/reportIcon.png",
+                      width: 22,
+                      height: 22,
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  const Expanded(
+                    child: Text(
+                      'Report Utility Problem',
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontFamily: 'FigtreeRegular',
+                        fontWeight: FontWeight.w600,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
 }

@@ -11,6 +11,7 @@ class CourseEnrollmentService {
     int courseId,
     String studentId,
     String courseName,
+    String lecturerId,
   ) async {
     try {
       final response = await http.post(
@@ -19,6 +20,7 @@ class CourseEnrollmentService {
         body: jsonEncode({
           'courseId': courseId,
           'studentId': studentId,
+          'lecturerId': lecturerId,
         }),
       );
 

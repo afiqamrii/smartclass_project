@@ -55,30 +55,21 @@ class _LectCreateClassState extends ConsumerState<LectCreateClass> {
           children: [
             //Here is the create class section , pass to the method inputField to create the input fields (title, description, date, time, location)
             // Subject Code Input
+            const Text(
+              'Select Course',
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            const SizedBox(height: 8),
             _courseDropdown(
-                context, courseListAsync, courseController, titleController),
+              context,
+              courseListAsync,
+              courseController,
+              titleController,
+            ),
             const SizedBox(height: 10),
-
-            // inputField(
-            //   'Course Code',
-            //   'e.g : CSE3403',
-            //   10,
-            //   null,
-            //   textCapitalization: TextCapitalization.characters,
-            //   controller: courseCodeController,
-            // ),
-            // const SizedBox(height: 5),
-
-            // // Title Input
-            // inputField(
-            //   'Class Name',
-            //   'e.g : Programming (K1) , Max 50 words',
-            //   50,
-            //   null,
-            //   textCapitalization: TextCapitalization.words,
-            //   controller: titleController,
-            // ),
-            // const SizedBox(height: 5),
 
             // Date Input
             inputField(
@@ -224,7 +215,7 @@ class _LectCreateClassState extends ConsumerState<LectCreateClass> {
       title: const Text(
         'Create Class',
         style: TextStyle(
-          fontSize: 19,
+          fontSize: 15,
           color: Colors.black,
         ),
       ),

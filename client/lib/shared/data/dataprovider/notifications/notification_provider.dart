@@ -9,8 +9,10 @@ final notificationServiceProvider = Provider<NotificationService>((ref) {
 });
 
 // FutureProvider to get unread notification count
-final unreadNotificationCountProvider = FutureProvider.autoDispose<int>((ref) async {
-  final user = ref.watch(userProvider); // assuming userProvider holds the current user
+final unreadNotificationCountProvider =
+    FutureProvider.autoDispose<int>((ref) async {
+  final user =
+      ref.watch(userProvider); // assuming userProvider holds the current user
   if (user.externalId.isEmpty) return 0;
 
   final notificationService = ref.read(notificationServiceProvider);
@@ -18,8 +20,10 @@ final unreadNotificationCountProvider = FutureProvider.autoDispose<int>((ref) as
 });
 
 //Get all notifications
-final notificationProvider = FutureProvider.autoDispose<List<NotificationModel>>((ref) async {
-  final user = ref.watch(userProvider); // assuming userProvider holds the current user
+final notificationProvider =
+    FutureProvider.autoDispose<List<NotificationModel>>((ref) async {
+  final user =
+      ref.watch(userProvider); // assuming userProvider holds the current user
   if (user.externalId.isEmpty) return [];
   final notificationService = ref.read(notificationServiceProvider);
   return await notificationService.getNotifications(user.externalId);

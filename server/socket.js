@@ -9,20 +9,20 @@ function setupSocket(io) {
   console.log('A user connected');
 
   socket.on('identify', async (userId) => {
-    // Store socket ID for the user in global map
     global.connectedUsers = global.connectedUsers || {};
     global.connectedUsers[userId] = socket.id;
+    socket.userId = userId; // Save for disconnect cleanup
 
-    // Get unread report count for this user
     const count = await reportService.getNewReportCountByUser(userId);
-
-    // Emit count only to this user's socket
     socket.emit('new_report_count', { count });
   });
 
   socket.on('disconnect', () => {
     console.log('User disconnected');
-    // Optionally remove from global.connectedUsers
+    // Remove user from global.connectedUsers
+    if (socket.userId && global.connectedUsers[socket.userId] === socket.id) {
+      delete global.connectedUsers[socket.userId];
+    }
   });
 });
 

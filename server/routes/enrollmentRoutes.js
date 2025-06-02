@@ -12,4 +12,7 @@ router.get("/getenrollment/:studentId", enrollmentController.getStudentEnrollmen
 //Get all enrollments for a student
 router.get("/allenrollment/:studentId", enrollmentController.getAllEnrollment); //Get all enrollments for a student
 
+//Get enrollments for a course for a lecturer to verify
+router.get("/courseenrollment/:lecturerId", enrollmentController.lecturerGetEnrollment); //Get enrollments for a course for a lecturer to verify 
+
 module.exports = router;

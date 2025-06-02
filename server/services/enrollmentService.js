@@ -22,6 +22,15 @@ exports.getStudentEnrollment = async (studentId) => {
     }
 };
 
+// Function to get enrollments for a course for a lecturer to verify
+exports.lecturerGetEnrollment = async ( lecturerId) => {
+    try {
+        return await enrollmentModel.lecturerGetEnrollment( lecturerId);
+    } catch (error) {
+        throw new Error("Error in service while fetching course enrollments for lecturer: " + error.message);
+    }
+};
+
 // Function to get all enrollments for a student
 exports.getAllEnrollments = async (studentId) => {
     try {

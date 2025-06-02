@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 // import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:smartclass_fyp_2024/master/app_strings.dart';
@@ -8,8 +9,19 @@ import 'package:smartclass_fyp_2024/shared/data/services/auth_services.dart';
 import 'package:smartclass_fyp_2024/features/onboarding/splashscreen/splashScreen.dart';
 import 'package:smartclass_fyp_2024/navigator_validToken.dart';
 
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+    FlutterLocalNotificationsPlugin();
+    
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  const AndroidInitializationSettings initializationSettingsAndroid =
+      AndroidInitializationSettings('@mipmap/ic_launcher');
+
+  const InitializationSettings initializationSettings =
+      InitializationSettings(android: initializationSettingsAndroid);
+
+  await flutterLocalNotificationsPlugin.initialize(initializationSettings);
+  
   await AppStrings.loadStrings();
   // await dotenv.load(fileName: ".env");
   runApp(const ProviderScope(child: MyApp()));
@@ -53,25 +65,24 @@ class _MainScreenState extends ConsumerState<MainScreen> {
   }
 
   Future<void> loadUserData() async {
-  final user = await ref.read(authServiceProvider).getUserData();
+    final user = await ref.read(authServiceProvider).getUserData();
 
-  if (user != null) {
-    ref.read(userProvider.notifier).setUserFromModel(user);
+    if (user != null) {
+      ref.read(userProvider.notifier).setUserFromModel(user);
 
-    // ✅ Refresh unread notifications
-    // ignore: unused_result
-    ref.refresh(unreadNotificationCountProvider);
-  } else {
+      // ✅ Refresh unread notifications
+      // ignore: unused_result
+      ref.refresh(unreadNotificationCountProvider);
+    } else {
+      setState(() {
+        tokenExpired = true;
+      });
+    }
+
     setState(() {
-      tokenExpired = true;
+      isLoading = false;
     });
   }
-
-  setState(() {
-    isLoading = false;
-  });
-}
-
 
   @override
   @override
@@ -109,3 +120,5 @@ class _MainScreenState extends ConsumerState<MainScreen> {
     );
   }
 }
+
+

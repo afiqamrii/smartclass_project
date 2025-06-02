@@ -44,10 +44,11 @@ const EnrollmentModel = {
         try {
             console.log("Fetching enrollments for student:", studentId);
             const query = `
-                SELECT ce.enrollment_id, ce.student_id, ce.courseId, ce.requested_at, c.courseName, c.courseCode, c.imageUrl, ce.status
+                SELECT ce.enrollment_id, ce.student_id, ce.courseId, ce.requested_at, c.courseName, c.courseCode, c.imageUrl, ce.status ,c.lecturerId , u.name AS lecturerName
                 FROM CourseEnrollment ce
                 JOIN Course c ON ce.courseId = c.courseId
-                WHERE ce.student_id = ? AND ce.status = "Pending"
+                JOIN User u ON c.lecturerId = u.externalId
+                WHERE ce.student_id = ? AND ce.status = "Pending" 
                 ORDER BY ce.requested_at DESC;
             `;
             const [rows] = await pool.query(query, [studentId]);
@@ -64,9 +65,10 @@ const EnrollmentModel = {
         try {
             console.log("Fetching enrollments for student:", studentId);
             const query = `
-                SELECT ce.enrollment_id, ce.student_id, ce.courseId, ce.requested_at, c.courseName, c.courseCode, c.imageUrl, ce.status
+                SELECT ce.enrollment_id, ce.student_id, ce.courseId, ce.requested_at, c.courseName, c.courseCode, c.imageUrl, ce.status ,c.lecturerId , u.name AS lecturerName
                 FROM CourseEnrollment ce
                 JOIN Course c ON ce.courseId = c.courseId
+                JOIN User u ON c.lecturerId = u.externalId
                 WHERE ce.student_id = ?
                 ORDER BY ce.requested_at DESC;
             `;
@@ -77,6 +79,31 @@ const EnrollmentModel = {
             throw new Error(`Error in Model: Failed to fetch enrollments: ${err.message}`);
         }
     },
+
+    // Get all enrollments for a course for a lecturer to verify
+    async lecturerGetEnrollment(lecturerId) {
+        // Validate input
+        if (!lecturerId) {
+            throw new Error("Lecturer ID is required");
+        }
+
+        try {
+            console.log("Fetching enrollments for lecturer:", lecturerId);
+            const query = `
+                SELECT ce.enrollment_id, ce.student_id, ce.courseId, ce.requested_at, c.courseName, c.courseCode, c.imageUrl, ce.status , u.name AS studentName
+                FROM CourseEnrollment ce
+                JOIN Course c ON ce.courseId = c.courseId
+                JOIN User u ON ce.student_id = u.externalId
+                WHERE c.lecturerId = ?
+                ORDER BY ce.requested_at DESC;
+            `;
+            const [rows] = await pool.query(query, [lecturerId]);
+            return rows; // Return the list of enrollments
+        } catch (err) {
+            console.error("Error retrieving data:", err.message);
+            throw new Error(`Error in Model: Failed to fetch course enrollments for lecturer: ${err.message}`);
+        }
+    }
 
 
 };
