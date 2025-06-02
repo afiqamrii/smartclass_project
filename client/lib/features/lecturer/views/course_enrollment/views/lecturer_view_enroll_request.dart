@@ -52,6 +52,7 @@ class _LecturerViewEnrollRequestState
   Future<void> updateEnrollmentRequestStatus(
       int enrollmentId, String status) async {
     try {
+      // ignore: unused_local_variable
       final response =
           await CourseEnrollmentRequestApi.updateEnrollmentRequestStatus(
         enrollmentId,
