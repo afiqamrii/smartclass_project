@@ -160,6 +160,25 @@ const lecturerGetEnrollment = async (req, res) => {
     }
 };
 
+// Update enrollment status
+const updateEnrollmentStatus = async (req, res) => {
+    try {
+        const { enrollmentId, status } = req.body;
 
-module.exports = { enrollStudent , getStudentEnrollment , getAllEnrollment, lecturerGetEnrollment };
+        // Validate input
+        if (!enrollmentId || !status) {
+            return res.status(400).json({ error: "Enrollment ID and status are required" });
+        }
+
+        // Call service to update enrollment status
+        const result = await enrollmentService.updateEnrollmentStatus(enrollmentId, status);
+        res.status(200).json({ message: "Enrollment status updated successfully", result });
+    } catch (error) {
+        console.error("Controller Error:", error);
+        res.status(500).json({ error: error.message });
+    }
+};
+
+
+module.exports = { enrollStudent , getStudentEnrollment , getAllEnrollment, lecturerGetEnrollment , updateEnrollmentStatus };
 

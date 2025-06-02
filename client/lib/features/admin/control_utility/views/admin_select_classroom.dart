@@ -17,6 +17,7 @@ class _AdminSelectClassroomState extends ConsumerState<AdminSelectClassroom> {
   String searchText = '';
   final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
+  late TextEditingController _searchController;
 
   void _onRefresh() async {
     // ignore: unused_result
@@ -29,6 +30,21 @@ class _AdminSelectClassroomState extends ConsumerState<AdminSelectClassroom> {
     await Future.delayed(const Duration(seconds: 1));
     if (mounted) setState(() {});
     _refreshController.loadComplete();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _searchController = TextEditingController(text: searchText);
+    _searchController.addListener(() {
+      setState(() {}); // Update UI to show/hide clear icon
+    });
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
   }
 
   @override
@@ -66,6 +82,15 @@ class _AdminSelectClassroomState extends ConsumerState<AdminSelectClassroom> {
                       setState(() {
                         searchText = value.toLowerCase();
                       });
+                    },
+                    controller: _searchController,
+                    onClear: () {
+                      setState(
+                        () {
+                          searchText = '';
+                          _searchController.clear();
+                        },
+                      );
                     },
                   ),
                 ),
@@ -112,9 +137,9 @@ class _AdminSelectClassroomState extends ConsumerState<AdminSelectClassroom> {
                                     toLeftTransition(
                                       AdminControlUtilities(
                                         classroomId: classroom.classroomId,
-                                        classroomName:
-                                            classroom.classroomName,
-                                        classroomDevId : classroom.group_developer_id,
+                                        classroomName: classroom.classroomName,
+                                        classroomDevId:
+                                            classroom.group_developer_id,
                                         esp32Id: classroom.esp32_id,
                                       ),
                                     ),
@@ -200,8 +225,14 @@ AppBar _appBar(BuildContext context) {
 
 class _SearchBarDelegate extends SliverPersistentHeaderDelegate {
   final ValueChanged<String> onChanged;
+  final TextEditingController controller;
+  final VoidCallback onClear;
 
-  _SearchBarDelegate({required this.onChanged});
+  _SearchBarDelegate({
+    required this.onChanged,
+    required this.controller,
+    required this.onClear,
+  });
 
   @override
   double get minExtent => 70;
@@ -210,7 +241,10 @@ class _SearchBarDelegate extends SliverPersistentHeaderDelegate {
 
   @override
   Widget build(
-      BuildContext context, double shrinkOffset, bool overlapsContent) {
+    BuildContext context,
+    double shrinkOffset,
+    bool overlapsContent,
+  ) {
     return Container(
       color: Colors.white,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
@@ -221,20 +255,31 @@ class _SearchBarDelegate extends SliverPersistentHeaderDelegate {
           borderRadius: BorderRadius.circular(25),
         ),
         child: TextField(
+          controller: controller,
           onChanged: onChanged,
-          decoration: const InputDecoration(
+          decoration: InputDecoration(
             border: InputBorder.none,
-            contentPadding: EdgeInsets.symmetric(vertical: 15),
+            contentPadding: const EdgeInsets.symmetric(vertical: 15),
             hintText: 'Search...',
-            hintStyle: TextStyle(
+            hintStyle: const TextStyle(
               color: Colors.grey,
               fontSize: 15,
             ),
-            prefixIcon: Icon(
+            prefixIcon: const Icon(
               Icons.search,
               color: Colors.grey,
               size: 23,
             ),
+            suffixIcon: controller.text.isNotEmpty
+                ? IconButton(
+                    icon: const Icon(
+                      Icons.clear,
+                      color: Colors.grey,
+                      size: 17,
+                    ),
+                    onPressed: onClear,
+                  )
+                : null,
           ),
         ),
       ),
@@ -242,5 +287,5 @@ class _SearchBarDelegate extends SliverPersistentHeaderDelegate {
   }
 
   @override
-  bool shouldRebuild(covariant _SearchBarDelegate oldDelegate) => false;
+  bool shouldRebuild(covariant _SearchBarDelegate oldDelegate) => true;
 }

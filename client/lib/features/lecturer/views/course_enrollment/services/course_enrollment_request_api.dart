@@ -44,4 +44,41 @@ class CourseEnrollmentRequestApi {
           : 'Could not fetch enrollment requests. Please try again later.');
     }
   }
+
+  //Function to update the enrollment request status
+  static Future<void> updateEnrollmentRequestStatus(
+      int enrollmentId, String status) async {
+    try {
+      final response = await http.put(
+        Uri.parse('${ApiConstants.baseUrl}/enrollment/updateenrollment'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'enrollmentId': enrollmentId,
+          'status': status,
+        }),
+      );
+
+      print('Status: ${response.statusCode}, Body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        final jsonData = jsonDecode(response.body);
+        // Check for presence of error key instead of success key
+        if (jsonData.containsKey('error')) {
+          throw Exception(jsonData['error']);
+        }
+        // success path: do nothing (return)
+      } else {
+        final jsonData = jsonDecode(response.body);
+        final error = jsonData['error'] ?? 'Failed to update request.';
+        throw Exception(error);
+      }
+    } catch (e) {
+      print('Error in updateEnrollmentRequestStatus: $e');
+      throw Exception(
+        e is Exception
+            ? e.toString().replaceFirst('Exception: ', '')
+            : 'Could not update enrollment request status. Please try again later.',
+      );
+    }
+  }
 }

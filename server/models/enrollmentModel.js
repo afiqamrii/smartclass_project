@@ -111,6 +111,30 @@ const EnrollmentModel = {
             console.error("Model Error:", err.message);
             throw new Error("Database query failed while fetching enrollments.");
         }
+    },
+
+    // Update enrollment status
+    async updateEnrollmentStatus(enrollmentId, status) {
+        // Validate input
+        if (!enrollmentId || !status) {
+            throw new Error("Enrollment ID and status are required");
+        }
+
+        try {
+            console.log("Updating enrollment status:", { enrollmentId, status });
+            const query = `UPDATE CourseEnrollment SET status = ? WHERE enrollment_id = ?`;
+            const [result] = await pool.query(query, [status, enrollmentId]);
+
+            if (result.affectedRows === 0) {
+                throw new Error("No enrollment found with the provided ID");
+            }
+
+            console.log("Enrollment status updated successfully:", result);
+            return result; // Return the result of the update operation
+        } catch (err) {
+            console.error("Error updating data:", err.message);
+            throw new Error(`Error in Model: Failed to update enrollment status: ${err.message}`);
+        }
     }
 
 };

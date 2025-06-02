@@ -41,3 +41,13 @@ exports.getAllEnrollments = async (studentId) => {
         throw new Error("Error in service while fetching all enrollments: " + error.message);
     }
 };
+
+// Function to update enrollment status
+exports.updateEnrollmentStatus = async (enrollmentId, status) => {
+    try {
+        return await enrollmentModel.updateEnrollmentStatus(enrollmentId, status);
+    } catch (error) {
+        console.error("Service Error:", error);
+        throw new Error("Failed to update enrollment status.");
+    }
+};

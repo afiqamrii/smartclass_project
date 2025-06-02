@@ -15,4 +15,7 @@ router.get("/allenrollment/:studentId", enrollmentController.getAllEnrollment); 
 //Get enrollments for a course for a lecturer to verify
 router.get("/courseenrollment/:lecturerId/:courseId", enrollmentController.lecturerGetEnrollment); //Get enrollments for a course for a lecturer to verify 
 
+//Update enrollment status
+router.put("/updateenrollment", enrollmentController.updateEnrollmentStatus); //Update enrollment status
+
 module.exports = router;

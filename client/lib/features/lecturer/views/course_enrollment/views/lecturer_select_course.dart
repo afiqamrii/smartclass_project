@@ -18,6 +18,7 @@ class _LecturerSelectCourseState extends ConsumerState<LecturerSelectCourse> {
   String searchText = '';
   final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
+  late TextEditingController _searchController;
 
   void _onRefresh() async {
     // ignore: unused_result
@@ -34,10 +35,26 @@ class _LecturerSelectCourseState extends ConsumerState<LecturerSelectCourse> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    _searchController = TextEditingController(text: searchText);
+    _searchController.addListener(() {
+      setState(() {}); // Update UI to show/hide clear icon
+    });
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     //Get user data
     final user = ref.watch(userProvider);
 
+    // Get the list of courses by lecturer ID
     final courseByLecturerAsyncValue =
         ref.watch(courseListByLecturerIdProvider(user.externalId));
 
@@ -48,7 +65,10 @@ class _LecturerSelectCourseState extends ConsumerState<LecturerSelectCourse> {
         controller: _refreshController,
         enablePullDown: true,
         header: const ClassicHeader(
-          releaseIcon: Icon(Icons.arrow_upward, color: Colors.grey),
+          releaseIcon: Icon(
+            Icons.arrow_upward,
+            color: Colors.grey,
+          ),
         ),
         onRefresh: _onRefresh,
         onLoading: _onLoading,
@@ -72,6 +92,15 @@ class _LecturerSelectCourseState extends ConsumerState<LecturerSelectCourse> {
                         searchText = value.toLowerCase();
                       });
                     },
+                    controller: _searchController,
+                    onClear: () {
+                      setState(
+                        () {
+                          searchText = '';
+                          _searchController.clear();
+                        },
+                      );
+                    },
                   ),
                 ),
                 SliverPadding(
@@ -81,7 +110,7 @@ class _LecturerSelectCourseState extends ConsumerState<LecturerSelectCourse> {
                   sliver: SliverToBoxAdapter(
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
-                        vertical: 16,
+                        vertical: 5,
                       ),
                       child: Text(
                         '${filtered.length} Courses',
@@ -100,8 +129,10 @@ class _LecturerSelectCourseState extends ConsumerState<LecturerSelectCourse> {
                   )
                 else
                   SliverPadding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 15,
+                    padding: const EdgeInsets.only(
+                      left: 15,
+                      right: 15,
+                      bottom: 15,
                     ),
                     sliver: SliverList(
                       delegate: SliverChildBuilderDelegate(
@@ -181,7 +212,7 @@ AppBar _appBar(BuildContext context) {
     backgroundColor: Colors.white,
     elevation: 0,
     title: const Text(
-      "Select Course",
+      "Your Courses",
       style: TextStyle(
         fontSize: 15,
         color: Colors.black,
@@ -202,8 +233,14 @@ AppBar _appBar(BuildContext context) {
 
 class _SearchBarDelegate extends SliverPersistentHeaderDelegate {
   final ValueChanged<String> onChanged;
+  final TextEditingController controller;
+  final VoidCallback onClear;
 
-  _SearchBarDelegate({required this.onChanged});
+  _SearchBarDelegate({
+    required this.onChanged,
+    required this.controller,
+    required this.onClear,
+  });
 
   @override
   double get minExtent => 70;
@@ -212,7 +249,10 @@ class _SearchBarDelegate extends SliverPersistentHeaderDelegate {
 
   @override
   Widget build(
-      BuildContext context, double shrinkOffset, bool overlapsContent) {
+    BuildContext context,
+    double shrinkOffset,
+    bool overlapsContent,
+  ) {
     return Container(
       color: Colors.white,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
@@ -223,20 +263,31 @@ class _SearchBarDelegate extends SliverPersistentHeaderDelegate {
           borderRadius: BorderRadius.circular(25),
         ),
         child: TextField(
+          controller: controller,
           onChanged: onChanged,
-          decoration: const InputDecoration(
+          decoration: InputDecoration(
             border: InputBorder.none,
-            contentPadding: EdgeInsets.symmetric(vertical: 15),
+            contentPadding: const EdgeInsets.symmetric(vertical: 15),
             hintText: 'Search...',
-            hintStyle: TextStyle(
+            hintStyle: const TextStyle(
               color: Colors.grey,
               fontSize: 15,
             ),
-            prefixIcon: Icon(
+            prefixIcon: const Icon(
               Icons.search,
               color: Colors.grey,
               size: 23,
             ),
+            suffixIcon: controller.text.isNotEmpty
+                ? IconButton(
+                    icon: const Icon(
+                      Icons.clear,
+                      color: Colors.grey,
+                      size: 17,
+                    ),
+                    onPressed: onClear,
+                  )
+                : null,
           ),
         ),
       ),
@@ -244,5 +295,5 @@ class _SearchBarDelegate extends SliverPersistentHeaderDelegate {
   }
 
   @override
-  bool shouldRebuild(covariant _SearchBarDelegate oldDelegate) => false;
+  bool shouldRebuild(covariant _SearchBarDelegate oldDelegate) => true;
 }
