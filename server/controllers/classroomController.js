@@ -21,24 +21,24 @@ exports.addClassroom = async (req, res) => {
         // Call service to add classroom
         const newClassroom = await classroomService.addClassroom({ classroomName , groupDevId });
 
-        //If successfully added 
-        //Create group in Favoriot
-        if (newClassroom) {
-            const groupPayload = {
-                group_name: favoriotGroupName,
-                group_developer_id: groupDevId,
-                active: true,
-                application_developer_id: process.env.FAVORIOT_APP_ID,
-                description: `Group for ${classroomName}`,
-                user_id: process.env.FAVORIOT_USERNAME,
-            };
+        // //If successfully added 
+        // //Create group in Favoriot
+        // if (newClassroom) {
+        //     const groupPayload = {
+        //         group_name: favoriotGroupName,
+        //         group_developer_id: groupDevId,
+        //         active: true,
+        //         application_developer_id: process.env.FAVORIOT_APP_ID,
+        //         description: `Group for ${classroomName}`,
+        //         user_id: process.env.FAVORIOT_USERNAME,
+        //     };
 
-            //Print
-            console.log("Creating group with payload:", groupPayload);
+        //     //Print
+        //     console.log("Creating group with payload:", groupPayload);
 
-            // Create group in Favoriot
-            await createGroup(groupPayload);
-        }
+        //     // Create group in Favoriot
+        //     await createGroup(groupPayload);
+        // }
 
 
         res.status(201).json({

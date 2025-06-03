@@ -45,7 +45,7 @@ class _AdminControlUtilitiesState extends ConsumerState<AdminControlUtilities> {
       ref.read(utilityProvider.notifier).loadUtilities(widget.classroomId);
 
       // Listen for utility updates
-      socket.off('utility_status_update'); // avoid duplicates
+      socket.off('utility_status_update');
       socket.on('utility_status_update', (data) {
         final int receivedClassroomId = data['classroomId'];
 
@@ -55,7 +55,8 @@ class _AdminControlUtilitiesState extends ConsumerState<AdminControlUtilities> {
                 newStatus: data['utilityStatus'],
               );
 
-          ref.read(utilityProvider.notifier).loadUtilities(widget.classroomId);
+          // ✅ Removed this line to prevent re-fetching and flickering
+          // ref.read(utilityProvider.notifier).loadUtilities(widget.classroomId);
         }
       });
     });
@@ -117,6 +118,7 @@ class _AdminControlUtilitiesState extends ConsumerState<AdminControlUtilities> {
                                 utility.utilityStatus == 'ON' ? true : false,
                             utilityId: utility.utilityId,
                             classroomId: widget.classroomId,
+                            deviceId: utility.deviceId,
                           );
                         }),
                         _addUtilitySection(context),

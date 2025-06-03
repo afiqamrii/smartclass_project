@@ -5,8 +5,8 @@ const UtilityModel = {
     async addUtility(utility) {
         try {
             console.log("Adding utility:", utility);
-            const query = `INSERT INTO Utility (utilityName, device_id , classroomId , topic , utilityType) VALUES (?, ? , ?, ? , ?)`;
-            const [result] = await pool.query(query, [utility.name, utility.device_id , utility.classroomId, utility.topic, utility.utilityType]);
+            const query = `INSERT INTO Utility (utilityName, device_id , classroomId , utilityType) VALUES (?, ? , ? , ?)`;
+            const [result] = await pool.query(query, [utility.name, utility.device_id , utility.classroomId, utility.utilityType]);
             if (result.affectedRows === 0) {
                 throw new Error("No rows affected, utility not added");
             }

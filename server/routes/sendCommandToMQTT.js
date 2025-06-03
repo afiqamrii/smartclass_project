@@ -46,4 +46,58 @@ router.post('/send-command/:classId', (req, res) => {
   });
 });
 
+// 🆕 POST /mqtt/send
+router.post('/controlUtility', (req, res) => {
+  const { message , device_id } = req.body;
+  const messageToSend = message.toLowerCase().trim();
+
+  //Merge the device_id with the message to be e.g {device_id}_{message} = 'lamp1_on'
+  const payloadMessage = device_id + '_' + messageToSend;
+
+  //Debug print to check the received message
+  // console.log("Received message:", message , messageToSend);
+
+  // Validate the message
+  if (!message || typeof message !== 'string' || message.trim() === '') {
+    return res.status(400).send({
+      Status_Code: 400,
+      Message: 'Invalid or missing "message" in request body',
+    });
+  }
+
+  if (!message) {
+    return res.status(400).send({
+      Status_Code: 400,
+      Message: 'Missing "message" in request body',
+    });
+  }
+  
+  //Payload to send to MQTT
+  const payload = JSON.stringify({
+    data: {
+      message: payloadMessage
+    }
+  });
+
+  // Debug print to check the payload
+  // console.log("Payload to MQTT:", payload);
+
+  mqttClient.publish(topic, payload, (err) => {
+    if (err) {
+      console.error('❌ Error publishing to MQTT:', err);
+      return res.status(500).send({
+        Status_Code: 500,
+        Message: 'Failed to send message',
+      });
+    }
+
+    console.log('✅ MQTT message published:', payload);
+    return res.status(200).send({
+      Status_Code: 200,
+      Message: 'Message sent successfully',
+      Published: payload
+    });
+  });
+});
+
 module.exports = router;

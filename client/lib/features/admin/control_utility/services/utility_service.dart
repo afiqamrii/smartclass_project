@@ -118,16 +118,31 @@ class UtilityService {
 
   //Update utility status by ID
   static Future<void> updateUtilityStatus(
-      int utilityId, String newStatus, int classroomId) async {
+      int utilityId, String newStatus, int classroomId, String deviceId) async {
+    
+    //First send the new status to the backend
     final response = await http.put(
       Uri.parse(
           '${ApiConstants.baseUrl}/utility/updateUtilityStatus/$utilityId'),
       headers: {'Content-Type': 'application/json'},
-      body:
-          jsonEncode({'utilityStatus': newStatus, 'classroomId': classroomId}),
+      body: jsonEncode({
+        'utilityStatus': newStatus,
+        'classroomId': classroomId,
+        'device_id': deviceId,
+      }),
     );
 
-    if (response.statusCode == 200) {
+    //Send the new status to the API endpoint for update to MQTT
+    final mqttResponse = await http.post(
+      Uri.parse('${ApiConstants.baseUrl}/mqtt/controlUtility'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'message': newStatus,
+        'device_id': deviceId,
+      }),
+    );
+
+    if (response.statusCode == 200 && mqttResponse.statusCode == 200) {
       // Successfully updated the utility status
       print(
           'UtilityService: Updated utility ID $utilityId to status $newStatus');

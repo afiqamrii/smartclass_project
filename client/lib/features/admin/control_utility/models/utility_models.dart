@@ -5,7 +5,7 @@ class UtilityModels {
   final String utilityStatus;
   final String deviceId;
   final int classroomId;
-  final String topic;
+  // final String topic;
   final String utilityType;
 
   UtilityModels({
@@ -14,7 +14,7 @@ class UtilityModels {
     required this.utilityStatus,
     required this.deviceId,
     required this.classroomId,
-    required this.topic,
+    // required this.topic,
     required this.utilityType,
   });
 
@@ -27,7 +27,7 @@ class UtilityModels {
       deviceId: json['device_id'] ??
           "Unknown Device ID", // Maps 'device_id' from JSON
       classroomId: json['classroomId'] ?? 0,
-      topic: json['topic'] ?? "No Topic",
+      // topic: json['topic'] ?? "No Topic",
       utilityType: json['utilityType'] ?? "Unknown Type",
     );
   }
@@ -49,7 +49,7 @@ class UtilityModels {
           this.utilityStatus, // Use new status if provided, else old
       deviceId: deviceId ?? this.deviceId,
       classroomId: classroomId ?? this.classroomId,
-      topic: topic ?? this.topic,
+      // topic: topic ?? this.topic,
       utilityType: utilityType,
     );
   }

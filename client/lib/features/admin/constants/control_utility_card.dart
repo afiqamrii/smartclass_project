@@ -8,16 +8,18 @@ class ControlUtilityCard extends StatefulWidget {
   final bool initialStatus;
   final int utilityId;
   final int classroomId;
+  final String deviceId;
 
   const ControlUtilityCard({
-    Key? key,
+    super.key,
     required this.title,
     required this.subtitle,
     required this.imagePath,
     required this.utilityId,
     required this.classroomId,
+    required this.deviceId,
     this.initialStatus = false,
-  }) : super(key: key);
+  });
 
   @override
   State<ControlUtilityCard> createState() => _ControlUtilityCardState();
@@ -32,12 +34,14 @@ class _ControlUtilityCardState extends State<ControlUtilityCard> {
     isOn = widget.initialStatus;
   }
 
-  void sendToBackend(String newStatus, int utilityId, int classroomId) {
+  void sendToBackend(
+      String newStatus, int utilityId, int classroomId, String deviceId) {
     // Send the updated status to the backend
     UtilityService.updateUtilityStatus(
       utilityId,
       newStatus,
       classroomId,
+      deviceId,
     ).then((_) {
       setState(() {
         //If the backend update is successful, update the local state
@@ -122,11 +126,12 @@ class _ControlUtilityCardState extends State<ControlUtilityCard> {
                     //Toggle on , send 'ON' to the backend
                     if (isOn) {
                       // Code to turn on the utility
-                      sendToBackend("ON", widget.utilityId, widget.classroomId);
+                      sendToBackend("ON", widget.utilityId, widget.classroomId,
+                          widget.deviceId);
                     } else {
                       // Code to turn off the utility
-                      sendToBackend(
-                          "OFF", widget.utilityId, widget.classroomId);
+                      sendToBackend("OFF", widget.utilityId, widget.classroomId,
+                          widget.deviceId);
                     }
                   },
                   activeColor: Colors.white,

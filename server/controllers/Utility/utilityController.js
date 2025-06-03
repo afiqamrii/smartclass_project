@@ -21,46 +21,46 @@ const addUtility = async (req, res) => {
         }
 
         // Sanitize/Format the utility name for Favoriot's group_name
-        const favoriotDeviceName = name.replace(/\s+/g, ""); 
+        const formattedName = name.replace(/\s+/g, ""); 
 
-        // Payload to add device in Favoriot
-        const payload = {
-            device_name: favoriotDeviceName,
-            active: true,
-            group_developer_id: group_developer_id,
-            description: name,
-            device_type: "ESP32",
-            sensor_type: "others",
-            timezone: "Asia/Kuala_Lumpur",
-            latitue: 0,
-            longitude: 0,
-        };
+        // // Payload to add device in Favoriot
+        // const payload = {
+        //     device_name: favoriotDeviceName,
+        //     active: true,
+        //     group_developer_id: group_developer_id,
+        //     description: name,
+        //     device_type: "ESP32",
+        //     sensor_type: "others",
+        //     timezone: "Asia/Kuala_Lumpur",
+        //     latitue: 0,
+        //     longitude: 0,
+        // };
 
         // Debug print to check the payload
-        console.log("Payload to Favoriot:", payload);
+        // console.log("Payload to Favoriot:", payload);
 
-        let response;
-        try {
-            response = await createDevice(payload);
-            console.log("Response from Favoriot:", response);
-        } catch (err) {
-            // Handle Favoriot duplicate device error
-            if (err.response && err.response.status === 409) {
-                return res.status(409).json({ error: "Device name already exists. Please use a different name." });
-            }
-            console.error("Error from Favoriot API:", err);
-            return res.status(500).json({ error: "Failed to create device in Favoriot" });
-        }
+        // let response;
+        // try {
+        //     response = await createDevice(payload);
+        //     console.log("Response from Favoriot:", response);
+        // } catch (err) {
+        //     // Handle Favoriot duplicate device error
+        //     if (err.response && err.response.status === 409) {
+        //         return res.status(409).json({ error: "Device name already exists. Please use a different name." });
+        //     }
+        //     console.error("Error from Favoriot API:", err);
+        //     return res.status(500).json({ error: "Failed to create device in Favoriot" });
+        // }
 
         // // Debug print to check the response
         // console.log("Response from Favoriot:", response);
 
         //Topic to add in the database
-        const topic = `v2/streams/${favoriotDeviceName}`;
+        // const topic = `v2/streams/${favoriotDeviceName}`;
 
         //Add the topic and device_id to the request body
-        req.body.topic = topic;
-        req.body.device_id = favoriotDeviceName; 
+        // req.body.topic = topic;
+        req.body.device_id = formattedName; 
 
         // Debug print to check the request body
         console.log("Request body:", req.body);
@@ -117,12 +117,12 @@ const getAllUtilities = async (req, res) => {
 
 //Function to update utility status by ID
 const updateUtilityStatus = async (req, res) => {
-    const { utilityStatus , classroomId } = req.body;
+    const { utilityStatus , classroomId , device_id } = req.body;
     const utilityId = req.params.utilityId;
 
     // Validate input
-    if (utilityStatus == "" || utilityId == "") {
-        return res.status(400).json({ error: 'Status and Utility ID are required' });
+    if (utilityStatus == "" || utilityId == "" || device_id == "") {
+        return res.status(400).json({ error: 'Status , Device ID and Utility ID are required' });
     }
 
     try {
