@@ -40,6 +40,33 @@ const ClassroomModel = {
             return [];
         }
     },
+
+    // Get classroom by esp32 ID
+    async getClassroomByEsp32Id(esp32Id) {
+        if (!esp32Id || esp32Id.trim() === "") {
+            throw new Error("ESP32 ID is required");
+        }
+        try {
+            const query = 
+            `SELECT 
+            c.group_developer_id,
+            u.device_id
+
+            FROM Classroom c
+            JOIN Utility u ON c.classroomId = u.classroomId 
+            
+            WHERE esp32_id = ?`;
+
+            const [rows] = await pool.query(query, [esp32Id]);
+            if (rows.length === 0) {
+                throw new Error("No classroom found with the provided ESP32 ID");
+            }
+            return rows; // Return the first matching classroom
+        } catch (err) {
+            console.error("Error retrieving classroom by esp32_id:", err.message);
+            throw new Error("Error in Model : Failed to fetch classroom by esp32 ID");
+        }
+    }
 };
 
 module.exports = ClassroomModel;

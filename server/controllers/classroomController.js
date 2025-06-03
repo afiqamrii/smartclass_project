@@ -68,3 +68,39 @@ exports.getClassroom = async (req, res) => {
         res.status(500).json({ message: "Failed to fetch classroom data" });
     }
 };
+
+// Function to get classroom by esp32 ID
+exports.getClassroomByEsp32Id = async (req, res) => {
+    try {
+        const esp32Id = req.params.esp32Id;
+
+        //Debugging log
+        console.log("Received request to get classroom by esp32 ID:", { esp32Id });
+
+        // Validate input
+        if (!esp32Id || esp32Id.trim() === "") {
+            return res.status(400).json({ message: "ESP32 ID is required" });
+        }
+
+        // Call service to get classroom by esp32 ID
+        const classroom = await classroomService.getClassroomByEsp32Id(esp32Id);
+
+        if (!classroom) {
+            return res.status(404).json({ message: "Classroom not found for the given ESP32 ID" });
+        }
+
+        // Format the response
+        const groupId = classroom[0].group_developer_id;
+        const devices = classroom.map(row => ({ name: row.device_id }));
+
+        //Respond with the classroom data
+        res.status(200).json({
+            groupId,
+            devices
+        });
+
+    } catch (error) {
+        console.error("Controller Error:", error);
+        res.status(500).json({ message: "Failed to fetch classroom data" });
+    }
+};

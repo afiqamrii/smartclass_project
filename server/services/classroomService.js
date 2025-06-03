@@ -30,5 +30,18 @@ const getClassroom = async () => {
     }
 };
 
+// Function to get classroom by esp32 ID
+const getClassroomByEsp32Id = async (esp32Id) => {
+    try {
+        if (!esp32Id || esp32Id.trim() === "") {
+            throw new Error("ESP32 ID is required");
+        }
+        const classroom = await classroomModel.getClassroomByEsp32Id(esp32Id);
+        return classroom;
+    } catch (error) {
+        throw new Error("Error in service while fetching classroom by esp32 ID: " + error.message);
+    }
+};
+
 //EXport module
-module.exports = { getClassroom , addClassroom , updateEsp32Id };
+module.exports = { getClassroom , addClassroom , updateEsp32Id , getClassroomByEsp32Id };
