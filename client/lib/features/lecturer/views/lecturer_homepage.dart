@@ -6,6 +6,7 @@ import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:smartclass_fyp_2024/constants/color_constants.dart';
 import 'package:smartclass_fyp_2024/features/lecturer/views/course_enrollment/views/lecturer_select_course.dart';
+import 'package:smartclass_fyp_2024/features/student/views/report_utility/views/student_view_reports_history.dart';
 import 'package:smartclass_fyp_2024/features/student/views/widgets/student_todayclass_card.dart';
 import 'package:smartclass_fyp_2024/shared/components/unavailablePage.dart';
 import 'package:smartclass_fyp_2024/shared/data/dataprovider/data_provider.dart';
@@ -533,7 +534,7 @@ Widget _cardSection(BuildContext context, User user) {
             ),
           },
           child: Container(
-            height: 100,
+            height: 90,
             decoration: BoxDecoration(
               color: const Color.fromARGB(255, 250, 250, 250),
               borderRadius: BorderRadius.circular(16),
@@ -565,10 +566,11 @@ Widget _cardSection(BuildContext context, User user) {
                   const Text(
                     'Course Enroll Request',
                     style: TextStyle(
-                      fontSize: 11,
+                      fontSize: 10,
                       fontFamily: 'FigtreeRegular',
                       fontWeight: FontWeight.w600,
                     ),
+                    textAlign: TextAlign.center,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -586,10 +588,15 @@ Widget _cardSection(BuildContext context, User user) {
         flex: 1,
         child: GestureDetector(
           onTap: () => {
-            // Handle tap on the card
+            // Handle tap on the card here
+            Navigator.of(context).push(
+              toLeftTransition(
+                const ViewReportsHistory(),
+              ),
+            ),
           },
           child: Container(
-            height: 100,
+            height: 90,
             decoration: BoxDecoration(
               color: const Color.fromARGB(255, 250, 250, 250),
               borderRadius: BorderRadius.circular(16),
@@ -621,11 +628,12 @@ Widget _cardSection(BuildContext context, User user) {
                   const Text(
                     'Report Utility Problem',
                     style: TextStyle(
-                      fontSize: 11,
+                      fontSize: 10,
                       fontFamily: 'FigtreeRegular',
                       fontWeight: FontWeight.w600,
                     ),
                     maxLines: 2,
+                    textAlign: TextAlign.center,
                     overflow: TextOverflow.ellipsis,
                   ),
                 ],
@@ -645,7 +653,7 @@ Widget _cardSection(BuildContext context, User user) {
             // Handle tap on the card
           },
           child: Container(
-            height: 100,
+            height: 90,
             decoration: BoxDecoration(
               color: const Color.fromARGB(255, 250, 250, 250),
               borderRadius: BorderRadius.circular(16),
@@ -657,8 +665,8 @@ Widget _cardSection(BuildContext context, User user) {
                 ),
               ],
             ),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(
+            child: const Padding(
+              padding: EdgeInsets.symmetric(
                 horizontal: 20,
                 vertical: 10,
               ),
@@ -672,15 +680,16 @@ Widget _cardSection(BuildContext context, User user) {
                       color: Colors.blue,
                     ),
                   ),
-                  const SizedBox(height: 10),
-                  const Text(
-                    'New Card Title',
+                  SizedBox(height: 10),
+                  Text(
+                    'Control Utilities',
                     style: TextStyle(
-                      fontSize: 11,
+                      fontSize: 10,
                       fontFamily: 'FigtreeRegular',
                       fontWeight: FontWeight.w600,
                     ),
                     maxLines: 2,
+                    textAlign: TextAlign.center,
                     overflow: TextOverflow.ellipsis,
                   ),
                 ],

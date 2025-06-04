@@ -8,6 +8,7 @@ import 'package:smartclass_fyp_2024/features/student/providers/student_class_pro
 import 'package:smartclass_fyp_2024/features/student/views/widgets/student_todayclass_card.dart';
 import 'package:smartclass_fyp_2024/master/app_strings.dart';
 import 'package:smartclass_fyp_2024/shared/components/unavailablePage.dart';
+import 'package:smartclass_fyp_2024/shared/data/dataprovider/user_provider.dart';
 
 class StudentMyclass extends ConsumerStatefulWidget {
   const StudentMyclass({super.key});
@@ -32,7 +33,7 @@ class _StudentMyclassState extends ConsumerState<StudentMyclass> {
     setState(() => _isRefreshing = true);
 
     // Invalidate the provider to trigger loading state
-    ref.refresh(pastClassProviders.future);
+    ref.refresh(pastClassProviders(ref.read(userProvider).externalId));
 
     await Future.delayed(const Duration(seconds: 3));
     setState(() => _isRefreshing = false);
@@ -40,7 +41,9 @@ class _StudentMyclassState extends ConsumerState<StudentMyclass> {
 
   @override
   Widget build(BuildContext context) {
-    final pastClassData = ref.watch(pastClassProviders);
+    // Get the student ID from the user provider
+    final studentId = ref.read(userProvider).externalId;
+    final pastClassData = ref.watch(pastClassProviders(studentId));
 
     return Scaffold(
       appBar: AppBar(

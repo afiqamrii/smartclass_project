@@ -42,7 +42,7 @@ const EnrollmentModel = {
         }
 
         try {
-            console.log("Fetching enrollments for student:", studentId);
+            console.log("Fetching enrollments for student here :", studentId);
             const query = `
                 SELECT ce.enrollment_id, ce.student_id, ce.courseId, ce.requested_at, c.courseName, c.courseCode, c.imageUrl, ce.status ,c.lecturerId , u.name AS lecturerName
                 FROM CourseEnrollment ce
@@ -72,7 +72,12 @@ const EnrollmentModel = {
                 WHERE ce.student_id = ?
                 ORDER BY ce.requested_at DESC;
             `;
+            
             const [rows] = await pool.query(query, [studentId]);
+
+            // Debugging: Log the retrieved rows
+            console.log("Retrieved enrollments:", rows);
+
             return rows; // Return the list of enrollments
         } catch (err) {
             console.error("Error retrieving data:", err.message);
@@ -122,7 +127,10 @@ const EnrollmentModel = {
 
         try {
             console.log("Updating enrollment status:", { enrollmentId, status });
-            const query = `UPDATE CourseEnrollment SET status = ? WHERE enrollment_id = ?`;
+            const query = `
+            UPDATE CourseEnrollment 
+            SET status = ? , approved_at = NOW()
+            WHERE enrollment_id = ?`;
             const [result] = await pool.query(query, [status, enrollmentId]);
 
             if (result.affectedRows === 0) {

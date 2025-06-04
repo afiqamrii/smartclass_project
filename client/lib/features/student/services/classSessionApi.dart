@@ -8,10 +8,15 @@ import 'package:smartclass_fyp_2024/features/student/models/todayClass_card_mode
 
 class Classsessionapi {
   //GET API Using provider to all today classes data
-  static Future<List<TodayclassCardModels>> getClasses() async {
+  static Future<List<TodayclassCardModels>> getClasses(String studentId) async {
     while (true) {
-      Response response = await get(
-          Uri.parse("${ApiConstants.baseUrl}/class/studentviewclass"));
+      Response response = await get(Uri.parse(
+          "${ApiConstants.baseUrl}/class/studentviewclass/$studentId"));
+
+      //Debugging: Print the response body
+      // print("Student ID: $studentId");
+      // print('Response body: ${response.body}');
+      // Check if the response is successful
       if (response.statusCode == 200) {
         final List result = jsonDecode(response.body)['Data'];
         return result.map(((e) => TodayclassCardModels.fromJson(e))).toList();
@@ -22,10 +27,10 @@ class Classsessionapi {
   }
 
   //GET API to get upcoming classes
-  static Future<List<TodayclassCardModels>> getUpcomingClasses() async {
+  static Future<List<TodayclassCardModels>> getUpcomingClasses(String studentId) async {
     while (true) {
       Response response = await get(
-          Uri.parse("${ApiConstants.baseUrl}/class/viewupcomingclass"));
+          Uri.parse("${ApiConstants.baseUrl}/class/viewupcomingclass/$studentId"));
       if (response.statusCode == 200) {
         final List result = jsonDecode(response.body)['Data'];
         return result.map(((e) => TodayclassCardModels.fromJson(e))).toList();
@@ -36,10 +41,10 @@ class Classsessionapi {
   }
 
   //GET API to get past classes
-  static Future<List<TodayclassCardModels>> getPastClasses() async {
+  static Future<List<TodayclassCardModels>> getPastClasses(String studentId) async {
     while (true) {
       Response response =
-          await get(Uri.parse("${ApiConstants.baseUrl}/class/viewpastclass"));
+          await get(Uri.parse("${ApiConstants.baseUrl}/class/viewpastclass/$studentId"));
       if (response.statusCode == 200) {
         final List result = jsonDecode(response.body)['Data'];
         return result.map(((e) => TodayclassCardModels.fromJson(e))).toList();
@@ -50,11 +55,11 @@ class Classsessionapi {
   }
 
   //GET API for now class
-  static Stream<List<TodayclassCardModels>> getNowClasses() async* {
+  static Stream<List<TodayclassCardModels>> getNowClasses(String studentId) async* {
     while (true) {
       await Future.delayed(const Duration(seconds: 5));
       Response response = await get(
-          Uri.parse("${ApiConstants.baseUrl}/class/viewcurrentclass"));
+          Uri.parse("${ApiConstants.baseUrl}/class/viewcurrentclass/$studentId"));
       if (response.statusCode == 200) {
         final List result = jsonDecode(response.body)['Data'];
         yield result.map(((e) => TodayclassCardModels.fromJson(e))).toList();

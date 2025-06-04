@@ -80,7 +80,7 @@ const ClassModel = {
     },
 
     // Retrieve today's classes for students
-    async studentViewTodayClass() {
+    async studentViewTodayClass(studentId) {
         try {
             const today = moment().format("YYYY-MM-DD");
             const query = `
@@ -106,10 +106,15 @@ const ClassModel = {
             LEFT JOIN 
                 ClassRecording cr ON cs.classId = cr.classId
 
+            JOIN 
+                CourseEnrollment ce ON cs.courseId = ce.courseId
+
             WHERE 
-                cs.date = ?
+                cs.date = ? AND ce.student_id = ? AND ce.status = 'Approved'
+            
+            ORDER BY cs.timeStart ASC
             `;
-            const [rows] = await pool.query(query, [today]);
+            const [rows] = await pool.query(query, [today , studentId]);
             console.log("Today's classes:", today);
             return rows;
         } catch (err) {
@@ -119,7 +124,7 @@ const ClassModel = {
     },
 
     // Student view upcoming class
-    async viewUpcomingClass() {
+    async viewUpcomingClass(studentId) {
         try {
             const today = moment().format("YYYY-MM-DD");
             const query = `
@@ -141,14 +146,19 @@ const ClassModel = {
             
             JOIN
                 Course c ON cs.courseId = c.courseId
+            
+            JOIN 
+                CourseEnrollment ce ON cs.courseId = ce.courseId
 
             LEFT JOIN 
                 ClassRecording cr ON cs.classId = cr.classId
 
             WHERE 
-                cs.date > ?
+                cs.date > ? AND ce.student_id = ? AND ce.status = 'Approved'
+            
+            ORDER BY cs.date ASC
             `;
-            const [rows] = await pool.query(query, [today]);
+            const [rows] = await pool.query(query, [today , studentId]);
             console.log("Upcoming classes:", today);
             return rows;
         } catch (err) {
@@ -158,7 +168,7 @@ const ClassModel = {
     },
 
     //View passt class
-    async viewPastClass(){
+    async viewPastClass(studentId){
         try {
             const today = moment().format("YYYY-MM-DD");
             const query = `
@@ -180,14 +190,23 @@ const ClassModel = {
             
             JOIN
                 Course c ON cs.courseId = c.courseId
+            
+            JOIN 
+                CourseEnrollment ce ON cs.courseId = ce.courseId
 
             LEFT JOIN 
                 ClassRecording cr ON cs.classId = cr.classId
 
             WHERE 
-                cs.date < ?
+                cs.date < ? AND ce.student_id = ? AND ce.status = 'Approved'
+            
+            ORDER BY cs.date DESC
+
             `;
-            const [rows] = await pool.query(query, [today]);
+            const [rows] = await pool.query(query, [today , studentId]);
+            
+            //Debug
+            console.log ("Data retrieved:", rows);
             console.log("Pass classes:", today);
             return rows;
         } catch (err) {
@@ -197,7 +216,7 @@ const ClassModel = {
     },
 
     //View current class
-    async viewCurrentClass(){
+    async viewCurrentClass(studentId){
         try {
             const today = moment().format("YYYY-MM-DD");
             const currentTime = moment().format("HH:mm:ss");
@@ -220,6 +239,9 @@ const ClassModel = {
             
             JOIN
                 Course c ON cs.courseId = c.courseId
+            
+            JOIN 
+                CourseEnrollment ce ON cs.courseId = ce.courseId
 
             LEFT JOIN 
                 ClassRecording cr ON cs.classId = cr.classId
@@ -228,8 +250,10 @@ const ClassModel = {
                 cs.date = ?
                 AND cs.timeStart <= ?
                 AND cs.timeEnd >= ?
+                AND ce.student_id = ?
+                AND ce.status = 'Approved'
             `;
-            const [rows] = await pool.query(query, [today ,currentTime, currentTime]);
+            const [rows] = await pool.query(query, [today ,currentTime, currentTime, studentId]);
             // console.log("Current time:", currentTime);
             return rows;
         } catch (err) {

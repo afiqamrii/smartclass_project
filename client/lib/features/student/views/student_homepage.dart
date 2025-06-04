@@ -39,12 +39,12 @@ class _StudentHomePageState extends ConsumerState<StudentHomePage> {
     });
 
     await ref.read(userProvider.notifier).refreshUserData();
-    await ref.read(nowClassProviders);
+    await ref.read(nowClassProviders(ref.read(userProvider).externalId).future);
     // ignore: duplicate_ignore
     // ignore: unused_result
-    ref.refresh(upcomingClassProviders.future);
-    ref.refresh(pastClassProviders.future);
-    ref.refresh(todayClassProviders);
+    ref.refresh(upcomingClassProviders(ref.read(userProvider).externalId));
+    ref.refresh(pastClassProviders(ref.read(userProvider).externalId));
+    ref.refresh(todayClassProviders(ref.read(userProvider).externalId));
 
     // await ref.refresh(unreadNotificationCountProvider.future);
     await Future.delayed(const Duration(seconds: 3));
@@ -61,16 +61,17 @@ class _StudentHomePageState extends ConsumerState<StudentHomePage> {
 
     //Get the data from provider
     //Today class
-    final todayClassData = ref.watch(todayClassProviders);
+    final todayClassData = ref.watch(todayClassProviders(user.externalId));
 
     //Upcoming class
-    final upcomingClassData = ref.watch(upcomingClassProviders);
+    final upcomingClassData =
+        ref.watch(upcomingClassProviders(user.externalId));
 
     //Past class
-    final pastClassData = ref.watch(pastClassProviders);
+    final pastClassData = ref.watch(pastClassProviders(user.externalId));
 
     //Get now/current class
-    final currentClassData = ref.watch(nowClassProviders);
+    final currentClassData = ref.watch(nowClassProviders(user.externalId));
 
     //Get notification count
     // final notificationCount = ref.watch(unreadNotificationCountProvider);

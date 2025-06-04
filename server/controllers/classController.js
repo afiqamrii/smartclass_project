@@ -54,8 +54,15 @@ exports.viewClassById = async (req, res) => {
 }
 
 exports.studentViewTodayClass = async (req, res) => {
+    const studentId = req.params.studentId; // Extract studentId from URL parameter
+    console.log("Received studentId:", studentId);
+
+    // Validate studentId
+    if (!studentId) {
+        return res.status(400).json({ message: "Student ID is required" });
+    }
     try {
-        const todayClasses = await classService.studentViewTodayClass();
+        const todayClasses = await classService.studentViewTodayClass(studentId);
         res.status(200).json({
             message: "Class data fetched successfully",
             Data: todayClasses ?? [],
@@ -68,8 +75,16 @@ exports.studentViewTodayClass = async (req, res) => {
 
 //Student view upcoming class
 exports.viewUpcomingClass = async (req, res) => {
+    //Get studentId from url
+    const studentId = req.params.studentId;
+
+    // Validate studentId
+    if (!studentId) {
+        return res.status(400).json({ message: "Student ID is required" });
+    }
+
     try {
-        const todayClasses = await classService.viewUpcomingClass();
+        const todayClasses = await classService.viewUpcomingClass(studentId);
         res.status(200).json({
             message: "Class data fetched successfully",
             Data: todayClasses ?? [],
@@ -82,8 +97,16 @@ exports.viewUpcomingClass = async (req, res) => {
 
 //View current class
 exports.viewCurrentClass = async (req,res) =>{
+    //Get studentId from url
+    const studentId = req.params.studentId;
+
+    // Validate studentId
+    if (!studentId) {
+        return res.status(400).json({ message: "Student ID is required" });
+    }
+
     try{
-        const currentClass = await classService.viewCurrentClass();
+        const currentClass = await classService.viewCurrentClass(studentId);
         res.status(200).json({
             message: "Class data fetched successfully",
             Data: currentClass ?? [],
@@ -96,8 +119,16 @@ exports.viewCurrentClass = async (req,res) =>{
 
 //View passt class
 exports.viewPastClass = async (req,res) =>{
+     //Get studentId from url
+    const studentId = req.params.studentId;
+
+    // Validate studentId
+    if (!studentId) {
+        return res.status(400).json({ message: "Student ID is required" });
+    }
+
     try{
-        const todayClasses = await classService.viewPastClass();
+        const todayClasses = await classService.viewPastClass(studentId);
         res.status(200).json({
             message: "Class data fetched successfully",
             Data: todayClasses ?? [],

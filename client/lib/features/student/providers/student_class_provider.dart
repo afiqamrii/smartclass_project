@@ -4,26 +4,26 @@ import 'package:smartclass_fyp_2024/features/student/models/todayClass_card_mode
 import 'package:smartclass_fyp_2024/features/student/services/classSessionApi.dart';
 
 final todayClassProviders =
-    FutureProvider<List<TodayclassCardModels>>((ref) async {
-  return await Classsessionapi.getClasses(); // Use classProvider from api.dart
+    FutureProvider.family<List<TodayclassCardModels> , String>((ref, studentId) async {
+  return await Classsessionapi.getClasses(studentId); // Use classProvider from api.dart
 });
 
 final upcomingClassProviders =
-    FutureProvider<List<TodayclassCardModels>>((ref) async {
+    FutureProvider.family<List<TodayclassCardModels>, String>((ref , studentId) async {
   return await Classsessionapi
-      .getUpcomingClasses(); // Use classProvider from api.dart
+      .getUpcomingClasses(studentId); // Use classProvider from api.dart
 });
 
 final pastClassProviders =
-    FutureProvider<List<TodayclassCardModels>>((ref) async {
+    FutureProvider.family<List<TodayclassCardModels>, String>((ref , studentId) async {
   return await Classsessionapi
-      .getPastClasses(); // Use classProvider from api.dart
+      .getPastClasses(studentId); // Use classProvider from api.dart
 });
 
 //Now class provider
 final nowClassProviders =
-    StreamProvider<List<TodayclassCardModels>>((ref) async* {
-  yield* Classsessionapi.getNowClasses(); // Use classProvider from api.dart
+    StreamProvider.family<List<TodayclassCardModels>, String>((ref , studentId) async* {
+  yield* Classsessionapi.getNowClasses(studentId); // Use classProvider from api.dart
 });
 
 //Check attendance

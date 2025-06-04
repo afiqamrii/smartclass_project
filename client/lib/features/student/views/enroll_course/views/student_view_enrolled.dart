@@ -220,7 +220,7 @@ class _StudentViewEnrolledState extends ConsumerState<StudentViewEnrolled> {
                                   courseCode: enrolledCourse.courseCode,
                                   imageUrl: enrolledCourse.courseImageUrl,
                                   isVerified:
-                                      enrolledCourse.status == 'Verified'
+                                      enrolledCourse.status == 'Approved'
                                           ? true
                                           : false,
                                 ),

@@ -43,9 +43,9 @@ const viewClassById = async (classId) => {
 };
 
 // Function to view class for students
-const studentViewTodayClass = async () => {
+const studentViewTodayClass = async (studentId) => {
     try {
-        const todayClasses = await classModel.studentViewTodayClass();
+        const todayClasses = await classModel.studentViewTodayClass(studentId);
         return todayClasses || [];
     } catch (error) {
         throw new Error("Error in service while fetching class data: " + error.message);
@@ -53,9 +53,9 @@ const studentViewTodayClass = async () => {
 };
 
 // View past class
-const viewPastClass = async () => {
+const viewPastClass = async (studentId) => {
     try {
-        const todayClasses = await classModel.viewPastClass();
+        const todayClasses = await classModel.viewPastClass(studentId);
         return todayClasses || [];
     } catch (error) {
         throw new Error("Error in service while fetching class data: " + error.message);
@@ -63,9 +63,9 @@ const viewPastClass = async () => {
 };
 
 // View upcoming class
-const viewUpcomingClass = async () => {
+const viewUpcomingClass = async (studentId) => {
     try {
-        const todayClasses = await classModel.viewUpcomingClass();
+        const todayClasses = await classModel.viewUpcomingClass(studentId);
         return todayClasses || [];
     } catch (error) {
         throw new Error("Error in service while fetching class data: " + error.message);
@@ -73,9 +73,9 @@ const viewUpcomingClass = async () => {
 };
 
 //View current class
-const viewCurrentClass = async () => {
+const viewCurrentClass = async (studentId) => {
     try {
-        const todayClasses = await classModel.viewCurrentClass();
+        const todayClasses = await classModel.viewCurrentClass(studentId);
         return todayClasses || [];
     } catch (error) {
         throw new Error("Error in service while fetching class data: " + error.message);
