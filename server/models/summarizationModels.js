@@ -8,8 +8,18 @@ const SummarizationModel = {
     async getSummarizationStatus(lecturerId) {
         try{
             const query = `
-            SELECT c.*, cr.recordingStatus
+            SELECT 
+            c.classId, 
+            co.courseCode,
+            co.courseName AS className,
+            c.classLocation,
+            c.timeStart,
+            c.timeEnd,
+            c.date,
+            cr.recordingStatus
+
             FROM ClassSession c
+            JOIN Course co ON c.courseId = co.courseId
             LEFT JOIN ClassRecording cr ON c.classId = cr.classId
             WHERE cr.recordingStatus IS NOT NULL AND c.lecturerId = ?;
         `;

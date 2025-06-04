@@ -3,8 +3,8 @@ const attendanceModel = require("../models/attendanceModel");
 // Function to add a class
 const addAttendance = async (attendanceData) => {
     try {
-        const { classId, studentId, attendanceStatus } = attendanceData;
-        const attendance = await attendanceModel.addAttendance(classId, studentId, attendanceStatus);
+        const { classId, studentId, attendanceStatus , timeStamp } = attendanceData;
+        const attendance = await attendanceModel.addAttendance(classId, studentId, attendanceStatus , timeStamp);
         return { success: true, attendance };
     } catch (error) {
         // Pass the error with status for controller to handle
@@ -24,4 +24,14 @@ const checkAttendance = async (checkAttendance) => {
     }
 };
 
-module.exports = { addAttendance , checkAttendance };
+// Function to generate attendance report
+const generateAttendanceReport = async (classId) => {
+    try {
+        const report = await attendanceModel.generateAttendanceReport(classId);
+        return report;
+    } catch (error) {
+        throw new Error("Error in service while generating attendance report: " + error.message);
+    }
+};
+
+module.exports = { addAttendance , checkAttendance , generateAttendanceReport };

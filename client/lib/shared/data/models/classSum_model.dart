@@ -51,8 +51,8 @@ class ClassSumModel {
 
     return ClassSumModel(
       classId: json['classId'],
-      courseCode: json['courseCode'],
-      courseName: json['className'],
+      courseCode: json['courseCode'] ?? "Not Specified",
+      courseName: json['className'] ?? "Unknown Class",
       location: json['classLocation'] ?? "Not Specified",
       startTime: formattedStartTime,
       endTime: formattedEndTime,

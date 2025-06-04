@@ -523,18 +523,17 @@ Widget _cardSection(BuildContext context, User user) {
     children: [
       // Left card (Course Enroll Request)
       Expanded(
+        flex: 1,
         child: GestureDetector(
           onTap: () => {
-            // Handle tap on the card here
             Navigator.of(context).push(
               toLeftTransition(
-                // const StudentEnrollCourse(),
                 const LecturerSelectCourse(),
               ),
             ),
-          }, // Handle tap on the card
+          },
           child: Container(
-            height: 65,
+            height: 100,
             decoration: BoxDecoration(
               color: const Color.fromARGB(255, 250, 250, 250),
               borderRadius: BorderRadius.circular(16),
@@ -547,8 +546,12 @@ Widget _cardSection(BuildContext context, User user) {
               ],
             ),
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Row(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 20,
+                vertical: 10,
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Center(
                     child: Image.asset(
@@ -558,18 +561,16 @@ Widget _cardSection(BuildContext context, User user) {
                       fit: BoxFit.contain,
                     ),
                   ),
-                  const SizedBox(width: 10),
-                  const Expanded(
-                    child: Text(
-                      'Course Enroll Request',
-                      style: TextStyle(
-                        fontSize: 11,
-                        fontFamily: 'FigtreeRegular',
-                        fontWeight: FontWeight.w600,
-                      ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
+                  const SizedBox(height: 10),
+                  const Text(
+                    'Course Enroll Request',
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontFamily: 'FigtreeRegular',
+                      fontWeight: FontWeight.w600,
                     ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ],
               ),
@@ -580,19 +581,15 @@ Widget _cardSection(BuildContext context, User user) {
 
       const SizedBox(width: 12),
 
-      // Right card (Report Utility Problem)
+      // Center card (Report Utility Problem)
       Expanded(
+        flex: 1,
         child: GestureDetector(
           onTap: () => {
-            // Handle tap on the card here
-            // Navigator.of(context).push(
-            //   toLeftTransition(
-            //     const ViewReportsHistory(),
-            //   ),
-            // ),
-          }, // Handle tap on the card
+            // Handle tap on the card
+          },
           child: Container(
-            height: 65,
+            height: 100,
             decoration: BoxDecoration(
               color: const Color.fromARGB(255, 250, 250, 250),
               borderRadius: BorderRadius.circular(16),
@@ -605,8 +602,12 @@ Widget _cardSection(BuildContext context, User user) {
               ],
             ),
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Row(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 20,
+                vertical: 10,
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Center(
                     child: Image.asset(
@@ -616,18 +617,71 @@ Widget _cardSection(BuildContext context, User user) {
                       fit: BoxFit.contain,
                     ),
                   ),
-                  const SizedBox(width: 10),
-                  const Expanded(
-                    child: Text(
-                      'Report Utility Problem',
-                      style: TextStyle(
-                        fontSize: 11,
-                        fontFamily: 'FigtreeRegular',
-                        fontWeight: FontWeight.w600,
-                      ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
+                  const SizedBox(height: 10),
+                  const Text(
+                    'Report Utility Problem',
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontFamily: 'FigtreeRegular',
+                      fontWeight: FontWeight.w600,
                     ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+
+      const SizedBox(width: 12),
+
+      // Right card (New Card)
+      Expanded(
+        flex: 1,
+        child: GestureDetector(
+          onTap: () => {
+            // Handle tap on the card
+          },
+          child: Container(
+            height: 100,
+            decoration: BoxDecoration(
+              color: const Color.fromARGB(255, 250, 250, 250),
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.2),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 20,
+                vertical: 10,
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Center(
+                    child: Icon(
+                      Icons.new_releases,
+                      size: 22,
+                      color: Colors.blue,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  const Text(
+                    'New Card Title',
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontFamily: 'FigtreeRegular',
+                      fontWeight: FontWeight.w600,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ],
               ),

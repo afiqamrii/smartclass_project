@@ -29,37 +29,45 @@ class AdminControlUtilities extends ConsumerStatefulWidget {
 
 class _AdminControlUtilitiesState extends ConsumerState<AdminControlUtilities> {
   late IO.Socket socket;
+  int totalUtilities = 0;
 
   @override
   void initState() {
     super.initState();
 
-    Future.microtask(() {
-      final user = ref.read(userProvider);
-      final socketService = ref.read(socketServiceProvider.notifier);
-      socketService.init(user.externalId); // already handled check inside
+    Future.microtask(
+      () {
+        final user = ref.read(userProvider);
+        final socketService = ref.read(socketServiceProvider.notifier);
+        socketService.init(user.externalId); // already handled check inside
 
-      socket = ref.read(socketServiceProvider)!;
+        socket = ref.read(socketServiceProvider)!;
 
-      // Load initial utility data
-      ref.read(utilityProvider.notifier).loadUtilities(widget.classroomId);
+        // Load initial utility data
+        ref.read(utilityProvider.notifier).loadUtilities(widget.classroomId);
 
-      // Listen for utility updates
-      socket.off('utility_status_update');
-      socket.on('utility_status_update', (data) {
-        final int receivedClassroomId = data['classroomId'];
+        // Listen for utility updates
+        socket.off('utility_status_update');
+        socket.on(
+          'utility_status_update',
+          (data) {
+            final int receivedClassroomId = data['classroomId'];
 
-        if (receivedClassroomId == widget.classroomId) {
-          ref.read(utilityProvider.notifier).updateUtilityStatusByClassroomId(
-                classroomId: receivedClassroomId,
-                newStatus: data['utilityStatus'],
-              );
+            if (receivedClassroomId == widget.classroomId) {
+              ref
+                  .read(utilityProvider.notifier)
+                  .updateUtilityStatusByClassroomId(
+                    classroomId: receivedClassroomId,
+                    newStatus: data['utilityStatus'],
+                  );
 
-          // ✅ Removed this line to prevent re-fetching and flickering
-          // ref.read(utilityProvider.notifier).loadUtilities(widget.classroomId);
-        }
-      });
-    });
+              // ✅ Removed this line to prevent re-fetching and flickering
+              // ref.read(utilityProvider.notifier).loadUtilities(widget.classroomId);
+            }
+          },
+        );
+      },
+    );
   }
 
   @override
@@ -103,27 +111,56 @@ class _AdminControlUtilitiesState extends ConsumerState<AdminControlUtilities> {
                         ],
                       ),
                     )
-                  : Wrap(
-                      spacing: 2.0,
-                      runSpacing: 8.0,
-                      children: [
-                        ...utilities.map((utility) {
-                          return ControlUtilityCard(
-                            title: utility.utilityName,
-                            subtitle: utility.utilityType,
-                            imagePath: utility.utilityType == 'Light'
-                                ? 'assets/icons/bulb.png'
-                                : 'assets/icons/fan.png',
-                            initialStatus:
-                                utility.utilityStatus == 'ON' ? true : false,
-                            utilityId: utility.utilityId,
-                            classroomId: widget.classroomId,
-                            deviceId: utility.deviceId,
-                          );
-                        }),
-                        _addUtilitySection(context),
-                      ],
+                  : Padding(
+                      padding: const EdgeInsets.only(
+                        left: 5.0,
+                        bottom: 5,
+                      ),
+                      child: Text(
+                        'Total Utilities: ${utilities.length}/4',
+                        style: const TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.black54,
+                        ),
+                      ),
                     ),
+              //NOtes that tell using only 4 utilities can be added
+              const Padding(
+                padding: EdgeInsets.only(left: 5.0, bottom: 10.0),
+                child: Text(
+                  'Notes : You can only add 4 utilities per classroom.',
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontStyle: FontStyle.italic,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.black54,
+                  ),
+                ),
+              ),
+              Wrap(
+                spacing: 2.0,
+                runSpacing: 8.0,
+                children: [
+                  ...utilities.map(
+                    (utility) {
+                      return ControlUtilityCard(
+                        title: utility.utilityName,
+                        subtitle: utility.utilityType,
+                        imagePath: utility.utilityType,
+                        initialStatus:
+                            utility.utilityStatus == 'ON' ? true : false,
+                        utilityId: utility.utilityId,
+                        classroomId: widget.classroomId,
+                        deviceId: utility.deviceId,
+                      );
+                    },
+                  ),
+                  utilities.length < 4
+                      ? _addUtilitySection(context)
+                      : const SizedBox.shrink(),
+                ],
+              ),
             ],
           ),
         ),

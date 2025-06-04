@@ -53,6 +53,22 @@ class _ControlUtilityCardState extends State<ControlUtilityCard> {
     });
   }
 
+  //Decide the image path based on the utility type
+  String getImagePath() {
+    switch (widget.imagePath.toLowerCase()) {
+      case 'light':
+        return 'assets/icons/bulb.png';
+      case 'fan':
+        return 'assets/icons/fan.png';
+      case 'aircond':
+        return 'assets/icons/ac.png';
+      case 'others':
+        return 'assets/icons/bulb.png';
+      default:
+        return 'assets/icons/bulb.png'; // Fallback to provided image path
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     Color activeBackground = Colors.black;
@@ -62,7 +78,9 @@ class _ControlUtilityCardState extends State<ControlUtilityCard> {
 
     return Card(
       elevation: 4,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+      ),
       color: isOn ? activeBackground : inactiveBackground,
       child: Container(
         width: MediaQuery.of(context).size.width * 0.43,
@@ -76,7 +94,7 @@ class _ControlUtilityCardState extends State<ControlUtilityCard> {
               radius: 20,
               backgroundColor: Colors.black45,
               child: Image.asset(
-                widget.imagePath,
+                getImagePath(),
                 width: 22,
                 height: 22,
                 color: Colors.white,

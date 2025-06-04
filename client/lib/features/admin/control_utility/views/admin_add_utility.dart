@@ -38,8 +38,6 @@ class _AdminAddUtilityState extends State<AdminAddUtility> {
     'Light',
     'Fan',
     'Aircond',
-    'Projector',
-    'Smartboard',
     'Others',
   ];
 

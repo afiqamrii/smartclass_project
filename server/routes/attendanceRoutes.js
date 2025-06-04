@@ -22,5 +22,11 @@ router.get("/checkattendance/:classId/:studentId", attendanceController.checkAtt
 // //Delete attendance
 // router.delete("/deleteattendance/:id", attendanceController.deleteAttendance);
 
+//Route to generate attendance report
+router.get("/generateattendancereport/:classId", attendanceController.generateAttendanceReport);
+
+//Route to generate attendance report in PDF format
+router.get('/attendance/report/:classId/pdf', attendanceController.generateAttendanceReportPDF);
+
 //Export module router
 module.exports = router;

@@ -206,7 +206,7 @@ class _LecturerViewClassState extends ConsumerState<LecturerViewClass> {
                                                       .width *
                                                   0.7,
                                               child: Text(
-                                                "Lecturer : Dr Nor | Location : ${classItem.location}",
+                                                "Lecturer : ${userData.name} | Location : ${classItem.location}",
                                                 style: const TextStyle(
                                                   color: Colors.white,
                                                   fontSize: 13,

@@ -6,6 +6,15 @@ exports.addClass = async (req, res) => {
         const addClass = req.body;
         console.log("Received add class request:", addClass);
 
+        //Filter time to add understandable format
+        if (addClass.startTime && addClass.endTime) {
+            addClass.startTime = new Date(addClass.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            addClass.endTime = new Date(addClass.endTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        } else {
+            addClass.startTime = null;
+            addClass.endTime = null;
+        }
+
         const result = await classService.addClass(addClass);
         res.status(200).json({ Status_Code: 200, message: "Class added successfully", classId: result.classId });
     } catch (error) {
