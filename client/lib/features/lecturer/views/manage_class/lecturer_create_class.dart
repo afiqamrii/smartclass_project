@@ -9,6 +9,7 @@ import 'package:smartclass_fyp_2024/features/lecturer/views/manage_class/models/
 import 'package:smartclass_fyp_2024/features/lecturer/views/manage_class/providers/course_providers.dart';
 import 'package:smartclass_fyp_2024/shared/data/dataprovider/user_provider.dart';
 import 'package:smartclass_fyp_2024/shared/data/models/user.dart';
+import 'package:smartclass_fyp_2024/shared/widgets/pageTransition.dart';
 import '../../../../shared/data/services/classApi.dart';
 
 class LectCreateClass extends ConsumerStatefulWidget {
@@ -37,6 +38,7 @@ class _LectCreateClassState extends ConsumerState<LectCreateClass> {
     final courseListAsync = ref.watch(courseListProvider);
 
     return Scaffold(
+        backgroundColor: Colors.white,
         appBar: appBar(context),
         body: _createClassSection(context, user, courseListAsync),
         resizeToAvoidBottomInset: true);
@@ -45,7 +47,11 @@ class _LectCreateClassState extends ConsumerState<LectCreateClass> {
   Padding _createClassSection(BuildContext context, User user,
       AsyncValue<List<CourseModel>> courseListAsync) {
     return Padding(
-      padding: const EdgeInsets.only(left: 30.0, right: 30.0),
+      padding: const EdgeInsets.only(
+        top: 10,
+        left: 30.0,
+        right: 30.0,
+      ),
       child: Form(
         key: _formKey,
         autovalidateMode:
@@ -211,7 +217,7 @@ class _LectCreateClassState extends ConsumerState<LectCreateClass> {
   AppBar appBar(BuildContext context) {
     return AppBar(
       toolbarHeight: 60.0,
-      backgroundColor: Colors.grey[100],
+      backgroundColor: Colors.white,
       title: const Text(
         'Create Class',
         style: TextStyle(
@@ -226,8 +232,8 @@ class _LectCreateClassState extends ConsumerState<LectCreateClass> {
         onTap: () {
           Navigator.push(
             context,
-            MaterialPageRoute(
-              builder: (context) => const LectViewAllClass(),
+            toRightTransition(
+              const LectViewAllClass(),
             ),
           );
         },

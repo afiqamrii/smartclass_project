@@ -3,13 +3,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:async';
-
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
-import 'package:lottie/lottie.dart';
+import 'package:smartclass_fyp_2024/features/lecturer/manage_attendance/views/lecturer_view_attendance.dart';
 import 'package:smartclass_fyp_2024/features/student/providers/student_class_provider.dart';
 import 'package:smartclass_fyp_2024/nfc/start_clock_in_nfc.dart';
 import 'package:smartclass_fyp_2024/shared/data/dataprovider/user_provider.dart';
+import 'package:smartclass_fyp_2024/shared/widgets/pageTransition.dart';
 
 class LecturerClassNowCard extends ConsumerStatefulWidget {
   //Class Card variable neededdd
@@ -50,6 +49,9 @@ class _LecturerClassNowCardState extends ConsumerState<LecturerClassNowCard> {
   String currentAnimation = 'assets/animations/nfc.json';
   bool isAlreadyClockIn = false;
   bool isTimeout = false;
+  bool isGracePeriod = false;
+
+  late DateTime classEndGraceTime;
 
   @override
   void initState() {
@@ -91,6 +93,9 @@ class _LecturerClassNowCardState extends ConsumerState<LecturerClassNowCard> {
 
     remaining = classEndTime.difference(DateTime.now());
 
+    // Add 1 hour grace period after class ends
+    classEndGraceTime = classEndTime.add(const Duration(hours: 1));
+
     // Start countdown
     timer =
         Timer.periodic(const Duration(seconds: 1), (_) => updateCountdown());
@@ -101,12 +106,12 @@ class _LecturerClassNowCardState extends ConsumerState<LecturerClassNowCard> {
     setState(() {
       remaining = classEndTime.difference(now);
 
-      // Dynamically update the isLessThan10Minutes flag
       isLessThan10Minutes = remaining.inMinutes < 10;
 
-      if (remaining.isNegative) {
+      if (now.isAfter(classEndTime) && now.isBefore(classEndGraceTime)) {
+        isGracePeriod = true;
+      } else if (now.isAfter(classEndGraceTime)) {
         timer?.cancel();
-        // Trigger a refresh of the provider here
         isTimeout = true;
       }
     });
@@ -190,9 +195,11 @@ class _LecturerClassNowCardState extends ConsumerState<LecturerClassNowCard> {
     final checkAttendance =
         ref.watch(checkAttendanceProvider((widget.classId, widget.userId)));
 
+    //Show countdown as 00 if the countdown is end
     final countdownText =
-        remaining.isNegative ? "Class Ended" : formatDuration(remaining);
+        remaining.isNegative ? "00:00:00" : formatDuration(remaining);
 
+    //Show class ended
     if (isTimeout) {
       return const Center(
         child: Column(
@@ -218,6 +225,7 @@ class _LecturerClassNowCardState extends ConsumerState<LecturerClassNowCard> {
         ),
       );
     }
+
     return Card(
       elevation: 5,
       color: const Color.fromARGB(255, 255, 249, 249),
@@ -300,7 +308,7 @@ class _LecturerClassNowCardState extends ConsumerState<LecturerClassNowCard> {
                               ),
                               const SizedBox(height: 15),
                               Text(
-                                "${widget.timeStart} - HERE ${widget.timeEnd}",
+                                "${widget.timeStart} - ${widget.timeEnd}",
                                 style: const TextStyle(
                                   fontSize: 12,
                                   fontFamily: 'Poppins',
@@ -317,11 +325,11 @@ class _LecturerClassNowCardState extends ConsumerState<LecturerClassNowCard> {
                               ),
                               const SizedBox(height: 10),
                               const Text(
-                                "Scan attendance within the remaining time only.",
+                                "You may review attendance within the remaining time with one more hour after the class ends.",
                                 style: TextStyle(
                                   fontSize: 11,
                                   fontFamily: 'FigtreeRegular',
-                                  color: Colors.white70,
+                                  color: Colors.white,
                                 ),
                               ),
                             ],
@@ -331,201 +339,92 @@ class _LecturerClassNowCardState extends ConsumerState<LecturerClassNowCard> {
                         // const SizedBox(width: 10),
 
                         // Countdown timer
-                        Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: List.generate(
-                            countdownText.split(":").length,
-                            (index) {
-                              final time = countdownText.split(":")[index];
-                              final labels = ['Hr', 'Min', 'Sec'];
+                        if (!isGracePeriod)
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: List.generate(
+                              countdownText.split(":").length,
+                              (index) {
+                                final time = countdownText.split(":")[index];
+                                final labels = ['Hr', 'Min', 'Sec'];
 
-                              return Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 2.5),
-                                child: Column(
-                                  children: [
-                                    Container(
-                                      width: 26,
-                                      height: 26,
-                                      alignment: Alignment.center,
-                                      decoration: BoxDecoration(
-                                        color: isLessThan10Minutes
-                                            ? Colors.red
-                                            : Colors.white,
-                                        borderRadius: BorderRadius.circular(6),
-                                        boxShadow: const [
-                                          BoxShadow(
-                                            color: Colors.black26,
-                                            blurRadius: 3,
-                                            offset: Offset(0, 1.5),
-                                          ),
-                                        ],
-                                      ),
-                                      child: Text(
-                                        time,
-                                        style: TextStyle(
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.bold,
-                                          fontFamily: 'Figtree',
+                                return Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 2.5),
+                                  child: Column(
+                                    children: [
+                                      Container(
+                                        width: 26,
+                                        height: 26,
+                                        alignment: Alignment.center,
+                                        decoration: BoxDecoration(
                                           color: isLessThan10Minutes
-                                              ? Colors.white
-                                              : Colors.black,
+                                              ? Colors.red
+                                              : Colors.white,
+                                          borderRadius:
+                                              BorderRadius.circular(6),
+                                          boxShadow: const [
+                                            BoxShadow(
+                                              color: Colors.black26,
+                                              blurRadius: 3,
+                                              offset: Offset(0, 1.5),
+                                            ),
+                                          ],
+                                        ),
+                                        child: Text(
+                                          time,
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.bold,
+                                            fontFamily: 'Figtree',
+                                            color: isLessThan10Minutes
+                                                ? Colors.white
+                                                : Colors.black,
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                    const SizedBox(height: 3),
-                                    Text(
-                                      labels[index],
-                                      style: const TextStyle(
-                                        fontSize: 9,
-                                        fontFamily: 'FigtreeRegular',
-                                        color: Colors.white70,
+                                      const SizedBox(height: 3),
+                                      Text(
+                                        labels[index],
+                                        style: const TextStyle(
+                                          fontSize: 9,
+                                          fontFamily: 'FigtreeRegular',
+                                          color: Colors.white70,
+                                        ),
                                       ),
-                                    ),
-                                  ],
-                                ),
-                              );
-                            },
+                                    ],
+                                  ),
+                                );
+                              },
+                            ),
                           ),
-                        ),
                       ],
                     ),
                     const SizedBox(height: 5),
 
-                    // Clock-in button
+                    // See attendance button
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton.icon(
                         onPressed: () {
-                          showModalBottomSheet(
-                            barrierColor: Colors.black54,
-                            shape: const RoundedRectangleBorder(
-                              borderRadius: BorderRadius.vertical(
-                                top: Radius.circular(30),
+                          //Handle see attendance here
+                          Navigator.of(context).push(
+                            toLeftTransition(
+                              LecturerViewAttendance(
+                                classId: widget.classId,
                               ),
                             ),
-                            context: context,
-                            builder: (modalContext) {
-                              // 🔄 Start NFC Clock-In when modal shows
-                              NfcClockInService.startClockIn(
-                                studentId: widget
-                                    .userId, // you can replace this with a dynamic value
-                                courseCode: widget.courseCode,
-                                classId: widget.classId.toString(),
-                                // or use an actual classId if available
-                              );
-                              // Start a timer to close the modal after 1 minutes
-                              Timer(const Duration(minutes: 1), () {
-                                NfcClockInService
-                                    .stopClockIn(); // ⛔ Stop NFC on timeout
-                                if (Navigator.of(modalContext).canPop()) {
-                                  Navigator.of(modalContext).pop();
-                                }
-                              });
-
-                              return IntrinsicHeight(
-                                child: Container(
-                                  alignment: Alignment.center,
-                                  width: double.infinity,
-                                  height:
-                                      MediaQuery.of(context).size.height * 0.46,
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(
-                                      left: 25,
-                                      right: 25,
-                                      top: 15,
-                                      bottom: 5,
-                                    ),
-                                    child: Column(
-                                      children: [
-                                        const SizedBox(height: 5),
-                                        Text(
-                                          isAlreadyClockIn
-                                              ? "Already Clock In !"
-                                              : "Ready to Scan",
-                                          style: const TextStyle(
-                                            fontSize: 24,
-                                            fontFamily: 'Figtree',
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.black,
-                                          ),
-                                        ),
-                                        const SizedBox(height: 10),
-                                        SizedBox(
-                                          width: MediaQuery.of(context)
-                                                  .size
-                                                  .width *
-                                              0.8,
-                                          child: Text(
-                                            textAlign: TextAlign.center,
-                                            isAlreadyClockIn
-                                                ? "You have already clocked in for today class."
-                                                : "Hold your device near the NFC reader to clock in attendance.",
-                                            style: const TextStyle(
-                                              fontSize: 14,
-                                              fontFamily: 'Figtree',
-                                              color: Colors.black54,
-                                            ),
-                                          ),
-                                        ),
-                                        Lottie.asset(
-                                          currentAnimation,
-                                          frameRate: FrameRate.max,
-                                          width: 190,
-                                          fit: BoxFit.cover,
-                                          repeat: currentAnimation !=
-                                              'assets/animations/success_tick.json',
-                                        ),
-                                        if (isAlreadyClockIn == false)
-                                          ElevatedButton(
-                                            onPressed: () {
-                                              NfcClockInService
-                                                  .stopClockIn(); // ⛔ Stop NFC on cancel
-                                              Navigator.pop(modalContext);
-                                            },
-                                            style: ElevatedButton.styleFrom(
-                                              backgroundColor: Colors.white,
-                                              foregroundColor: Colors.black,
-                                              elevation: 2,
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(10),
-                                              ),
-                                              padding: EdgeInsets.symmetric(
-                                                vertical: 12,
-                                                horizontal:
-                                                    MediaQuery.of(context)
-                                                            .size
-                                                            .width *
-                                                        0.30,
-                                              ),
-                                            ),
-                                            child: isAlreadyClockIn
-                                                ? null
-                                                : Text(
-                                                    "Cancel",
-                                                    style: TextStyle(
-                                                        color:
-                                                            Colors.grey[500]),
-                                                  ),
-                                          ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              );
-                            },
                           );
                         },
-                        icon: SvgPicture.asset(
-                          'assets/icons/fingerprint.svg',
-                          width: 15,
-                          height: 15,
+                        icon: Image.asset(
+                          'assets/icons/attendance.png',
+                          width: 17,
+                          height: 17,
                         ),
                         label: const Text(
-                          "Tap to Clock In ",
+                          "View Student Attendance",
                           style: TextStyle(
-                            fontSize: 13,
+                            fontSize: 12,
                             fontFamily: 'Figtree',
                             fontWeight: FontWeight.w500,
                           ),

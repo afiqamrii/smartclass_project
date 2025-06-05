@@ -2,7 +2,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:smartclass_fyp_2024/features/student/views/widgets/student_todayclass_card.dart';
 import 'package:smartclass_fyp_2024/shared/data/dataprovider/data_provider.dart';
 import 'package:smartclass_fyp_2024/features/lecturer/views/manage_class/lecturer_view_class.dart';
 import 'package:smartclass_fyp_2024/features/lecturer/views/template/lecturer_bottom_navbar.dart';
@@ -21,6 +23,10 @@ class LectViewAllClass extends ConsumerStatefulWidget {
 class _LectViewAllClassState extends ConsumerState<LectViewAllClass> {
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
+
+  // Add filter state
+  String _selectedFilter = "All";
+  final List<String> _filters = ["All", "Today", "Upcoming", "Past Class"];
 
   Future<void> _handleRefresh() async {
     //Refresh the class data
@@ -56,7 +62,7 @@ class _LectViewAllClassState extends ConsumerState<LectViewAllClass> {
     final data = ref.watch(classDataProvider(user.externalId));
 
     return Scaffold(
-      backgroundColor: const Color(0xffF7F7F7),
+      backgroundColor: Colors.white,
       appBar: appBar(context),
       body: data.when(
         data: (classes) {
@@ -65,6 +71,28 @@ class _LectViewAllClassState extends ConsumerState<LectViewAllClass> {
             final searchLower = _searchQuery.toLowerCase();
             return classItem.courseCode.toLowerCase().contains(searchLower) ||
                 classItem.courseName.toLowerCase().contains(searchLower);
+          }).toList();
+
+          // Apply date filter
+          final now = DateTime.now();
+          final todayStr = "${now.day} ${_monthName(now.month)} ${now.year}";
+          List<ClassCreateModel> dateFiltered = filtered.where((classItem) {
+            DateTime? classDate;
+            try {
+              classDate = DateFormat('d MMMM yyyy').parse(classItem.date);
+            } catch (_) {
+              return false;
+            }
+            switch (_selectedFilter) {
+              case "Today":
+                return classItem.date == todayStr;
+              case "Upcoming":
+                return classDate.isAfter(now);
+              case "Past":
+                return classDate.isBefore(now);
+              default:
+                return true;
+            }
           }).toList();
 
           return SmartRefresher(
@@ -90,15 +118,19 @@ class _LectViewAllClassState extends ConsumerState<LectViewAllClass> {
                     onClear: _clearSearch,
                   ),
                 ),
+                // ---filter chips here ---
+                _chipsFilterSection(context),
+                // --- End filter chips ---
                 SliverPadding(
                   padding: const EdgeInsets.only(
                     top: 10,
+                    bottom: 5,
                   ),
                   sliver: SliverToBoxAdapter(
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16.0),
                       child: Text(
-                        "${filtered.length} Classes Found",
+                        "${dateFiltered.length} Classes Found",
                         style: const TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w500,
@@ -110,7 +142,7 @@ class _LectViewAllClassState extends ConsumerState<LectViewAllClass> {
                 SliverList(
                   delegate: SliverChildBuilderDelegate(
                     (context, index) {
-                      final classItem = filtered[index];
+                      final classItem = dateFiltered[index];
                       return GestureDetector(
                         onTap: () {
                           Navigator.push(
@@ -120,10 +152,27 @@ class _LectViewAllClassState extends ConsumerState<LectViewAllClass> {
                             ),
                           );
                         },
-                        child: _classCardSection(classItem),
+                        child: Padding(
+                          padding: const EdgeInsets.only(
+                            right: 10.0,
+                            left: 10,
+                          ),
+                          child: StudentTodayclassCard(
+                            className: classItem.courseName,
+                            lecturerName: user.name,
+                            courseCode: classItem.courseCode,
+                            classLocation: classItem.location,
+                            date: classItem.date,
+                            timeStart: classItem.startTime,
+                            timeEnd: classItem.endTime,
+                            publishStatus: "",
+                            imageUrl: classItem.imageUrl,
+                            isClassHistory: false,
+                          ),
+                        ),
                       );
                     },
-                    childCount: filtered.length,
+                    childCount: dateFiltered.length,
                   ),
                 ),
               ],
@@ -136,77 +185,43 @@ class _LectViewAllClassState extends ConsumerState<LectViewAllClass> {
     );
   }
 
-  Padding _classCardSection(ClassCreateModel classItem) {
-    return Padding(
-      padding: const EdgeInsets.only(
-        left: 10.0,
-        bottom: 2.0,
-        top: 10,
-        right: 20,
-      ),
-      child: IntrinsicHeight(
-        child: Card(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12.0),
-          ),
-          elevation: 2,
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "${classItem.courseCode} - ${classItem.courseName}",
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
+  SliverToBoxAdapter _chipsFilterSection(BuildContext context) {
+    return SliverToBoxAdapter(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 1,
+        ),
+        child: Wrap(
+          spacing: 7,
+          children: _filters.map((filter) {
+            final isSelected = _selectedFilter == filter;
+            return ChoiceChip(
+              label: Text(
+                filter,
+                style: TextStyle(
+                  color: isSelected ? Colors.white : Colors.black87,
+                  fontSize: 11,
+                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                 ),
-                const SizedBox(height: 8.0),
-                Row(
-                  children: [
-                    const Icon(Icons.location_on_outlined, size: 20),
-                    const SizedBox(width: 8.0),
-                    Text(
-                      classItem.location,
-                      style: const TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8.0),
-                Row(
-                  children: [
-                    const Icon(Icons.access_time_outlined, size: 20),
-                    const SizedBox(width: 8.0),
-                    Text(
-                      "${classItem.startTime} - ${classItem.endTime}",
-                      style: const TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8.0),
-                Row(
-                  children: [
-                    const Icon(Icons.calendar_today_outlined, size: 20),
-                    const SizedBox(width: 8.0),
-                    Text(
-                      classItem.date,
-                      style: const TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
+              ),
+              selected: isSelected,
+              onSelected: (bool selected) {
+                setState(() => _selectedFilter = filter);
+              },
+              selectedColor: Theme.of(context).colorScheme.primary,
+              backgroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+                side: isSelected
+                    ? BorderSide.none
+                    : BorderSide(color: Colors.grey.shade400),
+              ),
+              elevation: isSelected ? 3 : 0,
+              pressElevation: 5,
+              padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 5),
+            );
+          }).toList(),
         ),
       ),
     );
@@ -214,6 +229,7 @@ class _LectViewAllClassState extends ConsumerState<LectViewAllClass> {
 
   AppBar appBar(BuildContext context) {
     return AppBar(
+      backgroundColor: Colors.white,
       elevation: 0,
       leading: GestureDetector(
         onTap: () {
@@ -255,6 +271,26 @@ class _LectViewAllClassState extends ConsumerState<LectViewAllClass> {
         ),
       ],
     );
+  }
+
+  // Helper to get month name for todayStr
+  String _monthName(int month) {
+    const months = [
+      '',
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December'
+    ];
+    return months[month];
   }
 }
 
