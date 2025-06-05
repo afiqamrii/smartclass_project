@@ -7,9 +7,7 @@ import 'package:skeletonizer/skeletonizer.dart';
 import 'package:smartclass_fyp_2024/shared/components/custom_buttom.dart';
 import 'package:smartclass_fyp_2024/shared/data/dataprovider/data_provider.dart';
 import 'package:smartclass_fyp_2024/features/lecturer/views/manage_summarization/lecturer_editsummarization.dart';
-import 'package:smartclass_fyp_2024/features/lecturer/views/template/lecturer_bottom_navbar.dart';
 import 'package:smartclass_fyp_2024/shared/data/services/summarizationApi.dart';
-import 'package:smartclass_fyp_2024/shared/widgets/pageTransition.dart';
 
 class LecturerViewsummarization extends ConsumerStatefulWidget {
   const LecturerViewsummarization({super.key, required this.classId});
@@ -51,19 +49,20 @@ class _LecturerViewsummarizationState
         title: const Text(
           "Summarization",
           style: TextStyle(
-            fontSize: 18,
+            fontSize: 15,
             fontWeight: FontWeight.bold,
           ),
         ),
         centerTitle: true,
         leading: IconButton(
           onPressed: () {
-            Navigator.push(
-              context,
-              toRightTransition(
-                const LectBottomNavBar(initialIndex: 0),
-              ),
-            );
+            Navigator.pop(context);
+            // Navigator.push(
+            //   context,
+            //   toRightTransition(
+            //     const LectBottomNavBar(initialIndex: 0),
+            //   ),
+            // );
           },
           icon: const Padding(
             padding: EdgeInsets.only(left: 9.0),
@@ -83,7 +82,7 @@ class _LecturerViewsummarizationState
               child: Text(
                 "No Summarization Found",
                 style: TextStyle(
-                  fontSize: 18,
+                  fontSize: 14,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -99,7 +98,7 @@ class _LecturerViewsummarizationState
             showChildOpacityTransition: false,
             child: Skeletonizer(
               enabled: _isRefreshing,
-              effect: ShimmerEffect(),
+              effect: const ShimmerEffect(),
               child: ListView(
                 children: [
                   Row(
@@ -110,7 +109,7 @@ class _LecturerViewsummarizationState
                         child: Text(
                           "Summarization Result",
                           style: TextStyle(
-                            fontSize: 20,
+                            fontSize: 17,
                             fontWeight: FontWeight.bold,
                             color: Colors.black,
                           ),

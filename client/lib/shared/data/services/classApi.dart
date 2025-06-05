@@ -5,42 +5,47 @@ import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 import 'package:smartclass_fyp_2024/constants/api_constants.dart';
 import 'package:smartclass_fyp_2024/features/lecturer/views/manage_class/models/create_class_model.dart';
+import 'package:smartclass_fyp_2024/features/student/models/todayClass_card_models.dart';
 import '../models/class_models.dart'; // HTTP package for making API requests.
 
 /// A class to handle API interactions for the application.
 class Api {
   //GET API Using provider to all classes data
-  Stream<List<ClassCreateModel>> getClasses(String lecturerId) async* {
-    while (true) {
-      Response response = await get(
-          Uri.parse("${ApiConstants.baseUrl}/class/viewclass/$lecturerId"));
-      if (response.statusCode == 200) {
-        final List result = jsonDecode(response.body)['Data'];
-        //Tokenize the data and convert it to ClassCreateModel
-        yield result.map(((e) => ClassCreateModel.fromJson(e))).toList();
-      } else {
-        throw Exception("Failed to load classes");
-      }
-      await Future.delayed(const Duration(seconds: 5)); // Polling interval
-    }
+  Future<List<ClassCreateModel>> getClasses(String lecturerId) async {
+  Response response = await get(
+      Uri.parse("${ApiConstants.baseUrl}/class/viewclass/$lecturerId"));
+  if (response.statusCode == 200) {
+    final List result = jsonDecode(response.body)['Data'];
+    return result.map(((e) => ClassCreateModel.fromJson(e))).toList();
+  } else {
+    throw Exception("Failed to load classes");
   }
+}
+
+  //LEcturer get current class
+   //GET API for now class
+  static Future<List<TodayclassCardModels>> getNowClasses(String lecturerId) async {
+  Response response = await get(
+      Uri.parse("${ApiConstants.baseUrl}/class/lecturercurrentclass/$lecturerId"));
+  if (response.statusCode == 200) {
+    final List result = jsonDecode(response.body)['Data'];
+    return result.map(((e) => TodayclassCardModels.fromJson(e))).toList();
+  } else {
+    throw Exception("Failed to load classes");
+  }
+}
 
   //GET API Using provider to get class by ID
-  Stream<List<ClassCreateModel>> getClassById(int classId) async* {
-    while (true) {
-      Response response = await get(
-          Uri.parse("${ApiConstants.baseUrl}/class/viewclassbyid/$classId"));
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body)['Data'];
-
-        // Wrap single object in a list
-        yield [ClassCreateModel.fromJson(data)];
-      } else {
-        throw Exception("Failed to load class by ID");
-      }
-      await Future.delayed(const Duration(seconds: 5));
-    }
+  Future<List<ClassCreateModel>> getClassById(int classId) async {
+  Response response = await get(
+      Uri.parse("${ApiConstants.baseUrl}/class/viewclassbyid/$classId"));
+  if (response.statusCode == 200) {
+    final data = jsonDecode(response.body)['Data'];
+    return [ClassCreateModel.fromJson(data)];
+  } else {
+    throw Exception("Failed to load class by ID");
   }
+}
 
   //POST API
   /// Sends a POST request to add a class to the backend database.

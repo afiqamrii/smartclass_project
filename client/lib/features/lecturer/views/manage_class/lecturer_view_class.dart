@@ -10,6 +10,7 @@ import 'package:smartclass_fyp_2024/shared/data/dataprovider/user_provider.dart'
 import 'package:smartclass_fyp_2024/features/lecturer/views/manage_class/lecturer_show_all_classes.dart';
 import 'package:smartclass_fyp_2024/features/lecturer/views/manage_class/lecturer_update_class.dart';
 import 'package:smartclass_fyp_2024/features/lecturer/views/manage_summarization/lecturer_viewSummarization.dart';
+import 'package:smartclass_fyp_2024/shared/data/models/user.dart';
 import 'package:smartclass_fyp_2024/shared/widgets/pageTransition.dart';
 import '../../../../shared/data/models/class_models.dart';
 import '../../../../shared/data/services/classApi.dart';
@@ -89,182 +90,14 @@ class _LecturerViewClassState extends ConsumerState<LecturerViewClass> {
                 children: [
                   Padding(
                     padding: const EdgeInsets.symmetric(
-                        vertical: 20.0, horizontal: 20),
-                    child: Card(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-                      clipBehavior: Clip.antiAlias,
-                      child: IntrinsicHeight(
-                        child: Stack(
-                          fit: StackFit.expand,
-                          children: [
-                            Skeletonizer(
-                              enabled: _isRefreshing,
-                              child: Image.network(
-                                classItem.imageUrl,
-                                fit: BoxFit.cover,
-                                errorBuilder: (_, __, ___) {
-                                  return Image.asset(
-                                    'assets/pictures/compPicture.jpg',
-                                    fit: BoxFit.cover,
-                                  );
-                                },
-                              ),
-                            ),
-                            Positioned(
-                              top: 10,
-                              left: 0,
-                              right: 0,
-                              bottom: 0,
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  gradient: LinearGradient(
-                                    begin: Alignment.bottomCenter,
-                                    end: Alignment.topCenter,
-                                    colors: [
-                                      Colors.black.withOpacity(1),
-                                      Colors.transparent,
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(15.0),
-                              child: Column(
-                                children: [
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    children: [
-                                      GestureDetector(
-                                        onTap: () {
-                                          Navigator.push(
-                                            context,
-                                            toLeftTransition(
-                                              LectUpdateClass(
-                                                classItem: classItem,
-                                              ),
-                                            ),
-                                          );
-                                        },
-                                        child: Image.asset(
-                                          'assets/icons/editicon.png',
-                                          height: 25,
-                                          width: 25,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 60),
-                                  Padding(
-                                    padding: const EdgeInsets.only(
-                                        left: 10.0, right: 10),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            SizedBox(
-                                              width: MediaQuery.of(context)
-                                                      .size
-                                                      .width *
-                                                  0.7,
-                                              child: Text(
-                                                "${classItem.courseCode} - ${classItem.courseName}",
-                                                style: const TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 18,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                              ),
-                                            ),
-                                            const SizedBox(height: 5),
-                                            Text(
-                                              "${classItem.startTime} - ${classItem.endTime}",
-                                              style: const TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 13,
-                                                fontFamily: 'FigtreeRegular',
-                                              ),
-                                            ),
-                                            Text(
-                                              classItem.date,
-                                              style: const TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 13,
-                                                fontFamily: 'FigtreeRegular',
-                                              ),
-                                            ),
-                                            const SizedBox(height: 10),
-                                            SizedBox(
-                                              width: MediaQuery.of(context)
-                                                      .size
-                                                      .width *
-                                                  0.7,
-                                              child: Text(
-                                                "Lecturer : ${userData.name} | Location : ${classItem.location}",
-                                                style: const TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 13,
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
+                      vertical: 10.0,
+                      horizontal: 10,
                     ),
+                    child: _classCardSection(classItem, context, userData),
                   ),
-                  const SizedBox(height: 5),
+                  const SizedBox(height: 1),
                   //Features section
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 22.0),
-                    child: IntrinsicHeight(
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.only(
-                              left: 20.0, right: 20, top: 10, bottom: 15),
-                          child: Column(
-                            children: [
-                              //Attendance
-                              _attendanceSection(),
-                              Divider(
-                                thickness: 1,
-                                color: Colors.black.withOpacity(0.15),
-                              ),
-                              //Recording section
-                              _recordingSection(recordingState, classItem),
-                              Divider(
-                                thickness: 1,
-                                color: Colors.black.withOpacity(0.15),
-                              ),
-                              //View Summarization section
-                              _viewSummarizationSection(context, classItem),
-                              Divider(
-                                thickness: 1,
-                                color: Colors.black.withOpacity(0.15),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
+                  _featuresSection(recordingState, classItem, context),
                   _deleteButton(context, classItem),
                 ],
               ),
@@ -283,6 +116,186 @@ class _LecturerViewClassState extends ConsumerState<LecturerViewClass> {
           ),
         );
       },
+    );
+  }
+
+  Padding _featuresSection(RecordingState recordingState,
+      ClassCreateModel classItem, BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+        horizontal: 1.0,
+      ),
+      child: IntrinsicHeight(
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.transparent,
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.only(
+              left: 20.0,
+              right: 20,
+              top: 5,
+              bottom: 15,
+            ),
+            child: Column(
+              children: [
+                //Attendance
+                _attendanceSection(),
+                Divider(
+                  thickness: 1,
+                  color: Colors.black.withOpacity(0.1),
+                ),
+                //Recording section
+                _recordingSection(recordingState, classItem),
+                Divider(
+                  thickness: 1,
+                  color: Colors.black.withOpacity(0.1),
+                ),
+                //View Summarization section
+                _viewSummarizationSection(context, classItem),
+                Divider(
+                  thickness: 1,
+                  color: Colors.black.withOpacity(0.1),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Card _classCardSection(
+      ClassCreateModel classItem, BuildContext context, User userData) {
+    return Card(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15),
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: IntrinsicHeight(
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            Skeletonizer(
+              enabled: _isRefreshing,
+              child: Image.network(
+                classItem.imageUrl,
+                fit: BoxFit.cover,
+                errorBuilder: (_, __, ___) {
+                  return Image.asset(
+                    'assets/pictures/compPicture.jpg',
+                    fit: BoxFit.cover,
+                  );
+                },
+              ),
+            ),
+            Positioned(
+              top: 10,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.bottomCenter,
+                    end: Alignment.topCenter,
+                    colors: [
+                      Colors.black.withOpacity(1),
+                      Colors.transparent,
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(15.0),
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            toLeftTransition(
+                              LectUpdateClass(
+                                classItem: classItem,
+                              ),
+                            ),
+                          );
+                        },
+                        child: Image.asset(
+                          'assets/icons/editicon.png',
+                          height: 25,
+                          width: 25,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 60),
+                  Padding(
+                    padding: const EdgeInsets.only(
+                      left: 10.0,
+                      right: 10,
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SizedBox(
+                              width: MediaQuery.of(context).size.width * 0.7,
+                              child: Text(
+                                "${classItem.courseCode} - ${classItem.courseName}",
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 5),
+                            Text(
+                              "${classItem.startTime} - ${classItem.endTime}",
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 13,
+                                fontFamily: 'FigtreeRegular',
+                              ),
+                            ),
+                            Text(
+                              classItem.date,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 13,
+                                fontFamily: 'FigtreeRegular',
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            SizedBox(
+                              width: MediaQuery.of(context).size.width * 0.7,
+                              child: Text(
+                                "Lecturer : ${userData.name} | Location : ${classItem.location}",
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 13,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -327,37 +340,45 @@ class _LecturerViewClassState extends ConsumerState<LecturerViewClass> {
     );
   }
 
-  Row _viewSummarizationSection(
+  Widget _viewSummarizationSection(
       BuildContext context, ClassCreateModel classItem) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        const Text(
-          "View Summarization",
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: Colors.black87,
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          toLeftTransition(
+            LecturerViewsummarization(
+              classId: classItem.classId,
+            ),
           ),
+        );
+      },
+      child: Padding(
+        padding: const EdgeInsets.only(
+          left: 0.0,
+          top: 10,
+          bottom: 10,
+          // right: 10,
         ),
-        IconButton(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => LecturerViewsummarization(
-                  classId: classItem.classId,
-                ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text(
+              "View Summarizations",
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
               ),
-            );
-          },
-          icon: Icon(
-            Icons.arrow_forward_ios,
-            size: 16,
-            color: Colors.black.withOpacity(0.5),
-          ),
+            ),
+            Icon(
+              Icons.arrow_forward_ios,
+              size: 16,
+              color: Colors.black.withOpacity(0.5),
+            ),
+          ],
         ),
-      ],
+      ),
     );
   }
 
@@ -410,27 +431,34 @@ class _LecturerViewClassState extends ConsumerState<LecturerViewClass> {
     );
   }
 
-  Row _attendanceSection() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        const Text(
-          "Attendance",
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: Colors.black87,
-          ),
+  Widget _attendanceSection() {
+    return GestureDetector(
+      onTap: () {},
+      child: Padding(
+        padding: const EdgeInsets.only(
+          left: 0.0,
+          top: 10,
+          bottom: 10,
         ),
-        IconButton(
-          onPressed: () {},
-          icon: Icon(
-            Icons.arrow_forward_ios,
-            size: 16,
-            color: Colors.black.withOpacity(0.5),
-          ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text(
+              "Attendance",
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+              ),
+            ),
+            Icon(
+              Icons.arrow_forward_ios,
+              size: 16,
+              color: Colors.black.withOpacity(0.5),
+            ),
+          ],
         ),
-      ],
+      ),
     );
   }
 

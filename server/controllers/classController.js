@@ -169,3 +169,24 @@ exports.deleteClass = async (req,res) => {
         res.status(500).json({message: "Failed to delete class data"});
     }
 };
+
+//Function to view current class (LEcturer)
+exports.lecturerGetCurrentClass = async (req, res) => {
+    try {
+        const lecturerId = req.params.lecturerId; // Extract lecturerId from URL parameter
+
+        //Validate lecturerId
+        if (!lecturerId) {
+            return res.status(400).json({ message: "Lecturer ID is required" });
+        }
+        
+        const currentClass = await classService.lecturerGetCurrentClass(lecturerId);
+        res.status(200).json({
+            message: "Class data fetched successfully",
+            Data: currentClass ?? [],
+        });
+    } catch (error) {
+        console.error("Controller Error:", error);
+        res.status(500).json({ message: "Failed to fetch class data" });
+    }
+}

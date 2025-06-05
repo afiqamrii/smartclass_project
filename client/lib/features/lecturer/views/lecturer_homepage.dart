@@ -1,11 +1,15 @@
-// ignore_for_file: await_only_futures
+// ignore_for_file: await_only_futures, unused_result
+
+import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:smartclass_fyp_2024/constants/color_constants.dart';
+import 'package:smartclass_fyp_2024/features/lecturer/manage_attendance/widgets/lecturer_class_now_card.dart';
 import 'package:smartclass_fyp_2024/features/lecturer/views/course_enrollment/views/lecturer_select_course.dart';
+import 'package:smartclass_fyp_2024/features/student/models/todayClass_card_models.dart';
 import 'package:smartclass_fyp_2024/features/student/views/report_utility/views/student_view_reports_history.dart';
 import 'package:smartclass_fyp_2024/features/student/views/widgets/student_todayclass_card.dart';
 import 'package:smartclass_fyp_2024/shared/components/unavailablePage.dart';
@@ -16,6 +20,7 @@ import 'package:smartclass_fyp_2024/features/lecturer/views/manage_summarization
 import 'package:smartclass_fyp_2024/features/lecturer/views/manage_class/lecturer_view_class.dart';
 import 'package:smartclass_fyp_2024/shared/data/models/classSum_model.dart';
 import 'package:smartclass_fyp_2024/shared/data/models/user.dart';
+import 'package:smartclass_fyp_2024/shared/widgets/loading.dart';
 import 'package:smartclass_fyp_2024/shared/widgets/pageTransition.dart';
 import '../../../shared/data/views/notification_icon.dart';
 import 'manage_class/lecturer_show_all_classes.dart';
@@ -31,6 +36,27 @@ class LectHomepage extends ConsumerStatefulWidget {
 
 class _LectHomepageState extends ConsumerState<LectHomepage> {
   bool _isRefreshing = false; // Add loading state
+  int limit = 3; // Set the limit for the number of items to display
+
+  Timer? _nowClassRefreshTimer;
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Refresh "Now Class" every 60 seconds
+    _nowClassRefreshTimer = Timer.periodic(const Duration(seconds: 60), (_) {
+      if (!mounted) return;
+      final externalId = ref.read(userProvider).externalId;
+      ref.refresh(nowClassProviders(externalId));
+    });
+  }
+
+  @override
+  void dispose() {
+    _nowClassRefreshTimer?.cancel();
+    super.dispose();
+  }
 
 // Handle the refresh and reload data from provider
   Future<void> _handleRefresh(WidgetRef ref, String externalId) async {
@@ -40,11 +66,13 @@ class _LectHomepageState extends ConsumerState<LectHomepage> {
 
     // Invalidate the provider to trigger loading state
 
-    await ref.read(classDataProviderSummarizationStatus(externalId));
+    await ref.refresh(classDataProviderSummarizationStatus(externalId));
     await ref.read(userProvider);
-    await ref.read(classDataProvider(externalId));
-    // ignore: unused_result
+    await ref.refresh(classDataProvider(externalId));
+    // ignore:
     await ref.refresh(unreadNotificationCountProvider);
+
+    await ref.refresh(nowClassProviders(externalId));
 
     // Wait for new data to load
     await Future.delayed(
@@ -63,6 +91,9 @@ class _LectHomepageState extends ConsumerState<LectHomepage> {
     final sumData =
         ref.watch(classDataProviderSummarizationStatus(user.externalId));
     final data = ref.watch(classDataProvider(user.externalId));
+
+    //Get now classes
+    final currentClassData = ref.watch(nowClassProviders(user.externalId));
 
     return Scaffold(
       backgroundColor: const Color(0xFF0d1116),
@@ -175,6 +206,7 @@ class _LectHomepageState extends ConsumerState<LectHomepage> {
                                 const SizedBox(height: 20),
                                 _cardSection(context, user),
                                 const SizedBox(height: 10),
+                                _nowClassSection(currentClassData, user, limit),
                                 _todayClass(context),
                                 const SizedBox(height: 0),
                                 _classListCard(context, classData, user),
@@ -286,7 +318,8 @@ class _LectHomepageState extends ConsumerState<LectHomepage> {
                       context,
                       toLeftTransition(
                         LecturerViewsummarization(
-                            classId: classes[index].classId),
+                          classId: classes[index].classId,
+                        ),
                       ));
                 },
                 child: Padding(
@@ -699,5 +732,66 @@ Widget _cardSection(BuildContext context, User user) {
         ),
       ),
     ],
+  );
+}
+
+Widget _nowClassSection(AsyncValue<List<TodayclassCardModels>> currentClassData,
+    User user, int limit) {
+  return Padding(
+    padding: const EdgeInsets.only(top: 5.0),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Padding(
+          padding: EdgeInsets.only(left: 5.0),
+          child: Text(
+            'Now Class',
+            style: TextStyle(
+              fontSize: 17,
+              fontFamily: 'Figtree',
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+            ),
+          ),
+        ),
+        const SizedBox(
+          height: 2,
+        ),
+        currentClassData.when(
+          data: (data) {
+            if (data.isEmpty) {
+              return const Unavailablepage(
+                animation: "assets/animations/noClassAnimation.json",
+                message: "No Class Today. YAY!",
+              );
+            } else {
+              return Column(
+                children: List.generate(
+                  data.length > limit ? limit : data.length,
+                  (index) => LecturerClassNowCard(
+                    classId: data[index].classId,
+                    userId: user.externalId,
+                    className: data[index].courseName,
+                    lecturerName: data[index].lecturerName,
+                    courseCode: data[index].courseCode,
+                    classLocation: data[index].location,
+                    timeStart: data[index].startTime,
+                    timeEnd: data[index].endTime,
+                    imageUrl: data[index].imageUrl,
+                  ),
+                ),
+              );
+            }
+          },
+          error: (error, stackTrace) {
+            return const SizedBox.shrink();
+          },
+          loading: () {
+            // Show a loading indicator while data is being fetched
+            return const LoadingWidget();
+          },
+        ),
+      ],
+    ),
   );
 }

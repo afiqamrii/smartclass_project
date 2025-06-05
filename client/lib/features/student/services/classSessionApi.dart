@@ -55,19 +55,16 @@ class Classsessionapi {
   }
 
   //GET API for now class
-  static Stream<List<TodayclassCardModels>> getNowClasses(String studentId) async* {
-    while (true) {
-      await Future.delayed(const Duration(seconds: 5));
-      Response response = await get(
-          Uri.parse("${ApiConstants.baseUrl}/class/viewcurrentclass/$studentId"));
-      if (response.statusCode == 200) {
-        final List result = jsonDecode(response.body)['Data'];
-        yield result.map(((e) => TodayclassCardModels.fromJson(e))).toList();
-      } else {
-        throw Exception("Failed to load classes");
-      }
-    }
+  static Future<List<TodayclassCardModels>> getNowClasses(String studentId) async {
+  Response response = await get(
+      Uri.parse("${ApiConstants.baseUrl}/class/viewcurrentclass/$studentId"));
+  if (response.statusCode == 200) {
+    final List result = jsonDecode(response.body)['Data'];
+    return result.map(((e) => TodayclassCardModels.fromJson(e))).toList();
+  } else {
+    throw Exception("Failed to load classes");
   }
+}
 
   //Check studeent attendance statu
   //GET API for now class

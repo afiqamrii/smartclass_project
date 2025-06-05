@@ -115,5 +115,15 @@ const deleteClass = async (id) => {
     }
 };
 
+//Function to get current class for lecturer
+const lecturerGetCurrentClass = async (lecturerId) => {
+    try{
+        const result = await classModel.lecturerGetCurrentClass(lecturerId);
+        return result;
+    } catch(error){
+        throw new Error("Error in service while deleting class data: " + error.message);
+    }
+};
+
 //EXport module
-module.exports = { addClass , viewClass ,viewClassById , updateClass , deleteClass , studentViewTodayClass ,viewUpcomingClass ,viewPastClass ,viewCurrentClass};
+module.exports = { addClass , viewClass ,viewClassById , updateClass , deleteClass , studentViewTodayClass ,viewUpcomingClass ,viewPastClass ,viewCurrentClass ,lecturerGetCurrentClass };

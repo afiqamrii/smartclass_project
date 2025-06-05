@@ -22,8 +22,9 @@ final pastClassProviders =
 
 //Now class provider
 final nowClassProviders =
-    StreamProvider.family<List<TodayclassCardModels>, String>((ref , studentId) async* {
-  yield* Classsessionapi.getNowClasses(studentId); // Use classProvider from api.dart
+    FutureProvider.family<List<TodayclassCardModels>, String>(
+        (ref, studentId) async {
+  return await Classsessionapi.getNowClasses(studentId);
 });
 
 //Check attendance

@@ -11,7 +11,7 @@ import 'package:smartclass_fyp_2024/features/student/providers/student_class_pro
 import 'package:smartclass_fyp_2024/nfc/start_clock_in_nfc.dart';
 import 'package:smartclass_fyp_2024/shared/data/dataprovider/user_provider.dart';
 
-class ClassNowCard extends ConsumerStatefulWidget {
+class LecturerClassNowCard extends ConsumerStatefulWidget {
   //Class Card variable neededdd
   final int classId;
   final String userId;
@@ -23,7 +23,7 @@ class ClassNowCard extends ConsumerStatefulWidget {
   final String imageUrl;
   final String lecturerName;
 
-  const ClassNowCard({
+  const LecturerClassNowCard({
     super.key,
     required this.classId,
     required this.userId,
@@ -37,10 +37,11 @@ class ClassNowCard extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<ClassNowCard> createState() => _ClassNowCardState();
+  ConsumerState<LecturerClassNowCard> createState() =>
+      _LecturerClassNowCardState();
 }
 
-class _ClassNowCardState extends ConsumerState<ClassNowCard> {
+class _LecturerClassNowCardState extends ConsumerState<LecturerClassNowCard> {
   late DateTime classStartTime;
   late DateTime classEndTime;
   late Duration remaining;
@@ -299,7 +300,7 @@ class _ClassNowCardState extends ConsumerState<ClassNowCard> {
                               ),
                               const SizedBox(height: 15),
                               Text(
-                                "${widget.timeStart} - ${widget.timeEnd}",
+                                "${widget.timeStart} - HERE ${widget.timeEnd}",
                                 style: const TextStyle(
                                   fontSize: 12,
                                   fontFamily: 'Poppins',

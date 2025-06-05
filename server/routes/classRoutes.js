@@ -15,4 +15,7 @@ router.get("/viewpastclass/:studentId", classController.viewPastClass); // View 
 router.put("/updateclass/:id", classController.updateClass); // Update a class
 router.delete("/deleteclass/:id", classController.deleteClass);
 
+//Lecturer get current class
+router.get("/lecturercurrentclass/:lecturerId", classController.lecturerGetCurrentClass);
+
 module.exports = router;

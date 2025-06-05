@@ -1,5 +1,7 @@
 // ignore_for_file: unused_result
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
@@ -32,6 +34,26 @@ class _StudentHomePageState extends ConsumerState<StudentHomePage> {
   int limit = 3; // Set the limit for the number of items to display
   int _tabIndex = 0;
 
+  Timer? _nowClassRefreshTimer;
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Refresh "Now Class" every 60 seconds
+    _nowClassRefreshTimer = Timer.periodic(const Duration(seconds: 60), (_) {
+      if (!mounted) return;
+      final externalId = ref.read(userProvider).externalId;
+      ref.refresh(nowClassProviders(externalId));
+    });
+  }
+
+  @override
+  void dispose() {
+    _nowClassRefreshTimer?.cancel();
+    super.dispose();
+  }
+
 // Handle the refresh and reload data from provider
   Future<void> _handleRefresh(WidgetRef ref) async {
     setState(() {
@@ -39,7 +61,8 @@ class _StudentHomePageState extends ConsumerState<StudentHomePage> {
     });
 
     await ref.read(userProvider.notifier).refreshUserData();
-    await ref.read(nowClassProviders(ref.read(userProvider).externalId).future);
+    await ref
+        .refresh(nowClassProviders(ref.read(userProvider).externalId).future);
     // ignore: duplicate_ignore
     // ignore: unused_result
     ref.refresh(upcomingClassProviders(ref.read(userProvider).externalId));

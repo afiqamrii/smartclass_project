@@ -59,7 +59,7 @@ class RecordingStateNotifier extends StateNotifier<Map<int, RecordingState>> {
           recordingText: const Text(
             "Recording Not Started",
             style: TextStyle(
-              fontSize: 16,
+              fontSize: 15,
               fontWeight: FontWeight.bold,
               color: Colors.black87,
             ),
@@ -84,7 +84,7 @@ class RecordingStateNotifier extends StateNotifier<Map<int, RecordingState>> {
           recordingText: const Text(
             "Recording Not Started",
             style: TextStyle(
-              fontSize: 16,
+              fontSize: 15,
               fontWeight: FontWeight.bold,
               color: Colors.black87,
             ),
