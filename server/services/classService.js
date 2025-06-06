@@ -1,14 +1,16 @@
 const classModel = require("../models/classModel");
+const attendanceService = require("../services/attendanceService");
+
 
 // Function to add a class
 const addClass = async (classData) => {
     try {
 
         //Fetch image from google API for class based on className or courseName
-        const imageQuery = classData.className ;
+        // const imageQuery = classData.className ;
 
         //Fetching images
-        const imageUrl = await fetchImageFromGoogle(imageQuery);
+        // const imageUrl = await fetchImageFromGoogle(imageQuery);
 
         // //Debug purpose
     // console.log("Image URL:", imageUrl);
@@ -16,7 +18,19 @@ const addClass = async (classData) => {
         // Ensure we pass correct values in order
         const { courseId , classLocation , timeStart, timeEnd, date  , lecturerId  } = classData;
         
-        const classId = await classModel.addClass(courseId , classLocation , timeStart, timeEnd, date  , lecturerId , imageUrl);
+        const classId = await classModel.addClass(courseId , classLocation , timeStart, timeEnd, date  , lecturerId );
+
+        //If class is added successfully, add all students that enroll this course to attendance table
+        if (classId) {
+            try {
+                //Call service to add student attendance
+                await attendanceService.addStudentAttendance(classId, courseId);
+            } catch (error) {
+                console.error("Error in service while adding student attendance: ", error);
+            }
+        }
+
+
         return { success: true, classId };
     } catch (error) {
         throw new Error("Error in service while adding class: " + error.message);

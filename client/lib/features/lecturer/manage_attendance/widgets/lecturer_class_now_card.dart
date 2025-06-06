@@ -339,7 +339,31 @@ class _LecturerClassNowCardState extends ConsumerState<LecturerClassNowCard> {
                         // const SizedBox(width: 10),
 
                         // Countdown timer
-                        if (!isGracePeriod)
+                        if (isGracePeriod) //Show only if in grace period
+                          Container(
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                              color: Colors.red.shade100,
+                              borderRadius: BorderRadius.circular(20),
+                              boxShadow: const [
+                                BoxShadow(
+                                  color: Colors.black26,
+                                  blurRadius: 3,
+                                  offset: Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                            child: const Padding(
+                              padding: EdgeInsets.all(8.0),
+                              child: Text("Class Ends",
+                                  style: TextStyle(
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.red,
+                                  )),
+                            ),
+                          ),
+                        if (!isGracePeriod) //Show only if not in grace period
                           Row(
                             mainAxisSize: MainAxisSize.min,
                             children: List.generate(

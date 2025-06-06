@@ -19,8 +19,9 @@ const AttendanceModel = {
 
         try {
             const query = `
-                INSERT INTO Attendance (classId, studentId, attendanceStatus , timeStamp)
-                VALUES (?, ?, ? , ?)
+                UPDATE Attendance
+                SET attendanceStatus = ?
+                WHERE classId = ? AND studentId = ?
             `;
             const [rows] = await pool.query(query, [classId, studentId, attendanceStatus , timeStamp]);
             return rows;
@@ -104,7 +105,26 @@ const AttendanceModel = {
             genericError.status = 500;
             throw genericError;
         }
-    }
+    },
+
+    // Function to add all students that enroll this course to attendance table after lecturer creates class
+    async addStudentAttendance(classId, studentId) {
+        try {
+            const query = `
+                INSERT INTO Attendance (classId, studentId)
+                VALUES (?, ?)
+            `;
+            const [rows] = await pool.query(query, [classId, studentId]);
+            return rows;
+        } catch (error) {
+            const genericError = new Error("Error in model while adding student attendance: " + error.message);
+            genericError.status = 500;
+            throw genericError;
+        }
+    },
+
 };
+
+
 
 module.exports = AttendanceModel;

@@ -143,6 +143,28 @@ const EnrollmentModel = {
             console.error("Error updating data:", err.message);
             throw new Error(`Error in Model: Failed to update enrollment status: ${err.message}`);
         }
+    },
+
+    //Function to get all student that enrolled for spesific course
+    async getAllEnrollment(courseId) {
+        //Validate input
+        if (!courseId) {
+            throw new Error("Course ID is required");
+        }
+
+        try {
+            console.log("Fetching enrollments for student:", courseId);
+            const query = `
+                SELECT student_id
+                FROM CourseEnrollment
+                WHERE courseId = ? AND status = "Approved"
+            `;
+            const [rows] = await pool.query(query, [courseId]);
+            return rows; // Return the list of enrollments
+        } catch (err) {
+            console.error("Error retrieving data:", err.message);
+            throw new Error(`Error in Model: Failed to fetch enrollments: ${err.message}`);
+        }
     }
 
 };

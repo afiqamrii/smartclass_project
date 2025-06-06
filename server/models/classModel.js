@@ -300,34 +300,34 @@ const ClassModel = {
             const today = moment().format("YYYY-MM-DD");
             const currentTime = moment().format("HH:mm:ss");
             const query = `
-                SELECT 
-                    cs.classId,
-                    c.courseCode,
-                    c.courseName AS className,
-                    cs.date,
-                    cs.timeStart,
-                    cs.timeEnd,
-                    cs.classLocation,
-                    c.imageUrl,
-                    cr.publishStatus,
-                    u.name
-                FROM 
-                    ClassSession cs
-                JOIN 
-                    User u ON cs.lecturerId = u.externalId
-                JOIN
-                    Course c ON cs.courseId = c.courseId
-                JOIN 
-                    CourseEnrollment ce ON cs.courseId = ce.courseId
-                LEFT JOIN 
-                    ClassRecording cr ON cs.classId = cr.classId
-                WHERE 
-                    cs.date = ?
-                    AND cs.timeStart <= ?
-                    AND ADDTIME(cs.timeEnd, '01:00:00') >= ?
-                    AND cs.lecturerId = ?
-                    AND ce.status = 'Approved'
-            `;
+            SELECT DISTINCT
+                cs.classId,
+                c.courseCode,
+                c.courseName AS className,
+                cs.date,
+                cs.timeStart,
+                cs.timeEnd,
+                cs.classLocation,
+                c.imageUrl,
+                cr.publishStatus,
+                u.name
+            FROM 
+                ClassSession cs
+            JOIN 
+                User u ON cs.lecturerId = u.externalId
+            JOIN
+                Course c ON cs.courseId = c.courseId
+            JOIN 
+                CourseEnrollment ce ON cs.courseId = ce.courseId
+            LEFT JOIN 
+                ClassRecording cr ON cs.classId = cr.classId
+            WHERE 
+                cs.date = ?
+                AND cs.timeStart <= ?
+                AND ADDTIME(cs.timeEnd, '01:00:00') >= ?
+                AND cs.lecturerId = ?
+                AND ce.status = 'Approved'
+`;
             const [rows] = await pool.query(query, [today ,currentTime, currentTime, lecturerId]);
             // console.log("Current time:", currentTime);
             return rows;

@@ -5,7 +5,7 @@ const router = express.Router();
 
 //Routes
 //Add attendance route
-router.post("/addattendance", attendanceController.addAttendance);
+router.put("/addattendance", attendanceController.addAttendance);
 
 //Check student attendance
 router.get("/checkattendance/:classId/:studentId", attendanceController.checkAttendance);
