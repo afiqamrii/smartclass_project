@@ -162,7 +162,7 @@ const ClassModel = {
             ORDER BY cs.date ASC
             `;
             const [rows] = await pool.query(query, [today , studentId]);
-            console.log("Upcoming classes:", today);
+            // console.log("Upcoming classes:", today);
             return rows;
         } catch (err) {
             console.error("Error retrieving data:", err.message);
@@ -209,8 +209,8 @@ const ClassModel = {
             const [rows] = await pool.query(query, [today , studentId]);
             
             //Debug
-            console.log ("Data retrieved:", rows);
-            console.log("Pass classes:", today);
+            // console.log ("Data retrieved:", rows);
+            // console.log("Pass classes:", today);
             return rows;
         } catch (err) {
             console.error("Error retrieving data:", err.message);
@@ -279,8 +279,8 @@ const ClassModel = {
         `;
         const values = [courseCode, className, date, timeStart, timeEnd, classLocation , id];
     
-        console.log("Executing SQL:", query);
-        console.log("With values:", values);
+        // console.log("Executing SQL:", query);
+        // console.log("With values:", values);
     
         await pool.query(query, values);
         return id;
