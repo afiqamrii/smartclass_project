@@ -9,9 +9,12 @@ const ClassroomModel = {
         try {
             console.log("Adding classroom:", classroom);
             const query = `INSERT INTO Classroom (classroomName, group_developer_id) VALUES (?, ?)`;
-            const [result] = await pool.query(query, [classroom.classroomName, classroom.groupDevId ]);
+            const [result] = await pool.query(query, [classroom.classroomName, classroom.groupDevId]);
             return result.insertId; // Return the ID of the newly created classroom
         } catch (err) {
+            if (err.code === 'ER_DUP_ENTRY') {
+                throw new Error("Classroom name already exists. Please choose a different name.");
+            }
             console.error("Error inserting data:", err.message);
             throw new Error("Error in Model : Failed to add classroom");
         }
@@ -89,6 +92,30 @@ const ClassroomModel = {
         } catch (err) {
             console.error("Error retrieving deleted classroom:", err.message);
             throw new Error("Error in Model : Failed to fetch deleted classroom");
+        }
+    },
+
+    //Function to restore deleted classroom
+    async restoreClassroom(classroomId) {
+        try {
+            const query = `UPDATE Classroom SET is_active = 'Yes' WHERE classroomId = ?`;
+            const [result] = await pool.query(query, [classroomId]);
+            return result.affectedRows > 0; // Return true if the restore was successful
+        } catch (err) {
+            console.error("Error restoring classroom:", err.message);
+            throw new Error("Error in Model : Failed to restore classroom");
+        }
+    },
+
+    //Function to completely delete classroom
+    async deleteClassroom(classroomId) {
+        try {
+            const query = `DELETE FROM Classroom WHERE classroomId = ?`;
+            const [result] = await pool.query(query, [classroomId]);
+            return result.affectedRows > 0; // Return true if the deletion was successful
+        } catch (err) {
+            console.error("Error deleting classroom:", err.message);
+            throw new Error("Error in Model : Failed to delete classroom");
         }
     },
 };

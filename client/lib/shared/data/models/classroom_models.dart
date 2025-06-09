@@ -28,6 +28,13 @@ class ClassroomModels {
     );
   }
 
+  // Convert a ClassroomModels object to a Map
+  Map<String, dynamic> toJson() {
+    return {
+      'classroomName': classroomName,
+    };
+  }
+
   @override
   String toString() {
     return classroomName;

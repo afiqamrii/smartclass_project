@@ -71,6 +71,8 @@ dependencies:
   geolocator: ^10.1.0
   flutter_local_notifications: ^19.2.1
   flutter_slidable:
+  file_picker:
+  excel: ^4.0.6
   
   
 

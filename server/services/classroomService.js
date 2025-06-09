@@ -6,7 +6,7 @@ const addClassroom = async (classroom) => {
         const newClassroom = await classroomModel.addClassroom(classroom);
         return newClassroom;
     } catch (error) {
-        throw new Error("Error in service while adding classroom: " + error.message);
+        throw new Error(error.message);
     }
 };
 
@@ -66,5 +66,25 @@ const getDeletedClassroom = async () => {
     }
 };
 
+//Function to restore deleted classroom
+const restoreClassroom = async (classroomId) => {
+    try {
+        const result = await classroomModel.restoreClassroom(classroomId);
+        return result;
+    } catch (error) {
+        throw new Error("Error in service while restoring classroom data: " + error.message);
+    }
+};
+
+//Function to completely delete classroom
+const deleteClassroom = async (classroomId) => {
+    try {
+        const result = await classroomModel.deleteClassroom(classroomId);
+        return result;
+    } catch (error) {
+        throw new Error("Error in service while deleting classroom data: " + error.message);
+    }
+};
+
 //EXport module
-module.exports = { getClassroom , addClassroom , updateEsp32Id , getClassroomByEsp32Id , softDeleteClassroom , getDeletedClassroom };
+module.exports = { getClassroom , addClassroom , updateEsp32Id , getClassroomByEsp32Id , softDeleteClassroom , getDeletedClassroom, restoreClassroom , deleteClassroom };

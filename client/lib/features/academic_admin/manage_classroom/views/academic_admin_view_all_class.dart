@@ -122,32 +122,37 @@ class _AcademicAdminViewAllClassState
                         vertical: 1,
                       ),
                       child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            '${filtered.length} Classrooms',
-                            style: const TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.black54,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              '${filtered.length} Classrooms',
+                              style: const TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w500,
+                                color: Colors.black54,
+                              ),
                             ),
-                          ),
-                          IconButton(
-                            icon: const Icon(
-                              Icons.restore_from_trash_outlined,
-                              color: Colors.black,
-                              size: 20,
+                            IconButton(
+                              icon: const Icon(
+                                Icons.restore_from_trash_outlined,
+                                color: Colors.black,
+                                size: 20,
+                              ),
+                              tooltip: 'Restore Deleted',
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  toLeftTransition(
+                                    const AcademicAdminRestoreDeletedClass(),
+                                  ),
+                                );
+
+                                //Refresh the list
+                                // ignore: unused_result
+                                ref.refresh(classroomApiProvider);
+                              },
                             ),
-                            tooltip: 'Restore Deleted',
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                toLeftTransition(const AcademicAdminRestoreDeletedClass(),),
-                              );
-                            },
-                          ),
-                        ]
-                      ),
+                          ]),
                     ),
                   ),
                 ),

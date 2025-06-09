@@ -1,3 +1,4 @@
+const e = require("express");
 const classroomService = require("../services/classroomService");
 const { createGroup } = require("../utils/favoriotAPI");
 
@@ -21,6 +22,11 @@ exports.addClassroom = async (req, res) => {
         // Call service to add classroom
         const newClassroom = await classroomService.addClassroom({ classroomName , groupDevId });
 
+        // Check if the error is duplicate entry
+        if (newClassroom instanceof Error && newClassroom.message.includes("Duplicate entry")) {
+            return res.status(409).json({ message: "Classroom name already exists" });
+        }
+
         // //If successfully added 
         // //Create group in Favoriot
         // if (newClassroom) {
@@ -41,18 +47,14 @@ exports.addClassroom = async (req, res) => {
         // }
 
 
-        res.status(201).json({
+        res.status(200).json({
             message: "Classroom added successfully",
             Data: newClassroom,
         });
     } catch (error) {
         console.error("Controller Error:", error);
-        if (error.isAxiosError && error.response) {
-            console.error("Axios error response status:", error.response.status);
-            console.error("Axios error response data:", error.response.data); // Log this!
-        }
-        res.status(500).json({ message: "Failed to add classroom" });
-        }
+        res.status(500).json({ message: error.message });
+    }
 };
 
 // Function to view all courses
@@ -128,5 +130,29 @@ exports.getDeletedClassroom = async (req, res) => {
     } catch (error) {
         console.error("Controller Error:", error);
         res.status(500).json({ message: "Failed to fetch classroom data" });
+    }
+};
+
+//Fcuntion to restore classroom
+exports.restoreClassroom = async (req, res) => {
+    try {
+        const classroomId = req.params.classroomId;
+        const result = await classroomService.restoreClassroom(classroomId);
+        res.status(200).json({ message: "Classroom data restored successfully", Restored_Id: result });
+    } catch (error) {
+        console.error("Controller Error:", error);
+        res.status(400).json({ message: err.message });
+    }
+};
+
+//Function to completely delete classroom
+exports.deleteClassroom = async (req, res) => {
+    try {
+        const classroomId = req.params.classroomId;
+        const result = await classroomService.deleteClassroom(classroomId);
+        res.status(200).json({ message: "Classroom data deleted successfully", Deleted_Id: result });
+    } catch (error) {
+        console.error("Controller Error:", error);
+        res.status(400).json({ message: err.message });
     }
 };
