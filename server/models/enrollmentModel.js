@@ -97,11 +97,11 @@ const EnrollmentModel = {
             const query = `
                 SELECT ce.enrollment_id, ce.student_id, ce.courseId, ce.requested_at,
                     c.courseName, c.courseCode, c.imageUrl, ce.status,
-                    u.name AS studentName
+                    u.name AS studentName, ce.approved_at
                 FROM CourseEnrollment ce
                 JOIN Course c ON ce.courseId = c.courseId
                 JOIN User u ON ce.student_id = u.externalId
-                WHERE c.lecturerId = ? AND ce.courseId = ?
+                WHERE c.lecturerId = ? AND ce.courseId = ? AND ce.status NOT IN ('Rejected')
                 ORDER BY ce.requested_at DESC;
             `;
 

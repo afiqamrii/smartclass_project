@@ -104,3 +104,29 @@ exports.getClassroomByEsp32Id = async (req, res) => {
         res.status(500).json({ message: "Failed to fetch classroom data" });
     }
 };
+
+//Function to delete classroom
+exports.softDeleteClassroom = async (req, res) => {
+    try {
+        const classroomId = req.params.classroomId;
+        const result = await classroomService.softDeleteClassroom(classroomId);
+        res.status(200).json({ message: "Classroom data deleted successfully", Deleted_Id: result });
+    } catch (error) {
+        console.error("Controller Error:", error);
+        res.status(400).json({ message: err.message });
+    }
+};
+
+//Function to get deleted classroom
+exports.getDeletedClassroom = async (req, res) => {
+    try {
+        const classroom = await classroomService.getDeletedClassroom();
+        res.status(200).json({
+            message: "Classroom data fetched successfully",
+            Data: classroom ?? [],
+        });
+    } catch (error) {
+        console.error("Controller Error:", error);
+        res.status(500).json({ message: "Failed to fetch classroom data" });
+    }
+};

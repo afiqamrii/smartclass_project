@@ -30,7 +30,7 @@ class _LectViewAllClassState extends ConsumerState<LectViewAllClass> {
 
   Future<void> _handleRefresh() async {
     //Refresh the class data
-    ref.refresh(classDataProvider(ref.read(userProvider).externalId));
+    ref.refresh(classDataProvider(ref.watch(userProvider).externalId));
 
     await Future.delayed(const Duration(seconds: 1));
     _refreshController.refreshCompleted();
@@ -75,7 +75,7 @@ class _LectViewAllClassState extends ConsumerState<LectViewAllClass> {
 
           // Apply date filter
           final now = DateTime.now();
-          final todayStr = "${now.day} ${_monthName(now.month)} ${now.year}";
+          // final todayStr = "${now.day} ${_monthName(now.month)} ${now.year}";
           List<ClassCreateModel> dateFiltered = filtered.where((classItem) {
             DateTime? classDate;
             try {
@@ -85,10 +85,12 @@ class _LectViewAllClassState extends ConsumerState<LectViewAllClass> {
             }
             switch (_selectedFilter) {
               case "Today":
-                return classItem.date == todayStr;
+                return classDate.year == now.year &&
+                    classDate.month == now.month &&
+                    classDate.day == now.day;
               case "Upcoming":
                 return classDate.isAfter(now);
-              case "Past":
+              case "Past Class":
                 return classDate.isBefore(now);
               default:
                 return true;

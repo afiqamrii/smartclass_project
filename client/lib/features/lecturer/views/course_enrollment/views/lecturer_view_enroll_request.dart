@@ -182,10 +182,16 @@ class _LecturerViewEnrollRequestState
             ),
             asyncRequests.when(
               loading: () => const SliverFillRemaining(
-                child: Center(child: CircularProgressIndicator()),
+                child: Center(
+                  child: CircularProgressIndicator(),
+                ),
               ),
               error: (e, _) => const SliverFillRemaining(
-                child: Center(child: Text('Failed to load requests')),
+                child: Center(
+                  child: Text(
+                    'No enrollment requests for this course',
+                  ),
+                ),
               ),
               data: (requests) {
                 final filtered = requests.where((req) {
@@ -224,8 +230,11 @@ class _LecturerViewEnrollRequestState
                               const CircleAvatar(
                                 radius: 20,
                                 backgroundColor: Colors.grey,
-                                child: Icon(Icons.person,
-                                    size: 20, color: Colors.white),
+                                child: Icon(
+                                  Icons.person,
+                                  size: 20,
+                                  color: Colors.white,
+                                ),
                               ),
                               const SizedBox(width: 12),
                               Expanded(
@@ -258,6 +267,15 @@ class _LecturerViewEnrollRequestState
                                     const SizedBox(height: 5),
                                     Row(
                                       children: [
+                                        if (req.status.toLowerCase() ==
+                                            'approved')
+                                          Text(
+                                            'Status: ${req.status} at ${_formatDate(DateTime.parse(req.approvedAt))}',
+                                            style: const TextStyle(
+                                              fontSize: 11,
+                                              color: Colors.green,
+                                            ),
+                                          ),
                                         if (req.status.toLowerCase() ==
                                             'pending')
                                           ElevatedButton.icon(
@@ -380,8 +398,8 @@ class _LecturerViewEnrollRequestState
                                                       child: const Text(
                                                         "Reject",
                                                         style: TextStyle(
-                                                            color:
-                                                                Colors.white),
+                                                          color: Colors.white,
+                                                        ),
                                                       ),
                                                     ),
                                                   ],

@@ -32,7 +32,7 @@ const ClassroomModel = {
     //Get all courses from the database
     async getAllClassroom() {
         try {
-            const query = `SELECT * FROM Classroom`;
+            const query = `SELECT * FROM Classroom WHERE is_active = 'Yes'`;
             const [rows] = await pool.query(query);
             return rows;
         } catch (err) {
@@ -66,7 +66,33 @@ const ClassroomModel = {
             console.error("Error retrieving classroom by esp32_id:", err.message);
             throw new Error("Error in Model : Failed to fetch classroom by esp32 ID");
         }
-    }
+    },
+
+    //Soft Delete classroom
+    async softDeleteClassroom(classroomId) {
+        try {
+            const query = `UPDATE Classroom SET is_active = 'No' WHERE classroomId = ?`;
+            const [result] = await pool.query(query, [classroomId]);
+            return result.affectedRows > 0; // Return true if the deletion was successful
+        } catch (err) {
+            console.error("Error deleting classroom:", err.message);
+            throw new Error("Error in Model : Failed to delete classroom");
+        }
+    },
+
+    //Function to get deleted classroom
+    async getDeletedClassroom() {
+        try {
+            const query = `SELECT * FROM Classroom WHERE is_active = 'No'`;
+            const [rows] = await pool.query(query);
+            return rows;
+        } catch (err) {
+            console.error("Error retrieving deleted classroom:", err.message);
+            throw new Error("Error in Model : Failed to fetch deleted classroom");
+        }
+    },
 };
+
+
 
 module.exports = ClassroomModel;

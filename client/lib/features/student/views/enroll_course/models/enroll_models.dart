@@ -11,6 +11,7 @@ class EnrollModels {
   final String status;
   final String lecturerId;
   final String lecturerName;
+  final String approvedAt;
 
   EnrollModels({
     required this.enrollmentId,
@@ -23,12 +24,16 @@ class EnrollModels {
     required this.status,
     required this.lecturerId,
     required this.lecturerName,
+    required this.approvedAt,
   });
 
   // Convert JSON object to EnrollModels
   factory EnrollModels.fromJson(Map<String, dynamic> json) {
     // Ensure requestedAt is a valid timestamp and format it
     final rawTimestamp = json['requested_at'] ?? "Unknown Date";
+    final rawApprovedAt = json['approvedAt'] ?? "Unknown Date";
+
+    final formattedApprovedAt = _formatTimestamp(rawApprovedAt);
     final formattedTimestamp = _formatTimestamp(rawTimestamp);
     return EnrollModels(
       enrollmentId: json['enrollment_id'] ?? 0,
@@ -41,6 +46,7 @@ class EnrollModels {
       status: json['status'] ?? "Pending",
       lecturerId: json['lecturerId'] ?? "Unknown Lecturer",
       lecturerName: json['lecturerName'] ?? "Unknown Lecturer Name",
+      approvedAt: formattedApprovedAt,
     );
   }
 

@@ -14,7 +14,7 @@ class CourseEnrollmentRequestApi {
       );
 
       // Debug: print status and body
-      print('Status: ${response.statusCode}, Body: ${response.body}');
+      // print('Status: ${response.statusCode}, Body: ${response.body}');
 
       final Map<String, dynamic> jsonData = jsonDecode(response.body);
 
@@ -38,7 +38,7 @@ class CourseEnrollmentRequestApi {
       }
     } catch (e) {
       // Print the error for debugging
-      print('Error in getEnrolledRequests: $e');
+      // print('Error in getEnrolledRequests: $e');
       throw Exception(e is Exception
           ? e.toString().replaceFirst('Exception: ', '')
           : 'Could not fetch enrollment requests. Please try again later.');

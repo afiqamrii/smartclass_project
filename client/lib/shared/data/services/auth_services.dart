@@ -4,9 +4,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'package:smartclass_fyp_2024/constants/api_constants.dart';
+import 'package:smartclass_fyp_2024/features/academic_admin/bottom_nav/academician_bottom_navbar.dart';
+import 'package:smartclass_fyp_2024/features/academic_admin/manage_profile/academic_admin_account_details.dart';
+import 'package:smartclass_fyp_2024/features/academic_admin/manage_profile/academic_admin_email_sended.dart';
+import 'package:smartclass_fyp_2024/features/academic_admin/registration/signup_page/academic_admin_greets_page.dart';
+import 'package:smartclass_fyp_2024/features/admin/manage_profile/admin_account_details.dart';
 import 'package:smartclass_fyp_2024/features/admin/manage_profile/admin_email_sended.dart';
 import 'package:smartclass_fyp_2024/features/lecturer/views/manage_profile/email_sended.dart';
 import 'package:smartclass_fyp_2024/features/lecturer/views/manage_profile/lecturer_account_details.dart';
+import 'package:smartclass_fyp_2024/features/student/views/manage_profile/student_account_details.dart';
 import 'package:smartclass_fyp_2024/features/student/views/manage_profile/student_email_sended.dart';
 import 'package:smartclass_fyp_2024/shared/data/models/role.dart';
 import 'package:smartclass_fyp_2024/features/admin/bottom_nav/admin_bottom_navbar.dart';
@@ -94,6 +100,14 @@ class AuthService {
               ),
               (route) => false,
             );
+          } else if (roleId == 4) {
+            Navigator.pushAndRemoveUntil(
+              context,
+              toRightTransition(
+                const AcademicAdminGreetsPage(),
+              ),
+              (route) => false,
+            );
           }
         },
       );
@@ -167,6 +181,13 @@ class AuthService {
             navigator.pushAndRemoveUntil(
               toLeftTransition(
                 const AdminBottomNavbar(initialIndex: 0),
+              ),
+              (route) => false,
+            );
+          } else if (userData['roleId'] == Role.academicStaff) {
+            navigator.pushAndRemoveUntil(
+              toLeftTransition(
+                const AcademicianBottomNavbar(initialIndex: 0),
               ),
               (route) => false,
             );
@@ -273,6 +294,13 @@ class AuthService {
         ),
         (route) => false,
       );
+    } else if (roleId == Role.academicStaff) {
+      navigator.pushAndRemoveUntil(
+        toLeftTransition(
+          const AcademicAdminGreetsPage(),
+        ),
+        (route) => false,
+      );
     }
   }
 
@@ -318,6 +346,12 @@ class AuthService {
             navigator.push(
               toLeftTransition(
                 AdminEmailSended(userEmail),
+              ),
+            );
+          } else if (roleId == Role.academicStaff) {
+            navigator.push(
+              toLeftTransition(
+                AcademicAdminEmailSended(userEmail),
               ),
             );
           }
@@ -366,13 +400,46 @@ class AuthService {
       );
 
       if (res.statusCode == 200) {
-        //Redirect to lecturer profile page
-        navigator.pushAndRemoveUntil(
-          toLeftTransition(
-            const LecturerAccountDetails(),
-          ),
-          (route) => false,
-        );
+        if(userId == Role.lecturer){
+          //Redirect to lecturer profile page
+          navigator.pushAndRemoveUntil(
+            toLeftTransition(
+              const LecturerAccountDetails(),
+            ),
+            (route) => false,
+          );
+        } else if(userId == Role.student){
+          //Redirect to student profile page
+          navigator.pushAndRemoveUntil(
+            toLeftTransition(
+              const StudentAccountDetails(),
+            ),
+            (route) => false,
+          );
+        } else if(userId == Role.staff){
+          //Redirect to admin profile page
+          navigator.pushAndRemoveUntil(
+            toLeftTransition(
+              const AdminAccountDetails(),
+            ),
+            (route) => false,
+          );
+        } else if(userId == Role.academicStaff){
+          //Redirect to academic admin profile page
+          navigator.pushAndRemoveUntil(
+            toLeftTransition(
+              const AcademicAdminAccountDetails(),
+            ),
+            (route) => false,
+          );
+        }
+        // //Redirect to lecturer profile page
+        // navigator.pushAndRemoveUntil(
+        //   toLeftTransition(
+        //     const LecturerAccountDetails(),
+        //   ),
+        //   (route) => false,
+        // );
       }
     } catch (e) {
       showSnackBar(context, e.toString());

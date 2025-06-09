@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 import 'package:quickalert/models/quickalert_type.dart';
 import 'package:quickalert/widgets/quickalert_dialog.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -168,6 +169,9 @@ class _LecturerViewClassState extends ConsumerState<LecturerViewClass> {
 
   Card _classCardSection(
       ClassCreateModel classItem, BuildContext context, User userData) {
+    final bool isPastClass = DateTime.now()
+        .isAfter(DateFormat('dd MMMM yyyy').parse(classItem.date));
+
     return Card(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(15),
@@ -215,6 +219,8 @@ class _LecturerViewClassState extends ConsumerState<LecturerViewClass> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
+                      // Only show edit button if NOT today
+
                       GestureDetector(
                         onTap: () {
                           Navigator.push(
@@ -226,11 +232,18 @@ class _LecturerViewClassState extends ConsumerState<LecturerViewClass> {
                             ),
                           );
                         },
-                        child: Image.asset(
-                          'assets/icons/editicon.png',
-                          height: 25,
-                          width: 25,
-                        ),
+                        child: isPastClass
+                            ? Image.asset(
+                                'assets/icons/editicon.png',
+                                height: 25,
+                                width: 25,
+                                color: Colors.transparent,
+                              )
+                            : Image.asset(
+                                'assets/icons/editicon.png',
+                                height: 25,
+                                width: 25,
+                              ),
                       ),
                     ],
                   ),
@@ -255,6 +268,8 @@ class _LecturerViewClassState extends ConsumerState<LecturerViewClass> {
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
                                 ),
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
                               ),
                             ),
                             const SizedBox(height: 5),
@@ -303,12 +318,7 @@ class _LecturerViewClassState extends ConsumerState<LecturerViewClass> {
     return AppBar(
       leading: GestureDetector(
         onTap: () {
-          Navigator.push(
-            context,
-            toRightTransition(
-              const LectViewAllClass(),
-            ),
-          );
+          Navigator.pop(context);
         },
         child: const Padding(
           padding: EdgeInsets.only(left: 20.0),

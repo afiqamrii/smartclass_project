@@ -12,7 +12,7 @@ const SummarizationModel = {
             c.classId, 
             co.courseCode,
             co.courseName AS className,
-            c.classLocation,
+            cl.classroomName AS classLocation,
             c.timeStart,
             c.timeEnd,
             c.date,
@@ -20,6 +20,7 @@ const SummarizationModel = {
 
             FROM ClassSession c
             JOIN Course co ON c.courseId = co.courseId
+            JOIN Classroom cl ON c.classroomId = cl.classroomId
             LEFT JOIN ClassRecording cr ON c.classId = cr.classId
             WHERE cr.recordingStatus IS NOT NULL AND c.lecturerId = ?;
         `;

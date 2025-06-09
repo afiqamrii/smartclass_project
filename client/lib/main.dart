@@ -11,7 +11,7 @@ import 'package:smartclass_fyp_2024/navigator_validToken.dart';
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
-    
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   const AndroidInitializationSettings initializationSettingsAndroid =
@@ -21,7 +21,7 @@ Future<void> main() async {
       InitializationSettings(android: initializationSettingsAndroid);
 
   await flutterLocalNotificationsPlugin.initialize(initializationSettings);
-  
+
   await AppStrings.loadStrings();
   // await dotenv.load(fileName: ".env");
   runApp(const ProviderScope(child: MyApp()));
@@ -115,10 +115,10 @@ class _MainScreenState extends ConsumerState<MainScreen> {
     return Scaffold(
       body: user.token.isNotEmpty
           ? NavigatorValidToken.navigateAfterLogin(
-              context, user.roleId) // Direct to page based on roleId
+              context,
+              user.roleId,
+            ) // Direct to page based on roleId
           : const SplashScreen(), // Show SplashScreen if token is empty
     );
   }
 }
-
-

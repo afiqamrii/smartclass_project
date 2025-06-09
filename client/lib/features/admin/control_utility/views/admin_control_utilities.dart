@@ -93,7 +93,8 @@ class _AdminControlUtilitiesState extends ConsumerState<AdminControlUtilities> {
               utilities.isEmpty
                   ? Center(
                       child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                        // crossAxisAlignment: CrossAxisAlignment.center,
+                        // mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           SizedBox(
                             width: 300,
@@ -107,7 +108,7 @@ class _AdminControlUtilitiesState extends ConsumerState<AdminControlUtilities> {
                             ),
                           ),
                           const SizedBox(height: 10),
-                          _addUtilitySection(context),
+                          // _addUtilitySection(context),
                         ],
                       ),
                     )
@@ -126,18 +127,19 @@ class _AdminControlUtilitiesState extends ConsumerState<AdminControlUtilities> {
                       ),
                     ),
               //NOtes that tell using only 4 utilities can be added
-              const Padding(
-                padding: EdgeInsets.only(left: 5.0, bottom: 10.0),
-                child: Text(
-                  'Notes : You can only add 4 utilities per classroom.',
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontStyle: FontStyle.italic,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.black54,
+              if (utilities.length >= 4)
+                const Padding(
+                  padding: EdgeInsets.only(left: 5.0, bottom: 10.0),
+                  child: Text(
+                    'Notes : You can only add 4 utilities per classroom.',
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontStyle: FontStyle.italic,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.black54,
+                    ),
                   ),
                 ),
-              ),
               Wrap(
                 spacing: 2.0,
                 runSpacing: 8.0,
@@ -156,9 +158,10 @@ class _AdminControlUtilitiesState extends ConsumerState<AdminControlUtilities> {
                       );
                     },
                   ),
-                  utilities.length < 4
-                      ? _addUtilitySection(context)
-                      : const SizedBox.shrink(),
+                  if (utilities.length < 4)
+                    utilities.length < 4
+                        ? _addUtilitySection(context)
+                        : const SizedBox.shrink(),
                 ],
               ),
             ],

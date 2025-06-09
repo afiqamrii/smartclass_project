@@ -151,12 +151,17 @@ class _StudentTodayclassCardState extends State<StudentTodayclassCard> {
                     Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Text(
-                          "${widget.date} | ${widget.classLocation}",
-                          style: const TextStyle(
-                            fontSize: 12,
-                            fontFamily: 'Poppins',
-                            color: Colors.white,
+                        Flexible(
+                          child: Text(
+                            "${widget.date} | ${widget.classLocation}",
+                            style: const TextStyle(
+                              fontSize: 12,
+                              fontFamily: 'Poppins',
+                              color: Colors.white,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            softWrap: true,
                           ),
                         ),
                       ],

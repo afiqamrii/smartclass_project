@@ -8,6 +8,7 @@ class CourseEnrollmentRequest {
   final String? imageUrl;
   final String status;
   final String studentName;
+  final String approvedAt;
 
   CourseEnrollmentRequest({
     required this.enrollmentId,
@@ -19,6 +20,7 @@ class CourseEnrollmentRequest {
     this.imageUrl,
     required this.status,
     required this.studentName,
+    required this.approvedAt,
   });
 
   // Convert JSON object to CourseEnrollmentRequest
@@ -33,6 +35,7 @@ class CourseEnrollmentRequest {
       imageUrl: json['imageUrl'],
       status: json['status'],
       studentName: json['studentName'],
+      approvedAt: json['approved_at'] ?? '0000-00-00',
     );
   }
 

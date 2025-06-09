@@ -6,7 +6,7 @@ const ClassModel = {
     async addClass(courseId , classLocation , timeStart, timeEnd, date  , lecturerId) {
         try {
             const query = `
-            INSERT INTO ClassSession (date , timeStart , timeEnd , classLocation  , lecturerId , courseId)
+            INSERT INTO ClassSession (date , timeStart , timeEnd , classroomId  , lecturerId , courseId)
             VALUES (?, ?, ?, ?, ?, ?)
             `;
             const values = [date , timeStart , timeEnd , classLocation  , lecturerId , courseId];
@@ -24,7 +24,7 @@ const ClassModel = {
     async getAllClasses(lecturerId){
         try{
             // Debugging: Log the lecturerId being used
-            // console.log("Retrieving classes for lecturerId:", lecturerId);
+            console.log("Retrieving classes for lecturerId:", lecturerId);
             const query = `
             SELECT 
                 cs.classId,
@@ -33,19 +33,19 @@ const ClassModel = {
                 cs.date,
                 cs.timeStart,
                 cs.timeEnd,
-                cs.classLocation,
+                cl.classroomName AS classLocation,
                 c.imageUrl,
                 cs.courseId
 
             FROM ClassSession cs
             JOIN Course c ON cs.courseId = c.courseId
-            WHERE c.lecturerId = ?
-            ORDER BY date DESC, timeStart DESC;
+            JOIN Classroom cl ON cs.classroomId = cl.classroomId
+            WHERE cs.lecturerId = ?
             `;
             const [rows] = await pool.query(query,[lecturerId]);
 
             // Debugging: Log the retrieved classes
-            // console.log("Retrieved classes:", rows);
+            console.log("Retrieved classes:", rows);
             return rows;
         }
         catch (err) {
@@ -65,13 +65,14 @@ const ClassModel = {
                 cs.date,
                 cs.timeStart,
                 cs.timeEnd,
-                cs.classLocation,
+                cl.classroomName AS classLocation,
                 c.imageUrl,
                 cs.courseId
 
             FROM ClassSession cs
             JOIN Course c ON cs.courseId = c.courseId
-            WHERE classId = ?
+            JOIN Classroom cl ON cs.classroomId = cl.classroomId
+            WHERE cs.classId = ?
         `;
             const [rows] = await pool.query(query, [id]);
             return rows[0] || null;
@@ -94,7 +95,7 @@ const ClassModel = {
                 cs.date,
                 cs.timeStart,
                 cs.timeEnd,
-                cs.classLocation,
+                cl.classroomName AS classLocation,
                 c.imageUrl,
                 cr.publishStatus,
                 u.name
@@ -105,6 +106,9 @@ const ClassModel = {
             
             JOIN 
                 Course c ON cs.courseId = c.courseId
+            
+            JOIN 
+                Classroom cl ON cs.classroomId = cl.classroomId
 
             LEFT JOIN 
                 ClassRecording cr ON cs.classId = cr.classId
@@ -138,7 +142,7 @@ const ClassModel = {
                 cs.date,
                 cs.timeStart,
                 cs.timeEnd,
-                cs.classLocation,
+                cl.classroomName AS classLocation,
                 c.imageUrl,
                 cr.publishStatus,
                 u.name
@@ -149,6 +153,9 @@ const ClassModel = {
             
             JOIN
                 Course c ON cs.courseId = c.courseId
+            
+            JOIN 
+                Classroom cl ON cs.classroomId = cl.classroomId
             
             JOIN 
                 CourseEnrollment ce ON cs.courseId = ce.courseId
@@ -182,7 +189,7 @@ const ClassModel = {
                 cs.date,
                 cs.timeStart,
                 cs.timeEnd,
-                cs.classLocation,
+                cl.classroomName AS classLocation,
                 c.imageUrl,
                 cr.publishStatus,
                 u.name
@@ -194,6 +201,9 @@ const ClassModel = {
             JOIN
                 Course c ON cs.courseId = c.courseId
             
+            JOIN 
+                Classroom cl ON cs.classroomId = cl.classroomId
+
             JOIN 
                 CourseEnrollment ce ON cs.courseId = ce.courseId
 
@@ -231,7 +241,7 @@ const ClassModel = {
                 cs.date,
                 cs.timeStart,
                 cs.timeEnd,
-                cs.classLocation,
+                cl.classroomName AS classLocation,
                 c.imageUrl,
                 cr.publishStatus,
                 u.name
@@ -242,6 +252,9 @@ const ClassModel = {
             
             JOIN
                 Course c ON cs.courseId = c.courseId
+            
+            JOIN 
+                Classroom cl ON cs.classroomId = cl.classroomId
             
             JOIN 
                 CourseEnrollment ce ON cs.courseId = ce.courseId
@@ -274,7 +287,7 @@ const ClassModel = {
         
         const query = `
             UPDATE ClassSession
-            SET courseCode = ?, className = ?, date = ?, timeStart = ?, timeEnd = ?, classLocation = ? 
+            SET courseCode = ?, className = ?, date = ?, timeStart = ?, timeEnd = ?, classroomId = ? 
             WHERE classId = ?
         `;
         const values = [courseCode, className, date, timeStart, timeEnd, classLocation , id];
@@ -307,7 +320,7 @@ const ClassModel = {
                 cs.date,
                 cs.timeStart,
                 cs.timeEnd,
-                cs.classLocation,
+                cl.classroomName AS classLocation,
                 c.imageUrl,
                 cr.publishStatus,
                 u.name
@@ -317,6 +330,8 @@ const ClassModel = {
                 User u ON cs.lecturerId = u.externalId
             JOIN
                 Course c ON cs.courseId = c.courseId
+            JOIN 
+                Classroom cl ON cs.classroomId = cl.classroomId
             JOIN 
                 CourseEnrollment ce ON cs.courseId = ce.courseId
             LEFT JOIN 

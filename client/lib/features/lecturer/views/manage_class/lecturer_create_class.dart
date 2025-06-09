@@ -7,7 +7,9 @@ import 'package:smartclass_fyp_2024/features/lecturer/views/manage_class/lecture
 import 'package:smartclass_fyp_2024/features/lecturer/views/manage_class/models/course_model.dart';
 import 'package:smartclass_fyp_2024/features/lecturer/views/manage_class/models/create_class_model.dart';
 import 'package:smartclass_fyp_2024/features/lecturer/views/manage_class/providers/course_providers.dart';
+import 'package:smartclass_fyp_2024/shared/data/dataprovider/classroom_provider.dart';
 import 'package:smartclass_fyp_2024/shared/data/dataprovider/user_provider.dart';
+import 'package:smartclass_fyp_2024/shared/data/models/classroom_models.dart';
 import 'package:smartclass_fyp_2024/shared/data/models/user.dart';
 import 'package:smartclass_fyp_2024/shared/widgets/pageTransition.dart';
 import '../../../../shared/data/services/classApi.dart';
@@ -36,16 +38,21 @@ class _LectCreateClassState extends ConsumerState<LectCreateClass> {
   Widget build(BuildContext context) {
     final user = ref.watch(userProvider);
     final courseListAsync = ref.watch(courseListProvider);
+    final classroomAsyncValue = ref.watch(classroomApiProvider);
 
     return Scaffold(
         backgroundColor: Colors.white,
         appBar: appBar(context),
-        body: _createClassSection(context, user, courseListAsync),
+        body: _createClassSection(
+            context, user, courseListAsync, classroomAsyncValue),
         resizeToAvoidBottomInset: true);
   }
 
-  Padding _createClassSection(BuildContext context, User user,
-      AsyncValue<List<CourseModel>> courseListAsync) {
+  Padding _createClassSection(
+      BuildContext context,
+      User user,
+      AsyncValue<List<CourseModel>> courseListAsync,
+      AsyncValue<List<ClassroomModels>> classroomAsyncValue) {
     return Padding(
       padding: const EdgeInsets.only(
         top: 10,
@@ -117,16 +124,29 @@ class _LectCreateClassState extends ConsumerState<LectCreateClass> {
             ),
             const SizedBox(height: 20),
 
-            // Location Input
-            inputField(
-              'Location',
-              'e.g BK-01',
-              25,
-              null,
-              textCapitalization: TextCapitalization.words,
-              controller: locationController,
+            const Text(
+              'Select Classroom',
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
+              ),
             ),
-            const SizedBox(height: 5),
+            const SizedBox(height: 8),
+            // Location Input
+            classDropdown(
+              context,
+              classroomAsyncValue,
+              locationController,
+            ),
+            // inputField(
+            //   'Location',
+            //   'e.g BK-01',
+            //   25,
+            //   null,
+            //   textCapitalization: TextCapitalization.words,
+            //   controller: locationController,
+            // ),
+            const SizedBox(height: 20),
 
             // Create Class Button
             Center(
@@ -203,7 +223,9 @@ class _LectCreateClassState extends ConsumerState<LectCreateClass> {
                     borderRadius: BorderRadius.circular(54.0),
                   ),
                   padding: const EdgeInsets.symmetric(
-                      horizontal: 20.0, vertical: 12.0),
+                    horizontal: 20.0,
+                    vertical: 12.0,
+                  ),
                 ),
               ),
             ),
@@ -278,6 +300,10 @@ class _LectCreateClassState extends ConsumerState<LectCreateClass> {
         const SizedBox(height: 8),
         TextFormField(
           controller: controller,
+          style: const TextStyle(
+            color: Colors.black,
+            fontSize: 14,
+          ),
           maxLength: maxLength,
           readOnly: onTap != null,
           textCapitalization: textCapitalization,
@@ -347,6 +373,106 @@ class _LectCreateClassState extends ConsumerState<LectCreateClass> {
   }
 }
 
+//Class Dropdown
+Widget classDropdown(
+  BuildContext context,
+  AsyncValue<List<ClassroomModels>> classListAsync,
+  TextEditingController locationController,
+) {
+  return classListAsync.when(
+    data: (classrooms) {
+      if (classrooms.isEmpty) {
+        return const Text("No classrooms available.");
+      }
+
+      return DropdownSearch<ClassroomModels>(
+        asyncItems: (String filter) async {
+          final filtered = classrooms
+              .where((c) =>
+                  c.classroomName.toLowerCase().contains(filter.toLowerCase()))
+              .toList();
+
+          // Sort filtered classrooms by name
+          filtered.sort((a, b) => a.classroomName
+              .toLowerCase()
+              .compareTo(b.classroomName.toLowerCase()));
+
+          return filtered;
+        },
+        popupProps: PopupProps.dialog(
+          showSearchBox: true,
+          searchFieldProps: TextFieldProps(
+            decoration: InputDecoration(
+              hintText: "Search classroom...",
+              contentPadding:
+                  const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+          ),
+          dialogProps: DialogProps(
+            contentPadding: const EdgeInsets.all(5),
+            backgroundColor: Colors.white,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
+            elevation: 10,
+          ),
+          itemBuilder: (context, item, isSelected) => Container(
+            padding: const EdgeInsets.symmetric(horizontal: 13),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 15),
+                Text(
+                  item.classroomName,
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight:
+                        isSelected ? FontWeight.bold : FontWeight.normal,
+                  ),
+                ),
+                const SizedBox(height: 15),
+                Divider(
+                  color: Colors.black.withOpacity(0.2),
+                  height: 1,
+                ),
+              ],
+            ),
+          ),
+        ),
+        itemAsString: (classroom) => classroom.classroomName,
+        onChanged: (selectedClassroom) {
+          if (selectedClassroom != null) {
+            locationController.text = selectedClassroom.classroomId.toString();
+          } else {
+            locationController.clear();
+          }
+        },
+        dropdownDecoratorProps: DropDownDecoratorProps(
+          dropdownSearchDecoration: InputDecoration(
+            hintText: "Select Classroom",
+            hintStyle: const TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+              color: Colors.grey,
+            ),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            filled: true,
+            fillColor: Colors.white,
+          ),
+        ),
+      );
+    },
+    loading: () => const CircularProgressIndicator(),
+    error: (err, _) => Text("Error loading classrooms: $err"),
+  );
+}
+
+//Course Dropdown
 Widget _courseDropdown(
     BuildContext context,
     AsyncValue<List<CourseModel>> courseListAsync,
@@ -388,7 +514,7 @@ Widget _courseDropdown(
             elevation: 10,
           ),
           itemBuilder: (context, item, isSelected) => Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 13),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.start,
@@ -397,9 +523,10 @@ Widget _courseDropdown(
                 Text(
                   item.toString(),
                   style: TextStyle(
-                    fontSize: 16,
+                    fontSize: 13,
                     fontWeight:
                         isSelected ? FontWeight.bold : FontWeight.normal,
+                    color: Colors.black,
                   ),
                 ),
                 const SizedBox(height: 15),
@@ -422,13 +549,17 @@ Widget _courseDropdown(
         },
         dropdownDecoratorProps: DropDownDecoratorProps(
           dropdownSearchDecoration: InputDecoration(
-            labelText: "Select Course",
-            labelStyle: const TextStyle(fontWeight: FontWeight.w500),
+            hintText: "Select a course",
+            hintStyle: const TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+              color: Colors.grey,
+            ),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
             ),
             filled: true,
-            fillColor: Colors.grey[100],
+            fillColor: Colors.white,
             // contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
           ),
         ),

@@ -70,6 +70,7 @@ dependencies:
   permission_handler: ^11.3.1
   geolocator: ^10.1.0
   flutter_local_notifications: ^19.2.1
+  flutter_slidable:
   
   
 

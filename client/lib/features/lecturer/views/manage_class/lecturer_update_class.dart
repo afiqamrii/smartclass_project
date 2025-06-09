@@ -103,7 +103,10 @@ class _LectUpdateClassState extends ConsumerState<LectUpdateClass> {
       appBar: AppBar(
         title: const Text(
           'Update Class',
-          style: TextStyle(fontSize: 18),
+          style: TextStyle(
+            fontSize: 15,
+            fontWeight: FontWeight.w600,
+          ),
         ),
         leading: GestureDetector(
           onTap: () {
@@ -116,7 +119,7 @@ class _LectUpdateClassState extends ConsumerState<LectUpdateClass> {
                 Icon(
                   Icons.arrow_back_ios,
                   color: Colors.black,
-                  size: 20,
+                  size: 18,
                 ),
               ],
             ),

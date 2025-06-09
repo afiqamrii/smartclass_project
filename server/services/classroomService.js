@@ -43,5 +43,28 @@ const getClassroomByEsp32Id = async (esp32Id) => {
     }
 };
 
+//Function to delete classroom
+const softDeleteClassroom = async (classroomId) => {
+    try {
+
+        //soft delete it
+        const result = await classroomModel.softDeleteClassroom(classroomId);
+
+        return result;
+    } catch (error) {
+        throw new Error("Error in service while deleting classroom data: " + error.message);
+    }
+};
+
+//Function to get deleted classroom
+const getDeletedClassroom = async () => {
+    try {
+        const classroom = await classroomModel.getDeletedClassroom();
+        return classroom || [];
+    } catch (error) {
+        throw new Error("Error in service while fetching classroom data: " + error.message);
+    }
+};
+
 //EXport module
-module.exports = { getClassroom , addClassroom , updateEsp32Id , getClassroomByEsp32Id };
+module.exports = { getClassroom , addClassroom , updateEsp32Id , getClassroomByEsp32Id , softDeleteClassroom , getDeletedClassroom };
