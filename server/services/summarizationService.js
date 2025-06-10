@@ -20,6 +20,16 @@ const accessSummarizationById = async (classId) => {
     }
 };
 
+// Function for student to access summarization by class id
+const studentAccessSummarizationById = async (classId) => {
+    try{
+        const summarizationByIdResults = await summarizationModel.studentAccessSummarizationById(classId);
+        return summarizationByIdResults || [];
+    } catch(error){
+        throw new Error("Error in service while fetching summarization by class id: " + error.message);
+    }
+};
+
 //Fuunction to edit summarization
 const editSummarization = async (summarizedText, classId) => {
     try{
@@ -52,4 +62,4 @@ const saveSummarization = async (summarizedText, recordingId ,classId ,recording
 }
 
 //Export module
-module.exports = { viewSummarizationStatus  , accessSummarizationById , editSummarization , updatePublishStatus, saveSummarization };
+module.exports = { viewSummarizationStatus  , accessSummarizationById , editSummarization , updatePublishStatus, saveSummarization , studentAccessSummarizationById };

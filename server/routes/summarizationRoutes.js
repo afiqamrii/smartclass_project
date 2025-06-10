@@ -9,6 +9,9 @@ router.get("/viewSummarizationStatus/:lecturerId", summarizationController.viewS
 // Route to access summarization by class id
 router.get("/accesssummarization/:classId", summarizationController.accessSummarizationById);
 
+//Route for student to access summarization by class id
+router.get("/studentaccesssummarization/:classId", summarizationController.studentAccessSummarizationById);
+
 //Route to save summarization
 router.put("/editsummarizedtext", summarizationController.editSummarization);
 

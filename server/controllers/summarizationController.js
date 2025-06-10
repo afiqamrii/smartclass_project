@@ -35,6 +35,25 @@ exports.accessSummarizationById = async (req, res) => {
     }
 };
 
+// Function to access summarization by class id
+exports.studentAccessSummarizationById = async (req, res) => {
+    try{
+        const {classId} = req.params
+
+        const summarizationByIdResults = await summarizationService.studentAccessSummarizationById(classId);
+
+        // Response
+        res.status(200).json({
+            "Status_Code": 200,
+            "Message": "Class Data Is Fetched Successfully",
+            "Data": summarizationByIdResults
+        });
+    } catch(error){
+        console.error("Controller Error:", error);
+        res.status(500).json({ message: "Failed to fetch summarization by class id" });
+    }
+};
+
 // Function to edit summarization
 exports.editSummarization = async (req, res) => {
     try{
@@ -85,3 +104,4 @@ exports.saveSummarization = async (req, res) => {
         res.status(500).json({ message: "Failed to save summarization" });
     }
 }
+

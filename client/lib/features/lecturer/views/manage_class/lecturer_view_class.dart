@@ -5,6 +5,7 @@ import 'package:quickalert/models/quickalert_type.dart';
 import 'package:quickalert/widgets/quickalert_dialog.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:smartclass_fyp_2024/constants/api_constants.dart';
+import 'package:smartclass_fyp_2024/features/lecturer/manage_attendance/views/lecturer_view_attendance.dart';
 import 'package:smartclass_fyp_2024/shared/data/dataprovider/data_provider.dart';
 import 'package:smartclass_fyp_2024/shared/data/dataprovider/recording_state_notifier.dart';
 import 'package:smartclass_fyp_2024/shared/data/dataprovider/user_provider.dart';
@@ -41,6 +42,21 @@ class _LecturerViewClassState extends ConsumerState<LecturerViewClass> {
     setState(() {
       _isRefreshing = false;
     });
+  }
+
+  bool shouldShowAttendance(String classDate) {
+    // final now = DateTime.now();
+
+    debugPrint('Class date: $classDate');
+
+    // Parse the class date: e.g., "08 June 2025"
+    final classDateObj = DateFormat('dd MMMM yyyy').parse(classDate);
+
+    // Return true only if class date is today or earlier
+    return classDateObj.isBefore(DateTime.now()) ||
+        classDateObj.day == DateTime.now().day &&
+            classDateObj.month == DateTime.now().month &&
+            classDateObj.year == DateTime.now().year;
   }
 
   @override
@@ -142,11 +158,17 @@ class _LecturerViewClassState extends ConsumerState<LecturerViewClass> {
             child: Column(
               children: [
                 //Attendance
-                _attendanceSection(),
-                Divider(
-                  thickness: 1,
-                  color: Colors.black.withOpacity(0.1),
-                ),
+                //If class is over show attendance
+
+                shouldShowAttendance(classItem.date)
+                    ? _attendanceSection()
+                    : const SizedBox.shrink(),
+
+                if (shouldShowAttendance(classItem.date))
+                  Divider(
+                    thickness: 1,
+                    color: Colors.black.withOpacity(0.1),
+                  ),
                 //Recording section
                 _recordingSection(recordingState, classItem),
                 Divider(
@@ -443,7 +465,16 @@ class _LecturerViewClassState extends ConsumerState<LecturerViewClass> {
 
   Widget _attendanceSection() {
     return GestureDetector(
-      onTap: () {},
+      onTap: () {
+        Navigator.push(
+          context,
+          toLeftTransition(
+            LecturerViewAttendance(
+              classId: widget.classItem.classId,
+            ),
+          ),
+        );
+      },
       child: Padding(
         padding: const EdgeInsets.only(
           left: 0.0,

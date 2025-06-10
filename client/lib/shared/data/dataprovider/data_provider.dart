@@ -40,3 +40,12 @@ final nowClassProviders =
         (ref, lecturerId) async {
   return await Api.getNowClasses(lecturerId);
 });
+
+//Student get summarization
+final studentSummarizationProvider =
+    StreamProvider.family<List<SummarizationModels>, int>(
+        (ref, classId) async* {
+  yield* ref
+      .watch(classProviderSummarization)
+      .getStudentSummarization(classId); // Use classProvider from api.dart
+});

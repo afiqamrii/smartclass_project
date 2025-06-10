@@ -31,7 +31,8 @@ const generateAttendanceReport = async (classId) => {
         const report = await attendanceModel.generateAttendanceReport(classId);
         return report;
     } catch (error) {
-        throw new Error("Error in service while generating attendance report: " + error.message);
+        
+        throw new Error(error.message);
     }
 };
 

@@ -69,7 +69,7 @@ class _StudentViewEnrolledState extends ConsumerState<StudentViewEnrolled> {
     return Scaffold(
       appBar: _appBar(context),
       backgroundColor: Colors.white,
-      body: SmartRefresher(
+      body: SmartRefresher( 
         controller: _refreshController,
         enablePullDown: true,
         header: const ClassicHeader(
@@ -163,7 +163,9 @@ class _StudentViewEnrolledState extends ConsumerState<StudentViewEnrolled> {
                                 elevation: isSelected ? 3 : 0,
                                 pressElevation: 5,
                                 padding: const EdgeInsets.symmetric(
-                                    horizontal: 7, vertical: 5),
+                                  horizontal: 7,
+                                  vertical: 5,
+                                ),
                               );
                             }).toList(),
                           ),

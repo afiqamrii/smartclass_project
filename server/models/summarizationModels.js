@@ -46,6 +46,20 @@ const SummarizationModel = {
         }
     },
 
+    //Retrieve summarizaation by class id for student
+    async studentAccessSummarizationById(classId) {
+        try{
+            const query = `
+            SELECT * FROM ClassRecording WHERE classId = ? AND publishStatus = "Published"
+        `;
+        const [rows] = await pool.query(query, [classId]);
+        return rows;
+        } catch (err) {
+            console.error("Error retrieving data:", err.message);
+            return [];
+        }
+    },
+
     // Update Summarization
     async editSummarization(summarizedText, classId) {
         try{

@@ -3,12 +3,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:smartclass_fyp_2024/features/student/manage_class/views/student_view_class_details.dart';
 import 'package:smartclass_fyp_2024/features/student/models/todayClass_card_models.dart';
 import 'package:smartclass_fyp_2024/features/student/providers/student_class_provider.dart';
 import 'package:smartclass_fyp_2024/features/student/views/widgets/student_todayclass_card.dart';
 import 'package:smartclass_fyp_2024/master/app_strings.dart';
 import 'package:smartclass_fyp_2024/shared/components/unavailablePage.dart';
 import 'package:smartclass_fyp_2024/shared/data/dataprovider/user_provider.dart';
+import 'package:smartclass_fyp_2024/shared/widgets/pageTransition.dart';
 
 class StudentMyclass extends ConsumerStatefulWidget {
   const StudentMyclass({super.key});
@@ -21,6 +24,8 @@ class _StudentMyclassState extends ConsumerState<StudentMyclass> {
   // ignore: unused_field
   bool _isRefreshing = false;
   String _selectedFilter = "All"; // default filter
+  final RefreshController _refreshController =
+      RefreshController(initialRefresh: false);
 
   final List<String> _filters = [
     "All",
@@ -28,6 +33,19 @@ class _StudentMyclassState extends ConsumerState<StudentMyclass> {
     "Last 7 Days",
     "Last 30 Days"
   ];
+
+  void _onRefresh() async {
+    ref.refresh(pastClassProviders(ref.read(userProvider).externalId));
+    await Future.delayed(const Duration(seconds: 1));
+    _refreshController.refreshCompleted();
+  }
+
+  // Simulate loading more data
+  void _onLoading() async {
+    await Future.delayed(const Duration(seconds: 1));
+    if (mounted) setState(() {});
+    _refreshController.loadComplete();
+  }
 
   Future<void> _handleRefresh(WidgetRef ref) async {
     setState(() => _isRefreshing = true);
@@ -50,51 +68,60 @@ class _StudentMyclassState extends ConsumerState<StudentMyclass> {
         title: Text(AppStrings.get("student", "class_history_title")),
         automaticallyImplyLeading: false,
       ),
-      body: ListView(
-        physics: const BouncingScrollPhysics(),
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12.0),
-            child: Wrap(
-              spacing: 7,
-              runSpacing: 1,
-              children: _filters.map((filter) {
-                final isSelected = _selectedFilter == filter;
-                return ChoiceChip(
-                  label: Text(
-                    filter,
-                    style: TextStyle(
-                      color: isSelected ? Colors.white : Colors.black87,
-                      fontSize: 11,
-                      fontWeight:
-                          isSelected ? FontWeight.bold : FontWeight.normal,
+      body: SmartRefresher(
+        controller: _refreshController,
+        enablePullDown: true,
+        header: const ClassicHeader(
+          releaseIcon: Icon(Icons.arrow_upward, color: Colors.grey),
+        ),
+        onRefresh: _onRefresh,
+        onLoading: _onLoading,
+        child: ListView(
+          physics: const BouncingScrollPhysics(),
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12.0),
+              child: Wrap(
+                spacing: 7,
+                runSpacing: 1,
+                children: _filters.map((filter) {
+                  final isSelected = _selectedFilter == filter;
+                  return ChoiceChip(
+                    label: Text(
+                      filter,
+                      style: TextStyle(
+                        color: isSelected ? Colors.white : Colors.black87,
+                        fontSize: 11,
+                        fontWeight:
+                            isSelected ? FontWeight.bold : FontWeight.normal,
+                      ),
                     ),
-                  ),
-                  selected: isSelected,
-                  onSelected: (bool selected) {
-                    setState(() => _selectedFilter = filter);
-                  },
-                  selectedColor: Theme.of(context).colorScheme.primary,
-                  backgroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
-                    side: isSelected
-                        ? BorderSide.none
-                        : BorderSide(color: Colors.grey.shade400),
-                  ),
-                  elevation: isSelected ? 3 : 0,
-                  pressElevation: 5,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 7, vertical: 5),
-                );
-              }).toList(),
+                    selected: isSelected,
+                    onSelected: (bool selected) {
+                      setState(() => _selectedFilter = filter);
+                    },
+                    selectedColor: Theme.of(context).colorScheme.primary,
+                    backgroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                      side: isSelected
+                          ? BorderSide.none
+                          : BorderSide(color: Colors.grey.shade400),
+                    ),
+                    elevation: isSelected ? 3 : 0,
+                    pressElevation: 5,
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 7, vertical: 5),
+                  );
+                }).toList(),
+              ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12),
-            child: _viewPastClass(pastClassData),
-          ),
-        ],
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              child: _viewPastClass(pastClassData),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -143,17 +170,29 @@ class _StudentMyclassState extends ConsumerState<StudentMyclass> {
               return Column(
                 children: List.generate(
                   filteredData.length,
-                  (index) => StudentTodayclassCard(
-                    className: filteredData[index].courseName,
-                    lecturerName: filteredData[index].lecturerName,
-                    courseCode: filteredData[index].courseCode,
-                    classLocation: filteredData[index].location,
-                    date: filteredData[index].date,
-                    timeStart: filteredData[index].startTime,
-                    timeEnd: filteredData[index].endTime,
-                    publishStatus: filteredData[index].publishStatus,
-                    imageUrl: filteredData[index].imageUrl,
-                    isClassHistory: true,
+                  (index) => GestureDetector(
+                    onTap: () => {
+                      // Handle tap on class card here
+                      Navigator.push(
+                          context,
+                          toLeftTransition(
+                            StudentViewClassDetails(
+                              classItem: filteredData[index],
+                            ),
+                          ))
+                    },
+                    child: StudentTodayclassCard(
+                      className: filteredData[index].courseName,
+                      lecturerName: filteredData[index].lecturerName,
+                      courseCode: filteredData[index].courseCode,
+                      classLocation: filteredData[index].location,
+                      date: filteredData[index].date,
+                      timeStart: filteredData[index].startTime,
+                      timeEnd: filteredData[index].endTime,
+                      publishStatus: filteredData[index].publishStatus,
+                      imageUrl: filteredData[index].imageUrl,
+                      isClassHistory: true,
+                    ),
                   ),
                 ),
               );

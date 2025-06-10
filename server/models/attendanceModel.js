@@ -101,7 +101,7 @@ const AttendanceModel = {
 
             return rows;
         } catch (error) {
-            const genericError = new Error("Error in model while generating attendance report: " + error.message);
+            const genericError = new Error(error.message);
             genericError.status = 500;
             throw genericError;
         }

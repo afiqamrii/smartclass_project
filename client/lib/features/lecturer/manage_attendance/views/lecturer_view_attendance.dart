@@ -210,8 +210,12 @@ class _LecturerViewAttendanceState
               loading: () => const SliverFillRemaining(
                 child: Center(child: CircularProgressIndicator()),
               ),
-              error: (e, _) => SliverFillRemaining(
-                child: Center(child: Text('Error: $e')),
+              error: (e, _) => const SliverFillRemaining(
+                child: Center(
+                  child: Text(
+                    "No students found in this class",
+                  ),
+                ),
               ),
             ),
           ],

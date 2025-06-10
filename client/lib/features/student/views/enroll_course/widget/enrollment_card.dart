@@ -18,7 +18,7 @@ class CourseStatusCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       elevation: 4,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       clipBehavior: Clip.antiAlias, // ensures child content respects radius
       child: Column(
         mainAxisSize: MainAxisSize.min,

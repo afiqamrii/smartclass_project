@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:smartclass_fyp_2024/constants/color_constants.dart';
+import 'package:smartclass_fyp_2024/features/student/manage_class/views/student_view_class_details.dart';
 import 'package:smartclass_fyp_2024/features/student/models/todayClass_card_models.dart';
 import 'package:smartclass_fyp_2024/features/student/providers/student_class_provider.dart';
 import 'package:smartclass_fyp_2024/features/student/views/enroll_course/views/student_view_enrolled.dart';
@@ -96,6 +97,9 @@ class _StudentHomePageState extends ConsumerState<StudentHomePage> {
     //Get now/current class
     final currentClassData = ref.watch(nowClassProviders(user.externalId));
 
+    //Get student enrolled courses
+    // final enrolledCourses = ref.watch(enrollmentListProvider(user.externalId));
+
     //Get notification count
     // final notificationCount = ref.watch(unreadNotificationCountProvider);
     // final sumData = ref.watch(classDataProviderSummarizationStatus);
@@ -120,7 +124,11 @@ class _StudentHomePageState extends ConsumerState<StudentHomePage> {
                 collapseMode: CollapseMode.pin, // Avoid stretching/mismatch
                 background: Container(
                   color: const Color(0xFF0d1116),
-                  padding: const EdgeInsets.only(top: 60, left: 20, right: 20),
+                  padding: const EdgeInsets.only(
+                    top: 60,
+                    left: 20,
+                    right: 20,
+                  ),
                   child: Skeletonizer(
                     enabled: _isRefreshing,
                     effect: const ShimmerEffect(),
@@ -207,8 +215,8 @@ class _StudentHomePageState extends ConsumerState<StudentHomePage> {
                           _cardSection(context),
                           const SizedBox(height: 12),
                           //Featured courses section
-                          _featuresCourseSection(context),
-                          const SizedBox(height: 30),
+                          // _featuresCourseSection(context, enrolledCourses),
+                          const SizedBox(height: 20),
                           //Add card section
                           DefaultTabController(
                             length: 3,
@@ -303,15 +311,21 @@ class _StudentHomePageState extends ConsumerState<StudentHomePage> {
                 message: "No Class Today. YAY!",
               );
             } else {
-              return GestureDetector(
-                onTap: () => {
-                  // Handle tap on class card here
-                  // For example, navigate to class details page
-                },
-                child: Column(
-                  children: List.generate(
-                    data.length > limit ? limit : data.length,
-                    (index) => StudentTodayclassCard(
+              return Column(
+                children: List.generate(
+                  data.length > limit ? limit : data.length,
+                  (index) => GestureDetector(
+                    onTap: () => {
+                      Navigator.push(
+                        context,
+                        toLeftTransition(
+                          StudentViewClassDetails(
+                            classItem: data[index],
+                          ),
+                        ),
+                      ),
+                    },
+                    child: StudentTodayclassCard(
                       className: data[index].courseName,
                       lecturerName: data[index].lecturerName,
                       courseCode: data[index].courseCode,
@@ -417,15 +431,21 @@ class _StudentHomePageState extends ConsumerState<StudentHomePage> {
                 message: "No Upcoming Class.",
               );
             } else {
-              return GestureDetector(
-                onTap: () => {
-                  // Handle tap on class card here
-                  // For example, navigate to class details page
-                },
-                child: Column(
-                  children: List.generate(
-                    data.length > limit ? limit : data.length,
-                    (index) => StudentTodayclassCard(
+              return Column(
+                children: List.generate(
+                  data.length > limit ? limit : data.length,
+                  (index) => GestureDetector(
+                    onTap: () => {
+                      Navigator.push(
+                        context,
+                        toLeftTransition(
+                          StudentViewClassDetails(
+                            classItem: data[index],
+                          ),
+                        ),
+                      ),
+                    },
+                    child: StudentTodayclassCard(
                       className: data[index].courseName,
                       lecturerName: data[index].lecturerName,
                       courseCode: data[index].courseCode,
@@ -529,15 +549,21 @@ class _StudentHomePageState extends ConsumerState<StudentHomePage> {
                 message: "No Past Class",
               );
             } else {
-              return GestureDetector(
-                onTap: () => {
-                  // Handle tap on class card here
-                  // For example, navigate to class details page
-                },
-                child: Column(
-                  children: List.generate(
-                    data.length > limit ? limit : data.length,
-                    (index) => StudentTodayclassCard(
+              return Column(
+                children: List.generate(
+                  data.length > limit ? limit : data.length,
+                  (index) => GestureDetector(
+                    onTap: () => {
+                      Navigator.push(
+                        context,
+                        toLeftTransition(
+                          StudentViewClassDetails(
+                            classItem: data[index],
+                          ),
+                        ),
+                      ),
+                    },
+                    child: StudentTodayclassCard(
                       className: data[index].courseName,
                       lecturerName: data[index].lecturerName,
                       courseCode: data[index].courseCode,
@@ -630,52 +656,6 @@ class _StudentHomePageState extends ConsumerState<StudentHomePage> {
               child: CircularProgressIndicator(),
             );
           },
-        ),
-      ],
-    );
-  }
-
-  Column _featuresCourseSection(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'Featured Courses',
-          style: TextStyle(
-            fontSize: 17,
-            fontFamily: 'Figtree',
-            fontWeight: FontWeight.bold,
-            color: Colors.black,
-          ),
-        ),
-        const SizedBox(height: 10),
-        SizedBox(
-          height: 150, // Set a fixed height for the ListView
-          child: ListView(
-            scrollDirection: Axis.horizontal,
-            clipBehavior: Clip.none, // Make it horizontal
-            physics: const BouncingScrollPhysics(),
-            shrinkWrap: true,
-            children: [
-              Container(
-                width: MediaQuery.of(context).size.width * 0.5,
-                height: 150,
-                decoration: BoxDecoration(
-                  color: Colors.grey[300],
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-              const SizedBox(width: 10), // Add spacing between items
-              Container(
-                width: MediaQuery.of(context).size.width * 0.5,
-                height: 150,
-                decoration: BoxDecoration(
-                  color: Colors.grey[300],
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-            ],
-          ),
         ),
       ],
     );

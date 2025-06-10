@@ -41,6 +41,23 @@ class Summarizationapi {
     }
   }
 
+  //Student Get Summarization with id
+  Stream<List<SummarizationModels>> getStudentSummarization(int classId) async* {
+    while (true) {
+      Response response = await get(Uri.parse(
+          "${ApiConstants.baseUrl}/summarization/studentaccesssummarization/$classId"));
+
+      //Check whether the response is successful or not.
+      if (response.statusCode == 200) {
+        final List<dynamic> data = jsonDecode(response.body)['Data'];
+        yield data.map((json) => SummarizationModels.fromJson(json)).toList();
+      } else {
+        throw Exception('Failed to load summarization');
+      }
+      await Future.delayed(const Duration(seconds: 5)); // Polling interval
+    }
+  }
+
   //PUT API to add summarized text to the database
   // Endpoint: /classrecording/updatesummarization
   /// Update Summarization data (PUT API)
