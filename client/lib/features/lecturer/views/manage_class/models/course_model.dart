@@ -14,10 +14,10 @@ class CourseModel {
   // Convert a Map to a CourseModel object
   factory CourseModel.fromJson(Map<String, dynamic> json) {
     return CourseModel(
-      courseId: json['courseId'] ,
+      courseId: json['courseId'],
       courseCode: json['courseCode'],
       courseName: json['courseName'],
-      lecturerId: json['lecturerId'],
+      lecturerId: json['lecturerId'] ?? '',
     );
   }
 

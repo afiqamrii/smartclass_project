@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:smartclass_fyp_2024/features/academic_admin/manage_classroom/services/manage_classroom_api.dart';
 import 'package:smartclass_fyp_2024/features/academic_admin/manage_classroom/views/academic_admin_addclass.dart';
+import 'package:smartclass_fyp_2024/features/academic_admin/manage_classroom/views/academic_admin_editclassroom.dart';
 import 'package:smartclass_fyp_2024/features/academic_admin/manage_classroom/views/academic_admin_restore.dart';
 import 'package:smartclass_fyp_2024/shared/data/dataprovider/classroom_provider.dart';
 import 'package:smartclass_fyp_2024/shared/widgets/pageTransition.dart';
@@ -177,14 +178,17 @@ class _AcademicAdminViewAllClassState
                                 endActionPane: ActionPane(
                                   motion: const DrawerMotion(),
                                   children: [
+                                    // Edit classroom
                                     SlidableAction(
                                       onPressed: (context) {
-                                        // Navigate to edit page or show a dialog
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(
-                                          SnackBar(
-                                            content: Text(
-                                              'Edit ${classroom.classroomName}',
+                                        //Direct to edit classroom screen
+                                        Navigator.push(
+                                          context,
+                                          toLeftTransition(
+                                            AcademicAdminEditclassroom(
+                                              classId: classroom.classroomId,
+                                              className:
+                                                  classroom.classroomName,
                                             ),
                                           ),
                                         );
@@ -194,6 +198,8 @@ class _AcademicAdminViewAllClassState
                                       icon: Icons.edit_outlined,
                                       label: 'Edit',
                                     ),
+
+                                    // Delete classroom
                                     SlidableAction(
                                       onPressed: (context) {
                                         showDialog(

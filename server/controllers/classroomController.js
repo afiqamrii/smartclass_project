@@ -156,3 +156,16 @@ exports.deleteClassroom = async (req, res) => {
         res.status(400).json({ message: err.message });
     }
 };
+
+//Edit classroom
+exports.editClassroom = async (req, res) => {
+    try {
+        const classroomId = req.params.classroomId;
+        const updatedClassroom = req.body;
+        const result = await classroomService.editClassroom(classroomId, updatedClassroom);
+        res.status(200).json({ message: "Classroom data updated successfully", Updated_Id: result });
+    } catch (error) {
+        console.error("Controller Error:", error);
+        res.status(400).json({ message: err.message });
+    }
+}

@@ -118,6 +118,18 @@ const ClassroomModel = {
             throw new Error("Error in Model : Failed to delete classroom");
         }
     },
+
+    //Function to edit classroom
+    async editClassroom(classroomId, updatedClassroom) {
+        try {
+            const query = `UPDATE Classroom SET classroomName = ? WHERE classroomId = ?`;
+            const [result] = await pool.query(query, [updatedClassroom.classroomName, classroomId]);
+            return result.affectedRows > 0; // Return true if the update was successful
+        } catch (err) {
+            console.error("Error updating classroom:", err.message);
+            throw new Error("Error in Model : Failed to update classroom");
+        }
+    },
 };
 
 

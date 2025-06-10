@@ -43,7 +43,7 @@ const addCourse = async (courseData) => {
         const courseId = await courseModel.addCourse(courseName, courseCode, imageUrl);
         return { success: true, courseId };
     } catch (error) {
-        throw new Error("Error in service while adding course: " + error.message);
+        throw new Error( error.message);
     }
 };
 
@@ -71,5 +71,55 @@ const getCourseByLecturerId = async (lecturerId) => {
     }
 };
 
+//Edit course
+const editCourse = async (editCourse) => {
+    try {
+        const result = await courseModel.editCourse(editCourse);
+        return result;
+    } catch (error) {
+        throw new Error("Error in service while editing course: " + error.message);
+    }
+};
+
+//Function to soft delete course
+const softDeleteCourse = async (courseId) => {
+    try {
+        const result = await courseModel.softDeleteCourse(courseId);
+        return result;
+    } catch (error) {
+        throw new Error(error.message);
+    }
+};
+
+//Funciton to get deleted course
+const getDeletedCourse = async () => {
+    try {
+        const result = await courseModel.getDeletedCourse();
+        return result;
+    } catch (error) {
+        throw new Error(error.message);
+    }
+};
+
+//Function to restore course
+const restoreCourse = async (courseId) => {
+    try {
+        const result = await courseModel.restoreCourse(courseId);
+        return result;
+    } catch (error) {
+        throw new Error(error.message);
+    }
+};
+
+//Function to completely delete course
+const deleteCourse = async (courseId) => {
+    try {
+        const result = await courseModel.deleteCourse(courseId);
+        return result;
+    } catch (error) {
+        throw new Error(error.message);
+    }
+};
+
 //EXport module
-module.exports = { viewCourse , addCourse, fetchImageFromGoogle, getCourseByLecturerId };
+module.exports = { viewCourse , addCourse, fetchImageFromGoogle, getCourseByLecturerId , editCourse, softDeleteCourse , getDeletedCourse , restoreCourse , deleteCourse };

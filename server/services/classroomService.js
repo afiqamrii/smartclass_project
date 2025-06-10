@@ -86,5 +86,15 @@ const deleteClassroom = async (classroomId) => {
     }
 };
 
+//Function to edit classroom
+const editClassroom = async (classroomId, updatedClassroom) => {
+    try {
+        const result = await classroomModel.editClassroom(classroomId, updatedClassroom);
+        return result;
+    } catch (error) {
+        throw new Error("Error in service while updating classroom data: " + error.message);
+    }
+};
+
 //EXport module
-module.exports = { getClassroom , addClassroom , updateEsp32Id , getClassroomByEsp32Id , softDeleteClassroom , getDeletedClassroom, restoreClassroom , deleteClassroom };
+module.exports = { getClassroom , addClassroom , updateEsp32Id , getClassroomByEsp32Id , softDeleteClassroom , getDeletedClassroom, restoreClassroom , deleteClassroom, editClassroom };

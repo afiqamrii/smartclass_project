@@ -11,6 +11,9 @@ router.get("/getclassroom", classroomController.getClassroom); //Get all classro
 //Get Deleted classroom
 router.get("/getdeletedclassroom", classroomController.getDeletedClassroom);
 
+//Edit classroom
+router.put("/editclassroom/:classroomId", classroomController.editClassroom);
+
 //Soft Delete classroom
 router.put("/deleteclassroom/:classroomId", classroomController.softDeleteClassroom);
 

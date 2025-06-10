@@ -1,20 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-import 'package:smartclass_fyp_2024/features/lecturer/views/course_enrollment/views/lecturer_view_enroll_request.dart';
+import 'package:smartclass_fyp_2024/features/academic_admin/manage_courses/services/manage_course_api.dart';
+import 'package:smartclass_fyp_2024/features/academic_admin/manage_courses/views/academic_admin_addcourse.dart';
+import 'package:smartclass_fyp_2024/features/academic_admin/manage_courses/views/academic_admin_editcourse.dart';
+import 'package:smartclass_fyp_2024/features/academic_admin/manage_courses/views/academic_admin_restorecourse.dart';
 import 'package:smartclass_fyp_2024/features/lecturer/views/manage_class/providers/course_providers.dart';
 import 'package:smartclass_fyp_2024/shared/data/dataprovider/user_provider.dart';
 import 'package:smartclass_fyp_2024/shared/widgets/pageTransition.dart';
 
-class LecturerSelectCourse extends ConsumerStatefulWidget {
-  const LecturerSelectCourse({super.key});
+class AcademicAdminViewAllCourse extends ConsumerStatefulWidget {
+  const AcademicAdminViewAllCourse({super.key});
 
   @override
-  ConsumerState<LecturerSelectCourse> createState() =>
-      _LecturerSelectCourseState();
+  ConsumerState<AcademicAdminViewAllCourse> createState() =>
+      _AcademicAdminViewAllCourseState();
 }
 
-class _LecturerSelectCourseState extends ConsumerState<LecturerSelectCourse> {
+class _AcademicAdminViewAllCourseState
+    extends ConsumerState<AcademicAdminViewAllCourse> {
   String searchText = '';
   final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
@@ -22,8 +27,7 @@ class _LecturerSelectCourseState extends ConsumerState<LecturerSelectCourse> {
 
   void _onRefresh() async {
     // ignore: unused_result
-    ref.refresh(
-        courseListByLecturerIdProvider(ref.read(userProvider).externalId));
+    ref.refresh(courseListProvider);
     await Future.delayed(const Duration(seconds: 1));
     _refreshController.refreshCompleted();
   }
@@ -49,14 +53,24 @@ class _LecturerSelectCourseState extends ConsumerState<LecturerSelectCourse> {
     super.dispose();
   }
 
+  //Method to soft delete
+  void softDeleteCourse(BuildContext context, int courseId) async {
+    await ManageCourseApi.softDeleteCourse(
+      context,
+      courseId,
+    );
+    //Refresh
+    _onRefresh();
+  }
+
   @override
   Widget build(BuildContext context) {
     //Get user data
+    // ignore: unused_local_variable
     final user = ref.watch(userProvider);
 
     // Get the list of courses by lecturer ID
-    final courseByLecturerAsyncValue =
-        ref.watch(courseListByLecturerIdProvider(user.externalId));
+    final courseByLecturerAsyncValue = ref.watch(courseListProvider);
 
     return Scaffold(
       appBar: _appBar(context),
@@ -85,7 +99,7 @@ class _LecturerSelectCourseState extends ConsumerState<LecturerSelectCourse> {
             return CustomScrollView(
               slivers: [
                 SliverPersistentHeader(
-                  pinned: true,
+                  pinned: false,
                   delegate: _SearchBarDelegate(
                     onChanged: (value) {
                       setState(() {
@@ -112,13 +126,38 @@ class _LecturerSelectCourseState extends ConsumerState<LecturerSelectCourse> {
                       padding: const EdgeInsets.symmetric(
                         vertical: 5,
                       ),
-                      child: Text(
-                        '${filtered.length} Courses',
-                        style: const TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w500,
-                          color: Colors.black54,
-                        ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            '${filtered.length} Courses',
+                            style: const TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.black54,
+                            ),
+                          ),
+                          IconButton(
+                            icon: const Icon(
+                              Icons.restore_from_trash_outlined,
+                              color: Colors.black,
+                              size: 20,
+                            ),
+                            tooltip: 'Restore Deleted',
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                toLeftTransition(
+                                  const AcademicAdminRestorecourse(),
+                                ),
+                              );
+
+                              //Refresh the list
+                              // ignore: unused_result
+                              ref.refresh(courseListProvider);
+                            },
+                          ),
+                        ],
                       ),
                     ),
                   ),
@@ -129,10 +168,8 @@ class _LecturerSelectCourseState extends ConsumerState<LecturerSelectCourse> {
                   )
                 else
                   SliverPadding(
-                    padding: const EdgeInsets.only(
-                      left: 15,
-                      right: 15,
-                      bottom: 10,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
                     ),
                     sliver: SliverList(
                       delegate: SliverChildBuilderDelegate(
@@ -140,22 +177,78 @@ class _LecturerSelectCourseState extends ConsumerState<LecturerSelectCourse> {
                           final courses = filtered[index];
                           return Column(
                             children: [
-                              // GestureDetector to navigate to AdminControlUtilities
-                              GestureDetector(
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    toLeftTransition(
-                                      LecturerViewEnrollRequest(
-                                        lecturerId: user.externalId,
-                                        courseId: courses.courseId,
-                                      ),
+                              Slidable(
+                                key: ValueKey(courses.courseId),
+                                endActionPane: ActionPane(
+                                  motion: const DrawerMotion(),
+                                  children: [
+                                    //Edit button
+                                    SlidableAction(
+                                      onPressed: (context) {
+                                        Navigator.push(
+                                          context,
+                                          toLeftTransition(
+                                            AcademicAdminEditcourse(
+                                              courseCode: courses.courseCode,
+                                              courseId: courses.courseId,
+                                              courseName: courses.courseName,
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                      backgroundColor: Colors.blue,
+                                      foregroundColor: Colors.white,
+                                      icon: Icons.edit_outlined,
+                                      label: 'Edit',
                                     ),
-                                  );
-                                },
+                                    //Delete button
+                                    SlidableAction(
+                                      onPressed: (context) {
+                                        showDialog(
+                                          context: context,
+                                          builder: (context) => AlertDialog(
+                                            title: const Text(
+                                              'Delete',
+                                            ),
+                                            content: Text(
+                                              'Are you sure you want to delete "${courses.courseName}"?',
+                                            ),
+                                            actions: [
+                                              TextButton(
+                                                onPressed: () =>
+                                                    Navigator.pop(context),
+                                                child: const Text('Cancel'),
+                                              ),
+                                              TextButton(
+                                                onPressed: () {
+                                                  //Soft Delete class
+                                                  softDeleteCourse(
+                                                    context,
+                                                    courses.courseId,
+                                                    // courses.courseName,
+                                                  );
+                                                },
+                                                child: const Text(
+                                                  'Delete',
+                                                  style: TextStyle(
+                                                    color: Colors.red,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        );
+                                      },
+                                      backgroundColor: Colors.red,
+                                      foregroundColor: Colors.white,
+                                      icon: Icons.delete,
+                                      label: 'Delete',
+                                    ),
+                                  ],
+                                ),
                                 child: Container(
                                   margin: const EdgeInsets.symmetric(
-                                    vertical: 7,
+                                    vertical: 10,
                                   ),
                                   padding: const EdgeInsets.symmetric(
                                     horizontal: 5,
@@ -172,22 +265,17 @@ class _LecturerSelectCourseState extends ConsumerState<LecturerSelectCourse> {
                                           fontWeight: FontWeight.w500,
                                         ),
                                       ),
-                                      const Icon(
-                                        Icons.chevron_right,
-                                        size: 23,
-                                      ),
                                     ],
                                   ),
                                 ),
                               ),
-                              // Divider to separate each classroom
-                              // Only show divider if it's not the last item
+                              // Divider to separate each course
                               if (index < filtered.length - 1)
                                 Divider(
                                   color: Colors.grey.withOpacity(0.3),
                                   thickness: 1,
-                                  indent: 5,
-                                  endIndent: 5,
+                                  // indent: 5,
+                                  // endIndent: 5,
                                 ),
                             ],
                           );
@@ -212,7 +300,7 @@ AppBar _appBar(BuildContext context) {
     backgroundColor: Colors.white,
     elevation: 0,
     title: const Text(
-      "Your Courses",
+      "All Courses",
       style: TextStyle(
         fontSize: 15,
         color: Colors.black,
@@ -228,6 +316,26 @@ AppBar _appBar(BuildContext context) {
       ),
       onPressed: () => Navigator.pop(context),
     ),
+    actions: [
+      Padding(
+        padding: const EdgeInsets.only(right: 10.0),
+        child: IconButton(
+          icon: const Icon(
+            Icons.add_outlined,
+            size: 23,
+            color: Colors.black,
+          ),
+          onPressed: () {
+            Navigator.push(
+              context,
+              toLeftTransition(
+                const AcademicAdminAddcourse(),
+              ),
+            );
+          },
+        ),
+      ),
+    ],
   );
 }
 

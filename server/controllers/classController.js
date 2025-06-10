@@ -189,4 +189,22 @@ exports.lecturerGetCurrentClass = async (req, res) => {
         console.error("Controller Error:", error);
         res.status(500).json({ message: "Failed to fetch class data" });
     }
-}
+};
+
+//Function to edit classroom
+exports.editClassroom = async (req, res) => {
+    try {
+        console.log("Received update request:", req.body);
+        
+        const classId = req.params.id; // Extract classId from URL parameter
+        const updatedClass = req.body; // Extract request body
+
+        // Call service function with correct parameters
+        const result = await classService.editClassroom(classId, updatedClass);
+
+        res.status(200).json({ message: "Classroom data updated successfully", Updated_Id: result });
+    } catch (error) {
+        console.error("Controller Error:", error);
+        res.status(500).json({ message: "Failed to update classroom data" });
+    }
+};
