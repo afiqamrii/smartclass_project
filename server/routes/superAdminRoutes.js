@@ -10,6 +10,9 @@ router.use(superAdminAuth);
 //SuperAdmin Get all users
 router.get("/getallusers", superAdminController.getAllUsers);
 
+//Get all user by id
+router.get("/getuserbyid/:userId", superAdminController.getUserById);
+
 //Get all pending approvals
 router.get("/getallpendingapprovals", superAdminController.getAllPendingApprovals);
 

@@ -29,6 +29,15 @@ const getAllUsers = async () => {
     }
 };
 
+//Get user by id
+const getUserById = async (userId) => {
+    try {
+        return await superAdminModel.getUserById(userId);
+    } catch (error) {
+        throw new Error("Error in service while fetching user by id: " + error.message);
+    }
+};
+
 //Get all pending approvals
 const getAllPendingApprovals = async () => {
     try {
@@ -121,39 +130,68 @@ const updateApprovalStatus = async (userId , status , email) => {
 
 
 //Function to disable user
-const disableUser = async (userId , email) => {
+const disableUser = async (userId , email , status) => {
     try {
-        const result = await superAdminModel.disableUser(userId , email);
+        const result = await superAdminModel.disableUser(userId , status);
 
         //Send email to user
+        let mailOptions = {};
         if (result.affectedRows > 0) {
-            let mailOptions = {};
-            mailOptions = {
-                from: process.env.AUTH_EMAIL,
-                to: email,
-                subject: "Your account has been disabled!",
-                html: `
-                    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 10px;">
+            if (status === "Disabled") {
+                mailOptions = {
+                    from: process.env.AUTH_EMAIL,
+                    to: email,
+                    subject: "Your account has been disabled!",
+                    html: `
+                        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 10px;">
 
-                        <!-- Logo Section -->
-                        <div style="text-align: center; margin-bottom: 20px;">
-                            <img src="https://i.imgur.com/LndAkqq.png
-                            " alt="IntelliClass Logo" style="max-width: 150px; height: auto;">
+                            <!-- Logo Section -->
+                            <div style="text-align: center; margin-bottom: 20px;">
+                                <img src="https://i.imgur.com/LndAkqq.png
+                                " alt="IntelliClass Logo" style="max-width: 150px; height: auto;">
+                            </div>
+
+                            <!-- Welcome Heading -->
+                            <h2 style="color: #4CAF50; text-align: center;">Your Account Has Been Disabled!</h2>
+
+                            <!-- Body Content -->
+                            <p style="font-size: 16px; color: #333;">Hi there,</p>
+                            <p style="font-size: 16px; color: #333;">Sorry to inform you that your account has been disabled by admin. Please try again later.</p>
+                            
+                            <!-- Footer -->
+                            <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
+                            <p style="font-size: 12px; color: #999; text-align: center;">&copy; ${new Date().getFullYear()} IntelliClass. All rights reserved.</p>
                         </div>
+                    `
+                };
+            } else if (status === "Approved") {
+                mailOptions = {
+                    from: process.env.AUTH_EMAIL,
+                    to: email,
+                    subject: "Your account has been enabled!",
+                    html: `
+                        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 10px;">
 
-                        <!-- Welcome Heading -->
-                        <h2 style="color: #4CAF50; text-align: center;">Your Account Has Been Disabled!</h2>
+                            <!-- Logo Section -->
+                            <div style="text-align: center; margin-bottom: 20px;">
+                                <img src="https://i.imgur.com/LndAkqq.png
+                                " alt="IntelliClass Logo" style="max-width: 150px; height: auto;">
+                            </div>
 
-                        <!-- Body Content -->
-                        <p style="font-size: 16px; color: #333;">Hi there,</p>
-                        <p style="font-size: 16px; color: #333;">Sorry to inform you that your account has been disabled by admin. Please try again later.</p>
-                        
-                        <!-- Footer -->
-                        <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
-                        <p style="font-size: 12px; color: #999; text-align: center;">&copy; ${new Date().getFullYear()} IntelliClass. All rights reserved.</p>
-                    </div>
-                `
-            };
+                            <!-- Welcome Heading -->
+                            <h2 style="color: #4CAF50; text-align: center;">Your Account Has Been Enabled!</h2>
+
+                            <!-- Body Content -->
+                            <p style="font-size: 16px; color: #333;">Hi there,</p>
+                            <p style="font-size: 16px; color: #333;">Your account has been enabled by admin. You can now log in and use the platform.</p>
+                            
+                            <!-- Footer -->
+                            <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
+                            <p style="font-size: 12px; color: #999; text-align: center;">&copy; ${new Date().getFullYear()} IntelliClass. All rights reserved.</p>
+                        </div>
+                    `
+                };
+            }
             await transporter.sendMail(mailOptions);
         }
         return result;
@@ -164,7 +202,9 @@ const disableUser = async (userId , email) => {
 
 module.exports = {
     getAllUsers,
+    getUserById,
     getAllPendingApprovals,
     updateApprovalStatus,
     disableUser,
+
 }; 

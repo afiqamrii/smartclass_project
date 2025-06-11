@@ -10,6 +10,11 @@ final getAllUserProvider = FutureProvider<List<UserModels>>((ref) async {
   return await ManageUserApi.fetchUsers(token);
 });
 
+final getUserByIdProvider = FutureProvider.family<List<UserModels>, int>((ref, userId) async {
+  final token = ref.watch(userProvider).token;
+  return await ManageUserApi.fetchUsersById(token, userId);
+});
+
 //Get all pending approval
 final getAllPendingApprovalProvider = FutureProvider<List<UserModels>>((ref) async {
   final token = ref.watch(userProvider).token;

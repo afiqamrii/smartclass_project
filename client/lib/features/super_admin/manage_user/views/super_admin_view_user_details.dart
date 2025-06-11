@@ -1,12 +1,59 @@
-import 'package:flutter/material.dart';
-import 'package:smartclass_fyp_2024/features/super_admin/manage_user/models/user_models.dart';
+// ignore_for_file: unused_result
 
-class SuperAdminViewUserDetails extends StatelessWidget {
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:smartclass_fyp_2024/features/super_admin/manage_user/models/user_models.dart';
+import 'package:smartclass_fyp_2024/features/super_admin/manage_user/providers/manage_user_provider.dart';
+import 'package:smartclass_fyp_2024/features/super_admin/manage_user/services/manage_user_api.dart';
+import 'package:smartclass_fyp_2024/shared/data/dataprovider/user_provider.dart';
+
+class SuperAdminViewUserDetails extends ConsumerStatefulWidget {
   const SuperAdminViewUserDetails({super.key, required this.user});
   final UserModels user;
 
   @override
+  ConsumerState<SuperAdminViewUserDetails> createState() =>
+      _SuperAdminViewUserDetailsState();
+}
+
+class _SuperAdminViewUserDetailsState
+    extends ConsumerState<SuperAdminViewUserDetails> {
+  final RefreshController _refreshController =
+      RefreshController(initialRefresh: false);
+
+  // Function to handle disable user account
+  void disableUser(BuildContext context, UserModels user, String status) {
+    //Call API to disable user account
+    ManageUserApi.disableUserAccount(
+      user.userId,
+      ref.watch(userProvider).token,
+      context,
+      user.userEmail,
+      status,
+    );
+
+    //Force to refresh page
+    ref.refresh(getAllUserProvider);
+  }
+
+  void _onRefresh() async {
+    // ignore: duplicate_ignore
+    // ignore: unused_result
+    ref.refresh(getAllUserProvider);
+    await Future.delayed(const Duration(seconds: 1));
+    _refreshController.refreshCompleted();
+  }
+
+  void _onLoading() async {
+    await Future.delayed(const Duration(seconds: 1));
+    _refreshController.loadComplete();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final user = ref.watch(getUserByIdProvider(widget.user.userId));
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -29,98 +76,119 @@ class SuperAdminViewUserDetails extends StatelessWidget {
           onPressed: () => Navigator.pop(context),
         ),
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            // Profile Avatar
-            CircleAvatar(
-              radius: 30,
-              backgroundColor: Colors.blue.shade100,
-              child: Text(
-                user.name[0].toUpperCase(),
+      body: SmartRefresher(
+        controller: _refreshController,
+        enablePullDown: true,
+        header: const ClassicHeader(),
+        onRefresh: _onRefresh,
+        onLoading: _onLoading,
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              // Profile Avatar
+              CircleAvatar(
+                radius: 30,
+                backgroundColor: Colors.blue.shade100,
+                child: Text(
+                  widget.user.name[0].toUpperCase(),
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 10),
+              Text(
+                widget.user.name,
                 style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
-            ),
-            const SizedBox(height: 10),
-            Text(
-              user.name,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              user.userEmail,
-              style: const TextStyle(
-                color: Colors.grey,
-                fontSize: 13,
-              ),
-            ),
-            const SizedBox(height: 7),
-            Text(
-              user.roleName,
-              style: const TextStyle(
-                fontSize: 13,
-                color: Colors.black54,
-              ),
-            ),
-            const SizedBox(height: 20),
-
-            // User Info Card
-            Card(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(15),
-                side: const BorderSide(
+              const SizedBox(height: 4),
+              Text(
+                widget.user.userEmail,
+                style: const TextStyle(
                   color: Colors.grey,
-                  width: 1,
+                  fontSize: 13,
                 ),
               ),
-              color: Colors.grey.shade100,
-              // elevation: 2,
-              child: Padding(
-                padding: const EdgeInsets.all(15.0),
-                child: Column(
-                  children: [
-                    _infoRow("Full Name", user.name),
-                    _infoRow("Email", user.userEmail),
-                    _infoRow("Role", user.roleName),
-                    _infoRow("ID", user.externalId),
-                    // Add more fields if needed
-                  ],
+              const SizedBox(height: 7),
+              Text(
+                widget.user.roleName,
+                style: const TextStyle(
+                  fontSize: 13,
+                  color: Colors.black54,
                 ),
               ),
-            ),
+              const SizedBox(height: 20),
 
-            const SizedBox(height: 24),
+              // User Info Card
+              Card(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15),
+                  side: const BorderSide(
+                    color: Colors.grey,
+                    width: 1,
+                  ),
+                ),
+                color: Colors.grey.shade100,
+                // elevation: 2,
+                child: Padding(
+                  padding: const EdgeInsets.all(15.0),
+                  child: Column(
+                    children: [
+                      _infoRow("Full Name", widget.user.name),
+                      _infoRow("Email", widget.user.userEmail),
+                      _infoRow("Role", widget.user.roleName),
+                      _infoRow("ID", widget.user.externalId),
+                      // Add more fields if needed
+                    ],
+                  ),
+                ),
+              ),
 
-            // Suggested Admin Actions
-            _cardSection(context, user),
-          ],
+              const SizedBox(height: 24),
+
+              // Suggested Admin Actions
+              _cardSection(context, widget.user),
+            ],
+          ),
         ),
       ),
     );
   }
 
   // Card Section
-  // Card Section using Wrap instead of Row
   Widget _cardSection(BuildContext context, UserModels user) {
     return Wrap(
       spacing: 16, // horizontal space between cards
       runSpacing: 16, // vertical space between lines
       children: [
-        _adminCard(
-          context,
-          label: 'Disable User Account',
-          icon: 'assets/icons/disabled.png',
-          color: Colors.yellow.shade200,
-          onTap: () {},
-        ),
+        if (user.status == "Approved")
+          _adminCard(
+            context,
+            label: 'Disable User Account',
+            icon: 'assets/icons/disabled.png',
+            color: Colors.yellow.shade200,
+            onTap: () {
+              // Handle disable user account
+              disableUser(context, user, "Disabled");
+            },
+          ),
+        if (user.status == "Disabled")
+          _adminCard(
+            context,
+            label: 'Enable User Account',
+            icon: 'assets/icons/correct.png',
+            color: Colors.green.shade200,
+            onTap: () {
+              // Handle disable user account
+              disableUser(context, user, "Approved");
+            },
+          ),
         _adminCard(
           context,
           label: 'Delete User Account',
@@ -222,28 +290,6 @@ class SuperAdminViewUserDetails extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
-
-  Widget _adminActionButton(BuildContext context,
-      {required String label,
-      required IconData icon,
-      required Color color,
-      required VoidCallback onPressed}) {
-    return ElevatedButton.icon(
-      style: ElevatedButton.styleFrom(
-        backgroundColor: color,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
-        padding: const EdgeInsets.symmetric(
-          horizontal: 12,
-          vertical: 10,
-        ),
-      ),
-      icon: Icon(icon, size: 18),
-      label: Text(label),
-      onPressed: onPressed,
     );
   }
 }

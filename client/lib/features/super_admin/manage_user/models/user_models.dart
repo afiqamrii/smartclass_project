@@ -6,6 +6,7 @@ class UserModels {
   final int roleId;
   final String roleName;
   final String externalId;
+  final String status;
 
   UserModels({
     required this.userId,
@@ -15,8 +16,8 @@ class UserModels {
     required this.roleId,
     required this.roleName,
     required this.externalId,
+    required this.status,
   });
-
 
   //Convert JSON to UserModels
   factory UserModels.fromJson(Map<String, dynamic> json) => UserModels(
@@ -27,6 +28,6 @@ class UserModels {
         roleId: json['roleId'] ?? 0,
         roleName: json['roleName'] ?? 'Unknown',
         externalId: json['externalId'] ?? 'Unknown',
+        status: json['status'] ?? 'Unknown',
       );
-
 }

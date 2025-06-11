@@ -12,13 +12,41 @@ const SuperAdminModel = {
                 u.userEmail,
                 u.roleId,
                 u.externalId,
-                r.roleName
+                r.roleName,
+                u.is_approved AS status
                 
             FROM User u
             JOIN UserRole r ON u.roleId = r.roleId    
-            WHERE u.is_approved = "Approved"
+            WHERE u.is_approved != 'Pending'
             `;
             const [rows] = await pool.query(query);
+            return rows;
+        } catch (err) {
+            console.error("Error retrieving data:", err.message);
+            return [];
+        }
+    },
+
+    //Get user by id
+    async getUserById (userId) {
+        try {
+            const query = 
+            `
+            SELECT 
+                u.userId,
+                u.name,
+                u.userName,
+                u.userEmail,
+                u.roleId,
+                u.externalId,
+                r.roleName,
+                u.is_approved AS status
+                
+            FROM User u
+            JOIN UserRole r ON u.roleId = r.roleId    
+            WHERE u.userId = ?
+            `;
+            const [rows] = await pool.query(query, [userId]);
             return rows;
         } catch (err) {
             console.error("Error retrieving data:", err.message);
@@ -86,15 +114,15 @@ const SuperAdminModel = {
     },
 
     //Disable user
-    async disableUser (userId) {
+    async disableUser (userId , status) {
         try {
             const query = 
             `
             UPDATE User
-            SET is_approved = "Disabled"
+            SET is_approved = ?
             WHERE userId = ?
             `;
-            const [rows] = await pool.query(query, [userId]);
+            const [rows] = await pool.query(query, [status , userId]);
             return rows;
         } catch (err) {
             console.error("Error retrieving data:", err.message);
