@@ -200,11 +200,55 @@ const disableUser = async (userId , email , status) => {
     }
 };
 
+//Completely delete user
+const deleteUser = async (userId , email) => {
+    try {
+        //Call service to delete
+        const result = await superAdminModel.deleteUser(userId);
+
+        //Once deleted, send email to user
+        let mailOptions = {};
+        if (result.affectedRows > 0) {
+            mailOptions = {
+                from: process.env.AUTH_EMAIL,
+                to: email,
+                subject: "Your account has been deleted!",
+                html: `
+                    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 10px;">
+
+                        <!-- Logo Section -->
+                        <div style="text-align: center; margin-bottom: 20px;">
+                            <img src="https://i.imgur.com/LndAkqq.png
+                            " alt="IntelliClass Logo" style="max-width: 150px; height: auto;">
+                        </div>
+
+                        <!-- Welcome Heading -->
+                        <h2 style="color: #4CAF50; text-align: center;">Your Account Has Been Deleted By Admin!</h2>
+
+                        <!-- Body Content -->
+                        <p style="font-size: 16px; color: #333;">Hi there,</p>
+                        <p style="font-size: 16px; color: #333;">Sorry to inform you that your account has been deleted by admin. We regret the inconvenience caused. Please try again later.</p>
+                        
+                        <!-- Footer -->
+                        <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
+                        <p style="font-size: 12px; color: #999; text-align: center;">&copy; ${new Date().getFullYear()} IntelliClass. All rights reserved.</p>
+                    </div>
+                `
+            };
+            await transporter.sendMail(mailOptions);
+        }
+        return result;
+    } catch (error) {
+        throw new Error("Error in service while deleting user: " + error.message);
+    }
+};
+
 module.exports = {
     getAllUsers,
     getUserById,
     getAllPendingApprovals,
     updateApprovalStatus,
     disableUser,
+    deleteUser,
 
 }; 

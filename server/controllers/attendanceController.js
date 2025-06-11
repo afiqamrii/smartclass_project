@@ -23,8 +23,6 @@ exports.addAttendance = async (req, res) => {
 
     // Add it to request body
     req.body.timeStamp = timeStamp;
-
-
     
     try {
         const addAttendance = req.body;

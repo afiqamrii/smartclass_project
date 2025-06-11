@@ -22,4 +22,7 @@ router.put("/updateapprovalstatus/:userId", superAdminController.updateApprovalS
 //Disable user
 router.put("/disableuser/:userId", superAdminController.disableUser);
 
+//Delete completely user
+router.delete("/deleteuser/:userId", superAdminController.deleteUser);
+
 module.exports = router;

@@ -117,10 +117,43 @@ const disableUser = async (req, res) => {
     }
 };
 
+//Completely delete user
+const deleteUser = async (req, res) => {
+    //Debug
+    console.log("Received delete user request");
+    try {
+        //Get parameters from request
+        const userId = req.params.userId;
+        const email = req.body.user_email;
+
+        //Debug
+        console.log("Received data:", userId, email);
+
+        //Validate input
+        if (!userId || userId.trim() === "") {
+            console.error("Error: User ID is required");
+            return res.status(400).json({ error: "User ID is required" });
+        }
+
+        //Validate input
+        if (!email || email.trim() === "") {
+            console.error("Error: User email is required");
+            return res.status(400).json({ error: "User email is required" });
+        }
+        
+        //Call service
+        const result = await superAdminService.deleteUser(userId , email);
+        res.status(200).json({ message: "User deleted successfully", result });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
 module.exports = { 
     getAllUsers,
     getAllPendingApprovals,
     updateApprovalStatus,
     disableUser,
     getUserById,
+    deleteUser
  };

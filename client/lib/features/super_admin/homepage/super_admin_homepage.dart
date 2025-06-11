@@ -144,18 +144,18 @@ class _SuperAdminHomepageState extends ConsumerState<SuperAdminHomepage> {
               ),
             ),
           ),
-          featureCard(
-            context: context,
-            imagePath: 'assets/pictures/management.png',
-            title: 'Manage Roles',
-            color: Colors.brown,
-            // onTap: () => Navigator.push(
-            //   context,
-            //   toLeftTransition(
-            //     const AcademicAdminViewAllClass(),
-            //   ),
-            // ),
-          ),
+          // featureCard(
+          //   context: context,
+          //   imagePath: 'assets/pictures/management.png',
+          //   title: 'Manage Roles',
+          //   color: Colors.brown,
+          //   // onTap: () => Navigator.push(
+          //   //   context,
+          //   //   toLeftTransition(
+          //   //     const AcademicAdminViewAllClass(),
+          //   //   ),
+          //   // ),
+          // ),
           featureCard(
             context: context,
             imagePath: 'assets/icons/pending.png',

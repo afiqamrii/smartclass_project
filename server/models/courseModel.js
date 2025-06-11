@@ -47,8 +47,8 @@ const CourseModel = {
 
         try {
             console.log("Fetching courses for lecturer:", lecturerId);
-            const query = `SELECT * FROM Course WHERE AND is_active = 'Yes'`;
-            const [rows] = await pool.query(query);
+            const query = `SELECT * FROM Course WHERE lecturerId = ? AND is_active = 'Yes'`;
+            const [rows] = await pool.query(query , [lecturerId]);
             return rows; // Return the list of courses
         } catch (err) {
             console.error("Error retrieving data:", err.message);

@@ -3,10 +3,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:quickalert/models/quickalert_type.dart';
+import 'package:quickalert/widgets/quickalert_dialog.dart';
 import 'package:smartclass_fyp_2024/features/super_admin/manage_user/models/user_models.dart';
 import 'package:smartclass_fyp_2024/features/super_admin/manage_user/providers/manage_user_provider.dart';
 import 'package:smartclass_fyp_2024/features/super_admin/manage_user/services/manage_user_api.dart';
 import 'package:smartclass_fyp_2024/shared/data/dataprovider/user_provider.dart';
+import 'package:smartclass_fyp_2024/shared/data/models/user.dart';
 
 class SuperAdminViewUserDetails extends ConsumerStatefulWidget {
   const SuperAdminViewUserDetails({super.key, required this.user});
@@ -21,11 +24,11 @@ class _SuperAdminViewUserDetailsState
     extends ConsumerState<SuperAdminViewUserDetails> {
   final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
+  final TextEditingController _deleteTextFieldController =
+      TextEditingController();
 
-  // Function to handle disable user account
-  void disableUser(BuildContext context, UserModels user, String status) {
-    //Call API to disable user account
-    ManageUserApi.disableUserAccount(
+  void disableUser(BuildContext context, UserModels user, String status) async {
+    await ManageUserApi.disableUserAccount(
       user.userId,
       ref.watch(userProvider).token,
       context,
@@ -33,14 +36,25 @@ class _SuperAdminViewUserDetailsState
       status,
     );
 
-    //Force to refresh page
-    ref.refresh(getAllUserProvider);
+    //Force to refresh
+    ref.refresh(getUserByIdProvider(widget.user.userId));
+  }
+
+  //Delete user account
+  void deleteUserAccount(BuildContext context, int userId, String email) async {
+    //Call API
+    await ManageUserApi.deleteUserAccount(
+      context,
+      userId,
+      ref.watch(userProvider).token,
+      widget.user.userEmail,
+    );
+    //Force to refresh
+    ref.refresh(getUserByIdProvider(widget.user.userId));
   }
 
   void _onRefresh() async {
-    // ignore: duplicate_ignore
-    // ignore: unused_result
-    ref.refresh(getAllUserProvider);
+    ref.refresh(getUserByIdProvider(widget.user.userId));
     await Future.delayed(const Duration(seconds: 1));
     _refreshController.refreshCompleted();
   }
@@ -52,7 +66,7 @@ class _SuperAdminViewUserDetailsState
 
   @override
   Widget build(BuildContext context) {
-    final user = ref.watch(getUserByIdProvider(widget.user.userId));
+    final userAsync = ref.watch(getUserByIdProvider(widget.user.userId));
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -84,88 +98,97 @@ class _SuperAdminViewUserDetailsState
         onLoading: _onLoading,
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16.0),
-          child: Column(
-            children: [
-              // Profile Avatar
-              CircleAvatar(
-                radius: 30,
-                backgroundColor: Colors.blue.shade100,
-                child: Text(
-                  widget.user.name[0].toUpperCase(),
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 10),
-              Text(
-                widget.user.name,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                widget.user.userEmail,
-                style: const TextStyle(
-                  color: Colors.grey,
-                  fontSize: 13,
-                ),
-              ),
-              const SizedBox(height: 7),
-              Text(
-                widget.user.roleName,
-                style: const TextStyle(
-                  fontSize: 13,
-                  color: Colors.black54,
-                ),
-              ),
-              const SizedBox(height: 20),
-
-              // User Info Card
-              Card(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15),
-                  side: const BorderSide(
-                    color: Colors.grey,
-                    width: 1,
-                  ),
-                ),
-                color: Colors.grey.shade100,
-                // elevation: 2,
-                child: Padding(
-                  padding: const EdgeInsets.all(15.0),
-                  child: Column(
-                    children: [
-                      _infoRow("Full Name", widget.user.name),
-                      _infoRow("Email", widget.user.userEmail),
-                      _infoRow("Role", widget.user.roleName),
-                      _infoRow("ID", widget.user.externalId),
-                      // Add more fields if needed
-                    ],
-                  ),
-                ),
-              ),
-
-              const SizedBox(height: 24),
-
-              // Suggested Admin Actions
-              _cardSection(context, widget.user),
-            ],
+          child: userAsync.when(
+            data: (userData) {
+              if (userData.isEmpty) {
+                return const Center(
+                    child: Text("User not found or has been deleted."));
+              }
+              return _userDetailsSection(context, userData.first);
+            },
+            loading: () => const Center(child: CircularProgressIndicator()),
+            error: (error, stackTrace) =>
+                const Center(child: Text("Error loading user data")),
           ),
         ),
       ),
     );
   }
 
-  // Card Section
+  Column _userDetailsSection(BuildContext context, UserModels user) {
+    return Column(
+      children: [
+        // Profile Avatar
+        CircleAvatar(
+          radius: 30,
+          backgroundColor: Colors.blue.shade100,
+          child: Text(
+            user.name[0].toUpperCase(),
+            style: const TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+            ),
+          ),
+        ),
+        const SizedBox(height: 10),
+        Text(
+          user.name,
+          style: const TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          user.userEmail,
+          style: const TextStyle(
+            color: Colors.grey,
+            fontSize: 13,
+          ),
+        ),
+        const SizedBox(height: 7),
+        Text(
+          user.roleName,
+          style: const TextStyle(
+            fontSize: 13,
+            color: Colors.black54,
+          ),
+        ),
+        const SizedBox(height: 20),
+
+        // User Info Card
+        Card(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+            side: const BorderSide(
+              color: Colors.grey,
+              width: 1,
+            ),
+          ),
+          color: Colors.grey.shade100,
+          child: Padding(
+            padding: const EdgeInsets.all(15.0),
+            child: Column(
+              children: [
+                _infoRow("Full Name", user.name),
+                _infoRow("Email", user.userEmail),
+                _infoRow("Role", user.roleName),
+                _infoRow("ID", user.externalId),
+              ],
+            ),
+          ),
+        ),
+        const SizedBox(height: 24),
+        _cardSection(context, user),
+      ],
+    );
+  }
+
   Widget _cardSection(BuildContext context, UserModels user) {
     return Wrap(
-      spacing: 16, // horizontal space between cards
-      runSpacing: 16, // vertical space between lines
+      spacing: 16,
+      runSpacing: 16,
       children: [
         if (user.status == "Approved")
           _adminCard(
@@ -174,8 +197,17 @@ class _SuperAdminViewUserDetailsState
             icon: 'assets/icons/disabled.png',
             color: Colors.yellow.shade200,
             onTap: () {
-              // Handle disable user account
-              disableUser(context, user, "Disabled");
+              QuickAlert.show(
+                context: context,
+                type: QuickAlertType.confirm,
+                title: "Disable User Account",
+                text: "Are you sure you want to disable this user account?",
+                confirmBtnText: "Yes",
+                cancelBtnText: "No",
+                onConfirmBtnTap: () {
+                  disableUser(context, user, "Disabled");
+                },
+              );
             },
           ),
         if (user.status == "Disabled")
@@ -185,8 +217,17 @@ class _SuperAdminViewUserDetailsState
             icon: 'assets/icons/correct.png',
             color: Colors.green.shade200,
             onTap: () {
-              // Handle disable user account
-              disableUser(context, user, "Approved");
+              QuickAlert.show(
+                context: context,
+                type: QuickAlertType.confirm,
+                title: "Enable User Account",
+                text: "Are you sure you want to enable this user account?",
+                confirmBtnText: "Yes",
+                cancelBtnText: "No",
+                onConfirmBtnTap: () {
+                  disableUser(context, user, "Approved");
+                },
+              );
             },
           ),
         _adminCard(
@@ -194,13 +235,72 @@ class _SuperAdminViewUserDetailsState
           label: 'Delete User Account',
           icon: 'assets/icons/delete.png',
           color: Colors.red.shade300,
-          onTap: () {},
+          onTap: () {
+            //Show dialog
+            final formKey = GlobalKey<FormState>();
+            String confirmDelete = '';
+            showDialog(
+              context: context,
+              builder: (context) => AlertDialog(
+                title: const Text('Delete This User Account'),
+                content: Form(
+                  key: formKey,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Text(
+                        'Are you sure want to delete the user account? This user will be permanently removed from the system.',
+                      ),
+                      TextFormField(
+                        decoration: const InputDecoration(
+                          labelText: 'Type "Delete User" to confirm',
+                          labelStyle: TextStyle(
+                            color: Colors.black54,
+                            fontSize: 14,
+                          ),
+                        ),
+                        validator: (value) {
+                          if (value != null &&
+                              value.trim().toLowerCase() != 'delete user') {
+                            return 'Please type "Delete User" to confirm';
+                          }
+                          return null;
+                        },
+                        onSaved: (value) => confirmDelete = value!,
+                      ),
+                    ],
+                  ),
+                ),
+                actions: [
+                  TextButton(
+                    child: const Text('Cancel'),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                  TextButton(
+                    child: const Text('Delete'),
+                    onPressed: () {
+                      if (formKey.currentState!.validate()) {
+                        formKey.currentState!.save();
+                        if (confirmDelete.trim().toLowerCase() ==
+                            'delete user') {
+                          deleteUserAccount(
+                            context,
+                            user.userId,
+                            user.userEmail,
+                          );
+                        }
+                      }
+                    },
+                  ),
+                ],
+              ),
+            );
+          },
         ),
       ],
     );
   }
 
-  // Admin Card Widget
   Widget _adminCard(
     BuildContext context, {
     required String label,
@@ -211,10 +311,8 @@ class _SuperAdminViewUserDetailsState
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        width: MediaQuery.of(context).size.width *
-            0.42, // about 42% of screen width
+        width: MediaQuery.of(context).size.width * 0.42,
         height: 110,
-        // color: color,
         decoration: BoxDecoration(
           color: color,
           borderRadius: BorderRadius.circular(16),

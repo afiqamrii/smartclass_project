@@ -37,9 +37,10 @@ class ManageUserApi {
   }
 
   //Get all users by id
-  static Future<List<UserModels>> fetchUsersById(String token , int userId  ) async {
+  static Future<List<UserModels>> fetchUsersById(
+      String token, int userId) async {
     final response = await http.get(
-      Uri.parse('${ApiConstants.baseUrl}/superadmin/getallusers/$userId'),
+      Uri.parse('${ApiConstants.baseUrl}/superadmin/getuserbyid/$userId'),
       headers: {
         'x-auth-token':
             token, // Pass the token as a header to verify authentication for super admin
@@ -109,19 +110,37 @@ class ManageUserApi {
       // print(response.body);
 
       if (response.statusCode == 200) {
-        await Flushbar(
-          message: 'User account disabled successfully!',
-          duration: const Duration(seconds: 3),
-          backgroundColor: Colors.green.shade600,
-          margin: const EdgeInsets.all(8),
-          borderRadius: BorderRadius.circular(8),
-          flushbarPosition: FlushbarPosition.TOP,
-          icon: const Icon(
-            Icons.check_circle,
-            color: Colors.white,
-          ),
-        ).show(context);
-        // Navigator.pop(context);
+        if (status == "Disabled") {
+          await Flushbar(
+            message: 'User account disabled successfully!',
+            duration: const Duration(seconds: 3),
+            backgroundColor: Colors.green.shade600,
+            margin: const EdgeInsets.all(8),
+            borderRadius: BorderRadius.circular(8),
+            flushbarPosition: FlushbarPosition.TOP,
+            icon: const Icon(
+              Icons.check_circle,
+              color: Colors.white,
+            ),
+          ).show(context);
+          //Force to refresh
+          Navigator.pop(context);
+        } else {
+          await Flushbar(
+            message: 'User account enabled successfully!',
+            duration: const Duration(seconds: 3),
+            backgroundColor: Colors.green.shade600,
+            margin: const EdgeInsets.all(8),
+            borderRadius: BorderRadius.circular(8),
+            flushbarPosition: FlushbarPosition.TOP,
+            icon: const Icon(
+              Icons.check_circle,
+              color: Colors.white,
+            ),
+          ).show(context);
+          //Force to refresh
+          Navigator.pop(context);
+        }
       } else {
         final jsonData = jsonDecode(response.body);
         final error = jsonData['error'] ?? 'Failed to disable user account.';
@@ -143,6 +162,61 @@ class ManageUserApi {
         e is Exception
             ? e.toString().replaceFirst('Exception: ', '')
             : 'Could not disable user account now. Please try again later.',
+      );
+    }
+  }
+
+  //Delete user account
+  static Future<void> deleteUserAccount(
+      BuildContext context, int userId, String token, String email) async {
+    try {
+      final response = await http.delete(
+        Uri.parse('${ApiConstants.baseUrl}/superadmin/deleteuser/$userId'),
+        headers: {
+          'x-auth-token': token,
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode({'user_email': email}),
+      );
+
+      // print(response.body);
+
+      if (response.statusCode == 200) {
+        await Flushbar(
+          message: 'User account deleted successfully!',
+          duration: const Duration(seconds: 3),
+          backgroundColor: Colors.green.shade600,
+          margin: const EdgeInsets.all(8),
+          borderRadius: BorderRadius.circular(8),
+          flushbarPosition: FlushbarPosition.TOP,
+          icon: const Icon(
+            Icons.check_circle,
+            color: Colors.white,
+          ),
+        ).show(context);
+        //Force to refresh
+        Navigator.pop(context);
+      } else {
+        final jsonData = jsonDecode(response.body);
+        final error = jsonData['error'] ?? 'Failed to delete user account.';
+        await Flushbar(
+          message: error,
+          duration: const Duration(seconds: 3),
+          backgroundColor: Colors.red.shade600,
+          margin: const EdgeInsets.all(8),
+          borderRadius: BorderRadius.circular(8),
+          flushbarPosition: FlushbarPosition.TOP,
+          icon: const Icon(
+            Icons.error,
+            color: Colors.white,
+          ),
+        ).show(context);
+      }
+    } catch (e) {
+      throw Exception(
+        e is Exception
+            ? e.toString().replaceFirst('Exception: ', '')
+            : 'Could not delete user account now. Please try again later.',
       );
     }
   }

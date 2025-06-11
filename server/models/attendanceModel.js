@@ -9,21 +9,21 @@ const AttendanceModel = {
             throw missingParamError;
         }
 
-        //Debugging log
-        // console.log("Adding attendance with parameters:", {
-        //     classId,
-        //     studentId,
-        //     attendanceStatus,
-        //     timeStamp
-        // });
+        // Debugging log
+        console.log("Adding attendance with parameters:", {
+            classId,
+            studentId,
+            attendanceStatus,
+            timeStamp
+        });
 
         try {
             const query = `
                 UPDATE Attendance
-                SET attendanceStatus = ?
+                SET attendanceStatus = ? , timeStamp = ?
                 WHERE classId = ? AND studentId = ?
             `;
-            const [rows] = await pool.query(query, [classId, studentId, attendanceStatus , timeStamp]);
+            const [rows] = await pool.query(query, [ attendanceStatus , timeStamp , classId, studentId]);
             return rows;
         } catch (error) {
             // Check for duplicate entry error (MySQL error code 1062)

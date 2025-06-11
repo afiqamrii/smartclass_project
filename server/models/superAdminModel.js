@@ -128,7 +128,8 @@ const SuperAdminModel = {
             console.error("Error retrieving data:", err.message);
             return [];
         }
-    }
+    },
+    
 };
 
 module.exports = SuperAdminModel;
