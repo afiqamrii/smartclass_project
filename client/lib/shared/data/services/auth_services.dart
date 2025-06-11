@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
@@ -14,6 +15,8 @@ import 'package:smartclass_fyp_2024/features/lecturer/views/manage_profile/email
 import 'package:smartclass_fyp_2024/features/lecturer/views/manage_profile/lecturer_account_details.dart';
 import 'package:smartclass_fyp_2024/features/student/views/manage_profile/student_account_details.dart';
 import 'package:smartclass_fyp_2024/features/student/views/manage_profile/student_email_sended.dart';
+import 'package:smartclass_fyp_2024/features/super_admin/bottom_navbar/superadmin_bottom_nav.dart';
+import 'package:smartclass_fyp_2024/features/super_admin/views/super_admin_signin.dart';
 import 'package:smartclass_fyp_2024/shared/data/models/role.dart';
 import 'package:smartclass_fyp_2024/features/admin/bottom_nav/admin_bottom_navbar.dart';
 import 'package:smartclass_fyp_2024/features/admin/registeration/signup_page/admin_greets_page.dart';
@@ -145,6 +148,15 @@ class AuthService {
           SharedPreferences prefs = await SharedPreferences.getInstance();
           final userData = jsonDecode(res.body);
 
+          // Check if token is present and not null
+          final token = userData['token'];
+          if (token != null && token is String) {
+            await prefs.setString('x-auth-token', token);
+          } else {
+            showSnackBar(context, 'Login failed: No token received.');
+            return;
+          }
+
           // print(userData); //Debugging Purposes
 
           //Set User Provider
@@ -191,12 +203,24 @@ class AuthService {
               ),
               (route) => false,
             );
+          } else if (userData['roleId'] == Role.superadmin) {
+            navigator.pushAndRemoveUntil(
+              toLeftTransition(
+                const SuperadminBottomNav(initialIndex: 0),
+              ),
+              (route) => false,
+            );
           }
 
           // print(userData['roleId']); //Debugging Purposes
         },
       );
     } catch (e) {
+      //Debug
+      print(e);
+      //Print more details
+      // ignore: use_build_context_synchronously
+      print(e.toString());
       showSnackBar(context, e.toString());
     }
   }
@@ -268,40 +292,61 @@ class AuthService {
     await prefs.setString('x-auth-token', '');
     // ref.read(userProvider.notifier).logout(); // Reset user state in Riverpod
 
-    //Navigate to Lecturer Page if user is lecturer
-    if (roleId == Role.lecturer) {
-      navigator.pushAndRemoveUntil(
-        toLeftTransition(
-          const LecturerGreetsPage(),
-        ),
-        (route) => false,
-      );
+    // Show Flushbar and navigate after it is dismissed
+    Flushbar(
+      message: "Successfully signed out",
+      duration: const Duration(seconds: 3),
+      flushbarPosition: FlushbarPosition.TOP,
+      borderRadius: BorderRadius.circular(8),
+      margin: const EdgeInsets.all(8),
+      backgroundColor: Colors.green,
+      icon: const Icon(
+        Icons.check_circle,
+        color: Colors.white,
+      ),
+    ).show(context).then((_) {
+      //Navigate to Lecturer Page if user is lecturer
+      if (roleId == Role.lecturer) {
+        navigator.pushAndRemoveUntil(
+          toLeftTransition(
+            const LecturerGreetsPage(),
+          ),
+          (route) => false,
+        );
 
-      //Navigate to Student Page if user is student
-    } else if (roleId == Role.student) {
-      navigator.pushAndRemoveUntil(
-        toLeftTransition(
-          const StudentGreetsPage(),
-        ),
-        (route) => false,
-      );
+        //Navigate to Student Page if user is student
+      } else if (roleId == Role.student) {
+        navigator.pushAndRemoveUntil(
+          toLeftTransition(
+            const StudentGreetsPage(),
+          ),
+          (route) => false,
+        );
 
-      //Navigate to Admin Page if user is admin
-    } else if (roleId == Role.staff) {
-      navigator.pushAndRemoveUntil(
-        toLeftTransition(
-          const AdminGreetsPage(),
-        ),
-        (route) => false,
-      );
-    } else if (roleId == Role.academicStaff) {
-      navigator.pushAndRemoveUntil(
-        toLeftTransition(
-          const AcademicAdminGreetsPage(),
-        ),
-        (route) => false,
-      );
-    }
+        //Navigate to Admin Page if user is admin
+      } else if (roleId == Role.staff) {
+        navigator.pushAndRemoveUntil(
+          toLeftTransition(
+            const AdminGreetsPage(),
+          ),
+          (route) => false,
+        );
+      } else if (roleId == Role.academicStaff) {
+        navigator.pushAndRemoveUntil(
+          toLeftTransition(
+            const AcademicAdminGreetsPage(),
+          ),
+          (route) => false,
+        );
+      } else if (roleId == Role.superadmin) {
+        navigator.pushAndRemoveUntil(
+          toLeftTransition(
+            SuperAdminSignin(),
+          ),
+          (route) => false,
+        );
+      }
+    });
   }
 
   Future<void> requestPasswordReset({
@@ -400,7 +445,7 @@ class AuthService {
       );
 
       if (res.statusCode == 200) {
-        if(userId == Role.lecturer){
+        if (userId == Role.lecturer) {
           //Redirect to lecturer profile page
           navigator.pushAndRemoveUntil(
             toLeftTransition(
@@ -408,7 +453,7 @@ class AuthService {
             ),
             (route) => false,
           );
-        } else if(userId == Role.student){
+        } else if (userId == Role.student) {
           //Redirect to student profile page
           navigator.pushAndRemoveUntil(
             toLeftTransition(
@@ -416,7 +461,7 @@ class AuthService {
             ),
             (route) => false,
           );
-        } else if(userId == Role.staff){
+        } else if (userId == Role.staff) {
           //Redirect to admin profile page
           navigator.pushAndRemoveUntil(
             toLeftTransition(
@@ -424,7 +469,7 @@ class AuthService {
             ),
             (route) => false,
           );
-        } else if(userId == Role.academicStaff){
+        } else if (userId == Role.academicStaff) {
           //Redirect to academic admin profile page
           navigator.pushAndRemoveUntil(
             toLeftTransition(

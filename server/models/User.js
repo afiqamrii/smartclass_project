@@ -38,6 +38,11 @@ const User = sequelize.define("User", {
     defaultValue: false, // Default: not verified
     allowNull: false,
   },
+  is_approved: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false, // Default: not approved
+    allowNull: false,
+  },
   externalId: {
     type: DataTypes.STRING(45),
     allowNull: true,

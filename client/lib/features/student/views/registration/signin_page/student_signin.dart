@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:smartclass_fyp_2024/features/onboarding/login_as.dart';
 import 'package:smartclass_fyp_2024/shared/components/login_textfield.dart';
 import 'package:smartclass_fyp_2024/shared/components/custom_buttom.dart';
 import 'package:smartclass_fyp_2024/shared/components/password_textfield.dart';
@@ -59,7 +60,7 @@ class _StudentLoginPageState extends ConsumerState<StudentLoginPage> {
           ref: ref,
           userEmail: emailController.text,
           userPassword: passwordController.text,
-          roleId: Role.student, 
+          roleId: Role.student,
         ),
         timeoutFuture,
       ]);
@@ -225,6 +226,36 @@ class _StudentLoginPageState extends ConsumerState<StudentLoginPage> {
                       onTap: () {
                         signUserIn(context, ref);
                       },
+                    ),
+                    const SizedBox(height: 40),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "Back to select role?",
+                          style: TextStyle(
+                            color: Colors.grey[600],
+                            fontFamily: 'Figtree',
+                          ),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              toLeftTransition(
+                                const LoginAsPage(),
+                              ),
+                            );
+                          },
+                          child: const Text(
+                            "Click Here",
+                            style: TextStyle(
+                              color: Colors.purple,
+                              fontSize: 13,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),

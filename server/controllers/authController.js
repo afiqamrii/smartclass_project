@@ -86,7 +86,7 @@ exports.signIn = async (req, res) => {
 
     } catch (err) {
         // Check if the error is user-related
-        const userErrors = ["Invalid Email or Password!","Please Enter Valid Email!","Email is not verified yet! Check your email to verify your account."];
+        const userErrors = ["Invalid Email or Password!","Please Enter Valid Email!","Email is not verified yet! Check your email to verify your account.","Your account is not approved by admin yet! Please wait for approval.","Your account has been disabled by admin! Please try again later."];
         
         // Handle different types of errors
         //User error - 400

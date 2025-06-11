@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:open_file/open_file.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:smartclass_fyp_2024/features/lecturer/manage_attendance/providers/attendance_providers.dart';
+import 'package:smartclass_fyp_2024/features/lecturer/manage_attendance/services/attendance_services.dart';
 
 class LecturerViewAttendance extends ConsumerStatefulWidget {
   final int classId;
@@ -43,7 +46,7 @@ class _LecturerViewAttendanceState
     final attendanceAsync = ref.watch(attendanceProvider(widget.classId));
 
     return Scaffold(
-      appBar: _appBar(context),
+      appBar: _appBar(context, widget.classId),
       backgroundColor: Colors.white,
       body: SmartRefresher(
         controller: _refreshController,
@@ -225,7 +228,7 @@ class _LecturerViewAttendanceState
   }
 }
 
-AppBar _appBar(BuildContext context) {
+AppBar _appBar(BuildContext context, int classId) {
   return AppBar(
     backgroundColor: Colors.white,
     elevation: 0,
@@ -246,7 +249,43 @@ AppBar _appBar(BuildContext context) {
       ),
       onPressed: () => Navigator.pop(context),
     ),
+    actions: [
+      Padding(
+        padding: const EdgeInsets.only(right: 20.0),
+        //Button to download report
+        child: GestureDetector(
+          onTap: () => downloadReport(context, classId),
+          child: SvgPicture.asset(
+            "assets/icons/download.svg",
+            height: 15,
+            // color: Colors.black,
+          ),
+        ),
+      ),
+    ],
   );
+}
+
+//Download report in PDF format function
+void downloadReport(BuildContext context, int classId) async {
+  final filePath = await AttendanceService().downloadAttendanceReport(classId);
+  if (filePath != null) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: const Text('File downloaded'),
+        action: SnackBarAction(
+          label: 'Open',
+          onPressed: () {
+            OpenFile.open(filePath);
+          },
+        ),
+      ),
+    );
+  } else {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Failed to download file')),
+    );
+  }
 }
 
 class _SearchBarDelegate extends SliverPersistentHeaderDelegate {

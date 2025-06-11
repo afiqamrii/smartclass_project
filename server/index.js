@@ -62,6 +62,9 @@ app.use("/mqtt", sendCommandToMQTT);
 app.use("/notification", notificationRoutes);
 app.use("/utility" , utilityRoutes);
 
+// Super Admin Route
+app.use("/superadmin", require("./routes/superAdminRoutes"));
+
 // ✅ Start WebSocket logic from socket.js
 const setupSocket = require('./socket');
 setupSocket(io);

@@ -81,6 +81,7 @@ exports.signUp = async ({userName , userEmail , name , userPassword , confirmPas
             userPassword: hashedPassword, 
             roleId,
             verified: false,
+            is_approved: "Pending",
             externalId: externalId
         });
 
@@ -204,7 +205,7 @@ exports.verifyEmail = async (userId, uniqueString) => {
       await User.update({ verified: true }, { where: { userId: userId } });
       await UserVerification.destroy({ where: { userId } });
   
-      return { error: false, message: "Email has been successfully verified!" };
+      return { error: false, message: "Email has been successfully verified! Now wait for admin approval. We will notify you once approved" };
     } catch (err) {
       console.log(err);
       return { error: true, message: "Error occurred during verification." };
@@ -234,6 +235,17 @@ exports.signIn = async (userEmail , userPassword) => {
         throw new Error("Email is not verified yet! Check your email to verify your account.");
     }
 
+    //Check if user is approved by admin or not
+    if (user.is_approved == "Pending") {
+        throw new Error("Your account is not approved by admin yet! Please wait for approval.");
+    }
+
+    //Check if user account is disabled or not
+    if (user.is_approved == "Disabled") {
+        throw new Error("Your account has been disabled by admin! Please try again later.");
+    }
+
+
     //Check if password is correct
     const isMatch = await bcrypt.compare(userPassword , user.userPassword);
 
@@ -247,11 +259,21 @@ exports.signIn = async (userEmail , userPassword) => {
 
     //Token generation and storing it in DB
     const token = jwt.sign(
-        { id: user.userId }, 
+    {
+        id: user.userId,
+        role: user.roleId === 5 ? "superadmin" : "user" 
+    },
         "passwordKey",
-        { expiresIn: "24h" } // Token expires in 1 day
-    
+        { expiresIn: "24h" }
     );
+
+    console.log("user.roleId:", user.roleId);  // Check if it is 5
+    console.log("role:", user.roleId === 5 ? "superadmin" : "user");  // Expected: "superadmin"
+
+    const decoded = jwt.decode(token);
+    console.log("Decoded token:", decoded);  // It MUST include "role": "superadmin"
+
+
     
     console.log("Returning:", { ...user.get({ plain: true }) , token });
 12

@@ -1,25 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:smartclass_fyp_2024/features/onboarding/login_as.dart';
+import 'package:smartclass_fyp_2024/features/super_admin/views/super_admin_resetpass.dart';
 import 'package:smartclass_fyp_2024/shared/components/login_textfield.dart';
 import 'package:smartclass_fyp_2024/shared/components/custom_buttom.dart';
 import 'package:smartclass_fyp_2024/shared/components/password_textfield.dart';
 import 'package:smartclass_fyp_2024/shared/data/dataprovider/user_provider.dart';
-import 'package:smartclass_fyp_2024/features/lecturer/views/registration/signin_page/resetPassword_page.dart';
 import 'package:smartclass_fyp_2024/shared/data/models/role.dart';
 import 'package:smartclass_fyp_2024/shared/widgets/appbar.dart';
 import 'package:smartclass_fyp_2024/shared/widgets/pageTransition.dart';
 
 import '../../../../shared/data/services/auth_services.dart';
 
-class AcademicAdminSignin extends ConsumerStatefulWidget {
-  AcademicAdminSignin({super.key});
+class SuperAdminSignin extends ConsumerStatefulWidget {
+  SuperAdminSignin({super.key});
 
   @override
-  _AcademicAdminSigninState createState() => _AcademicAdminSigninState();
+  _SuperAdminSigninState createState() => _SuperAdminSigninState();
 }
 
-class _AcademicAdminSigninState extends ConsumerState<AcademicAdminSignin> {
+class _SuperAdminSigninState extends ConsumerState<SuperAdminSignin> {
   //Import AuthServices
   final authService = AuthService();
 
@@ -60,7 +60,7 @@ class _AcademicAdminSigninState extends ConsumerState<AcademicAdminSignin> {
           ref: ref,
           userEmail: emailController.text,
           userPassword: passwordController.text,
-          roleId: Role.academicStaff, // Set roleId to 4 (Academic Staff)
+          roleId: Role.superadmin, // Set roleId superadmin
         ),
         timeoutFuture,
       ]);
@@ -112,9 +112,9 @@ class _AcademicAdminSigninState extends ConsumerState<AcademicAdminSignin> {
                     ),
                     const SizedBox(height: 20),
                     const Text(
-                      'Log In As Academic Admin',
+                      'Log In As Super Admin',
                       style: TextStyle(
-                        fontSize: 22,
+                        fontSize: 25,
                         fontFamily: 'FigtreeExtraBold',
                         fontWeight: FontWeight.bold,
                       ),
@@ -196,7 +196,7 @@ class _AcademicAdminSigninState extends ConsumerState<AcademicAdminSignin> {
                         Navigator.push(
                           context,
                           toLeftTransition(
-                            ResetPasswordPage(),
+                            SuperAdminResetpass(),
                           ),
                         );
                       },

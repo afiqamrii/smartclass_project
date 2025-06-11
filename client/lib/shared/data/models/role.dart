@@ -3,4 +3,5 @@ class Role {
   static const lecturer = 2;
   static const staff = 3;
   static const academicStaff = 4;
+  static const superadmin = 5;
 }

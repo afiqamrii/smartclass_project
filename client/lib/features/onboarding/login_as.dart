@@ -4,7 +4,9 @@ import 'package:smartclass_fyp_2024/features/academic_admin/registration/signup_
 import 'package:smartclass_fyp_2024/features/admin/registeration/signup_page/admin_greets_page.dart';
 import 'package:smartclass_fyp_2024/features/lecturer/views/registration/signup_page/lecturer_greets_page.dart';
 import 'package:smartclass_fyp_2024/features/student/views/registration/signin_page/student_greets_page.dart';
+import 'package:smartclass_fyp_2024/features/super_admin/views/super_admin_signin.dart';
 import 'package:smartclass_fyp_2024/shared/widgets/appbar.dart';
+import 'package:smartclass_fyp_2024/shared/widgets/pageTransition.dart';
 
 class LoginAsPage extends StatelessWidget {
   const LoginAsPage({super.key});
@@ -73,6 +75,42 @@ class LoginAsPage extends StatelessWidget {
                     ),
                   ],
                 ),
+              ),
+            ),
+            // const SizedBox(height: 10),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 10.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text(
+                    "Are you a Super Admin?",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontFamily: 'Figtree',
+                    ),
+                  ),
+                  // Spacer(),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        toLeftTransition(
+                          SuperAdminSignin(),
+                        ),
+                      );
+                    },
+                    child: const Text(
+                      "Click Here",
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontFamily: 'Figtree',
+                        color: Colors.blue,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           ],

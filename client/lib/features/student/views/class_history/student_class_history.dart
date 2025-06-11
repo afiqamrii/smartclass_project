@@ -69,6 +69,7 @@ class _StudentMyclassState extends ConsumerState<StudentMyclass> {
         automaticallyImplyLeading: false,
       ),
       body: SmartRefresher(
+        physics: const BouncingScrollPhysics(),
         controller: _refreshController,
         enablePullDown: true,
         header: const ClassicHeader(

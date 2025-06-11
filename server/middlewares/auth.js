@@ -12,6 +12,8 @@ const auth = async (req, res, next) => {
         //Verify token
         const verified = jwt.verify(token, "passwordKey");
 
+        console.log("Verified token:", verified);
+
         //Show error
         if(!verified){
             return res.status(401).json({message: "Token verification failed , authorization denied !"});
@@ -27,4 +29,5 @@ const auth = async (req, res, next) => {
         res.status(500).json({error : err.message}); 
     }
 }
+
 module.exports =  auth ;

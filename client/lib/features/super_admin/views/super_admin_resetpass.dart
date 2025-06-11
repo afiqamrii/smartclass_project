@@ -6,8 +6,8 @@ import 'package:smartclass_fyp_2024/shared/data/dataprovider/user_provider.dart'
 
 import '../../../../../shared/data/services/auth_services.dart';
 
-class ResetPasswordPage extends ConsumerWidget {
-  ResetPasswordPage({super.key});
+class SuperAdminResetpass extends ConsumerWidget {
+  SuperAdminResetpass({super.key});
 
   //Import AuthServices
   final authService = AuthService();

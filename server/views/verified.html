@@ -87,7 +87,7 @@
     <img src="/logo.png" alt="IntelliClass Logo" id="logo">
     <div id="statusIcon" class="icon">✔️</div>
     <h2 id="statusMessage">Email has been verified !</h2>
-    <p id="bottomMessage">You can now log in</p>
+    <p id="bottomMessage">You will be notified when your account is approved</p>
   </div>
 
   <footer>© 2025 IntelliClass</footer>
@@ -103,6 +103,7 @@
       document.getElementById('statusMessage').textContent = message || 'Verification failed';
       document.getElementById('bottomMessage').textContent = 'Your Email Has Been verified Or No Record Found , Please Sign Up Again.';
     } else if (message) {
+      // Display success message
       document.getElementById('statusMessage').textContent = message;
     }
   </script>

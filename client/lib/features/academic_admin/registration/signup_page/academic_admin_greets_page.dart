@@ -99,44 +99,44 @@ class AcademicAdminGreetsPage extends StatelessWidget {
                   SizedBox(
                     height: MediaQuery.of(context).size.height * 0.05,
                   ),
-                  if (!Navigator.canPop(context))
-                    //Back to choose role button
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Text(
-                          "Choose another role?",
+                  // if (!Navigator.canPop(context))              
+                  //Back to choose role button
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text(
+                        "Choose another role?",
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: Colors.black54,
+                          fontFamily: 'Figtree',
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                      const SizedBox(
+                        width: 5,
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            toRightTransition(
+                              const LoginAsPage(), //Direct to choose role page
+                            ),
+                          );
+                        },
+                        child: const Text(
+                          "Click here",
                           style: TextStyle(
                             fontSize: 13,
-                            color: Colors.black54,
+                            color: Color.fromARGB(255, 192, 28, 113),
                             fontFamily: 'Figtree',
                             fontWeight: FontWeight.w800,
                           ),
                         ),
-                        const SizedBox(
-                          width: 5,
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              toRightTransition(
-                                const LoginAsPage(), //Direct to choose role page
-                              ),
-                            );
-                          },
-                          child: const Text(
-                            "Click here",
-                            style: TextStyle(
-                              fontSize: 13,
-                              color: Color.fromARGB(255, 192, 28, 113),
-                              fontFamily: 'Figtree',
-                              fontWeight: FontWeight.w800,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
+                      ),
+                    ],
+                  ),
                 ],
               ),
             ),
