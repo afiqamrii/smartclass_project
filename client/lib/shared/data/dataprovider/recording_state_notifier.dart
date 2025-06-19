@@ -43,6 +43,27 @@ class RecordingState {
 class RecordingStateNotifier extends StateNotifier<Map<int, RecordingState>> {
   RecordingStateNotifier() : super({}); // Initialize with empty state.
 
+  void initialize(int classId) {
+    if (!state.containsKey(classId)) {
+      state = {
+        ...state,
+        classId: RecordingState(
+          isRecording: false,
+          micIcon:
+              const Icon(Icons.mic_off_rounded, color: Colors.white, size: 20),
+          recordingText: const Text(
+            "Not recorded yet",
+            style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87),
+          ),
+          micColor: const Color.fromARGB(255, 255, 61, 61),
+        ),
+      };
+    }
+  }
+
   /// This function toggles recording ON or OFF for a specific class.
   /// If recording is ON, it will stop recording and update UI.
   /// If recording is OFF, it will start recording and update UI.
@@ -67,7 +88,10 @@ class RecordingStateNotifier extends StateNotifier<Map<int, RecordingState>> {
           micColor: const Color.fromARGB(255, 255, 61, 61),
         );
 
+    print('>>> Current state for class $classId: ${currentState.isRecording}');
+
     if (currentState.isRecording) {
+      print('>>> Sending STOP for class $classId');
       // If recording is currently ON, send "stop" command to Favoriot API.
       await FavoriotApi.publishData("stop", classId);
 
@@ -93,6 +117,7 @@ class RecordingStateNotifier extends StateNotifier<Map<int, RecordingState>> {
         ),
       };
     } else {
+      print('>>> Sending START for class $classId');
       // If recording is currently OFF, send "start" command to Favoriot API.
       await FavoriotApi.publishData("start", classId);
 

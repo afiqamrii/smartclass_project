@@ -158,12 +158,12 @@ class _AdminHomepageState extends ConsumerState<AdminHomepage> {
               ),
             ),
           ),
-          featureCard(
-            context: context,
-            imagePath: 'assets/icons/remote.png',
-            title: 'Smart Lighting',
-            color: Colors.green,
-          ),
+          // featureCard(
+          //   context: context,
+          //   imagePath: 'assets/icons/remote.png',
+          //   title: 'Smart Lighting',
+          //   color: Colors.green,
+          // ),
         ],
       ),
     );

@@ -77,6 +77,17 @@ dependencies:
   file_picker:
   excel: ^4.0.6
   open_file: ^3.5.10
+
+  # google_mlkit_face_detection: ^0.13.1
+  image: ^4.0.17
+  # google_mlkit_image_labeling: 
+  # google_mlkit_object_detection:
+  # google_ml_kit: ^0.20.0
+  google_mlkit_face_detection: ^0.11.0
+  google_mlkit_commons: ^0.8.0
+
+  camera: ^0.10.5+9
+  location: 
   
   
 

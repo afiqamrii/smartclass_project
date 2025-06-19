@@ -29,6 +29,8 @@ class LecturerViewClass extends ConsumerStatefulWidget {
 class _LecturerViewClassState extends ConsumerState<LecturerViewClass> {
   // ignore: unused_field
   bool _isRefreshing = false;
+  Map<int, bool> _pendingToggle = {};
+  bool hasAutoStopped = false;
 
   Future<void> _handleRefresh(WidgetRef ref) async {
     setState(() {
@@ -42,6 +44,76 @@ class _LecturerViewClassState extends ConsumerState<LecturerViewClass> {
     setState(() {
       _isRefreshing = false;
     });
+  }
+
+  bool isPastClassEndDateTime(String classDate, String endTime) {
+    try {
+      debugPrint("Raw endTime: $endTime");
+
+      // Normalize all whitespace and remove weird chars
+      endTime = endTime
+          .replaceAll(RegExp(r'\u202F|\u00A0|\s+'),
+              ' ') // non-breaking and multiple spaces
+          .replaceAll('\u200E', '') // left-to-right mark
+          .trim();
+
+      debugPrint("Cleaned endTime: $endTime");
+
+      // Parse date
+      final classDateObj = DateFormat('dd MMMM yyyy').parse(classDate);
+
+      // Parse time
+      final parsedTime = DateFormat('h:mm a').parse(endTime);
+
+      // Combine date + time
+      final classEndDateTime = DateTime(
+        classDateObj.year,
+        classDateObj.month,
+        classDateObj.day,
+        parsedTime.hour,
+        parsedTime.minute,
+      );
+
+      debugPrint("Parsed class end datetime: $classEndDateTime");
+      debugPrint("Current time: ${DateTime.now()}");
+
+      return DateTime.now().isAfter(classEndDateTime);
+    } catch (e) {
+      debugPrint('Error parsing classDate or endTime: $e');
+      return false;
+    }
+  }
+
+  bool isToggleAllowed(String date, String startTime, String endTime) {
+    final now = DateTime.now();
+
+    // Clean strings to remove invisible or extra characters
+    date = date.trim();
+    startTime = startTime
+        .replaceAll(RegExp(r'\s+'), ' ')
+        .replaceAll('\u202f', ' ')
+        .trim();
+    endTime = endTime
+        .replaceAll(RegExp(r'\s+'), ' ')
+        .replaceAll('\u202f', ' ')
+        .trim();
+
+    try {
+      final classDate = DateFormat("dd MMMM yyyy").parse(date);
+      final parsedStartTime = DateFormat("h:mm a").parse(startTime);
+      final parsedEndTime = DateFormat("h:mm a").parse(endTime);
+
+      final fullStart = DateTime(classDate.year, classDate.month, classDate.day,
+          parsedStartTime.hour, parsedStartTime.minute);
+      final fullEnd = DateTime(classDate.year, classDate.month, classDate.day,
+              parsedEndTime.hour, parsedEndTime.minute)
+          .add(const Duration(minutes: 10)); // Add 10 mins grace
+
+      return now.isAfter(fullStart) && now.isBefore(fullEnd);
+    } catch (e) {
+      // print("Date/time parsing error: $e");
+      return false;
+    }
   }
 
   bool shouldShowAttendance(String classDate) {
@@ -60,26 +132,33 @@ class _LecturerViewClassState extends ConsumerState<LecturerViewClass> {
   }
 
   @override
+  void initState() {
+    super.initState();
+
+    Future.microtask(() {
+      final classId = widget.classItem.classId;
+      final classEnd = isPastClassEndDateTime(
+          widget.classItem.date, widget.classItem.endTime);
+      final current = ref.read(recordingStateProvider)[classId];
+
+      if (current == null) {
+        ref.read(recordingStateProvider.notifier).initialize(classId);
+      } else if (classEnd && current.isRecording) {
+        // Only stop if it was still recording
+        ref.read(recordingStateProvider.notifier).toggleRecording(classId);
+      }
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
+    //Recoridng state
     final recordingState =
-        ref.watch(recordingStateProvider)[widget.classItem.classId] ??
-            RecordingState(
-              isRecording: false,
-              micIcon: const Icon(
-                Icons.mic_off_rounded,
-                color: Colors.white,
-                size: 20,
-              ),
-              recordingText: const Text(
-                "Not recorded yet",
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
-                ),
-              ),
-              micColor: const Color.fromARGB(255, 255, 61, 61),
-            );
+        ref.watch(recordingStateProvider)[widget.classItem.classId];
+
+    if (recordingState == null) {
+      return const Center(child: CircularProgressIndicator());
+    }
 
     // ignore: unused_local_variable
     final userData = ref.watch(userProvider);
@@ -415,7 +494,27 @@ class _LecturerViewClassState extends ConsumerState<LecturerViewClass> {
   }
 
   Column _recordingSection(
-      RecordingState recordingState, ClassCreateModel classItem) {
+    RecordingState recordingState,
+    ClassCreateModel classItem,
+  ) {
+    final toggleAllowed =
+        isToggleAllowed(classItem.date, classItem.startTime, classItem.endTime);
+
+    final isRecording = recordingState.isRecording;
+
+    // // ✅ Automatically stop recording if class has ended
+    // if (!toggleAllowed && isRecording && !hasAutoStopped) {
+    //   WidgetsBinding.instance.addPostFrameCallback((_) {
+    //     ref
+    //         .read(recordingStateProvider.notifier)
+    //         .toggleRecording(classItem.classId);
+    //     hasAutoStopped = true;
+    //   });
+    // }
+
+    // print("Toggling recording for class ${classItem.classId}");
+    // print("Toggle triggered: ${!recordingState.isRecording}");
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -428,6 +527,14 @@ class _LecturerViewClassState extends ConsumerState<LecturerViewClass> {
           ),
         ),
         const SizedBox(height: 5),
+        if (!toggleAllowed)
+          const Padding(
+            padding: EdgeInsets.only(top: 8.0, bottom: 5),
+            child: Text(
+              "Recording can only be started during class time.",
+              style: TextStyle(fontSize: 12, color: Colors.redAccent),
+            ),
+          ),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -447,14 +554,23 @@ class _LecturerViewClassState extends ConsumerState<LecturerViewClass> {
             ),
             Transform.scale(
               scale: 0.75,
-              child: Switch(
-                value: recordingState.isRecording,
-                activeColor: Colors.green,
-                onChanged: (bool value) async {
-                  await ref
-                      .read(recordingStateProvider.notifier)
-                      .toggleRecording(classItem.classId);
-                },
+              child: Opacity(
+                opacity: toggleAllowed ? 1.0 : 0.5,
+                child: IgnorePointer(
+                  ignoring: !toggleAllowed,
+                  child: Switch(
+                    value: isRecording,
+                    activeColor: Colors.green.shade400,
+                    inactiveThumbColor: Colors.grey,
+                    inactiveTrackColor: Colors.grey[300],
+                    activeTrackColor: Colors.green.shade200,
+                    onChanged: (_) async {
+                      await ref
+                          .read(recordingStateProvider.notifier)
+                          .toggleRecording(classItem.classId);
+                    },
+                  ),
+                ),
               ),
             ),
           ],

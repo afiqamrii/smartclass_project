@@ -51,6 +51,24 @@ const UtilityModel = {
             console.error("Error updating data:", err.message);
             throw new Error("Error in Model: Failed to update utility status");
         }
+    },
+
+    // Delete utility by ID
+    async deleteUtility(utilityId) {
+        if (!utilityId) {
+            throw new Error("Utility ID is required to delete utility");
+        }
+        try {
+            const query = `DELETE FROM Utility WHERE utilityId = ?`;
+            const [result] = await pool.query(query, [utilityId]);
+            if (result.affectedRows === 0) {
+                throw new Error("No rows affected, utility not deleted");
+            }
+            return result; // Return the result of the delete operation
+        } catch (err) {
+            console.error("Error deleting data:", err.message);
+            throw new Error("Error in Model: Failed to delete utility");
+        }
     }
 };
 

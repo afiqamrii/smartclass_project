@@ -9,6 +9,7 @@ import 'package:skeletonizer/skeletonizer.dart';
 import 'package:smartclass_fyp_2024/constants/color_constants.dart';
 import 'package:smartclass_fyp_2024/features/lecturer/manage_attendance/widgets/lecturer_class_now_card.dart';
 import 'package:smartclass_fyp_2024/features/lecturer/views/course_enrollment/views/lecturer_select_course.dart';
+import 'package:smartclass_fyp_2024/features/lecturer/views/manage_class/models/create_class_model.dart';
 import 'package:smartclass_fyp_2024/features/student/models/todayClass_card_models.dart';
 import 'package:smartclass_fyp_2024/features/student/views/report_utility/views/student_view_reports_history.dart';
 import 'package:smartclass_fyp_2024/features/student/views/widgets/student_todayclass_card.dart';
@@ -206,7 +207,8 @@ class _LectHomepageState extends ConsumerState<LectHomepage> {
                                 const SizedBox(height: 20),
                                 _cardSection(context, user),
                                 const SizedBox(height: 10),
-                                _nowClassSection(currentClassData, user, limit),
+                                _nowClassSection(
+                                    context, currentClassData, user, limit),
                                 _todayClass(context),
                                 const SizedBox(height: 0),
                                 _classListCard(context, classData, user),
@@ -740,8 +742,11 @@ Widget _cardSection(BuildContext context, User user) {
   );
 }
 
-Widget _nowClassSection(AsyncValue<List<TodayclassCardModels>> currentClassData,
-    User user, int limit) {
+Widget _nowClassSection(
+    BuildContext context,
+    AsyncValue<List<TodayclassCardModels>> currentClassData,
+    User user,
+    int limit) {
   return Padding(
     padding: const EdgeInsets.only(top: 5.0),
     child: Column(
@@ -770,19 +775,40 @@ Widget _nowClassSection(AsyncValue<List<TodayclassCardModels>> currentClassData,
                 message: "No Class Today. YAY!",
               );
             } else {
+              final classData = ClassCreateModel(
+                classId: data[0].classId,
+                courseName: data[0].courseName,
+                courseCode: data[0].courseCode,
+                location: data[0].location,
+                startTime: data[0].startTime,
+                endTime: data[0].endTime,
+                date: data[0].date,
+                lecturerId: user.externalId,
+                imageUrl: data[0].imageUrl,
+              );
               return Column(
                 children: List.generate(
                   data.length > limit ? limit : data.length,
-                  (index) => LecturerClassNowCard(
-                    classId: data[index].classId,
-                    userId: user.externalId,
-                    className: data[index].courseName,
-                    lecturerName: data[index].lecturerName,
-                    courseCode: data[index].courseCode,
-                    classLocation: data[index].location,
-                    timeStart: data[index].startTime,
-                    timeEnd: data[index].endTime,
-                    imageUrl: data[index].imageUrl,
+                  (index) => GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        toLeftTransition(
+                          LecturerViewClass(classItem: classData),
+                        ),
+                      );
+                    },
+                    child: LecturerClassNowCard(
+                      classId: data[index].classId,
+                      userId: user.externalId,
+                      className: data[index].courseName,
+                      lecturerName: data[index].lecturerName,
+                      courseCode: data[index].courseCode,
+                      classLocation: data[index].location,
+                      timeStart: data[index].startTime,
+                      timeEnd: data[index].endTime,
+                      imageUrl: data[index].imageUrl,
+                    ),
                   ),
                 ),
               );

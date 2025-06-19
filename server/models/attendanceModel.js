@@ -81,16 +81,20 @@ const AttendanceModel = {
                 c.date AS classDate,
                 c.timeStart AS classStartTime,
                 c.timeEnd AS classEndTime,
-                c.classLocation AS classLocation
+                cl.classroomname AS classLocation
 
                 FROM Attendance a
                 JOIN User u ON a.studentId = u.externalId 
                 JOIN ClassSession c ON a.classId = c.classId
                 JOIN User us ON c.lecturerId = us.externalId
                 JOIN Course co ON c.courseId = co.courseId
+                JOIN Classroom cl ON c.classroomId = cl.classroomId
                 WHERE a.classId = ?
             `;
             const [rows] = await pool.query(query, [classId]);
+
+            //Debug print to check the received message
+            // console.log("Received message:", rows);
 
             // Check if any records were found
             if (rows.length === 0) {
@@ -118,6 +122,55 @@ const AttendanceModel = {
             return rows;
         } catch (error) {
             const genericError = new Error("Error in model while adding student attendance: " + error.message);
+            genericError.status = 500;
+            throw genericError;
+        }
+    },
+
+    //Save student faces
+    async registerStudentFaces(studentId , encoding) {
+        try {
+            const query = `
+                INSERT INTO FaceEncodings (studentId , face_vector)
+                VALUES (?, ?)
+            `;
+            const [rows] = await pool.query(query, [studentId, encoding]);
+
+            
+            return rows;
+        } catch (error) {
+
+            //If duplicate entry, return error message to the controller
+            if (error.code === 'ER_DUP_ENTRY' ) {
+                const duplicateEntryError = new Error("You have already registered the face. Only one face is allowed.");
+                duplicateEntryError.status = 409; // Conflict
+                throw duplicateEntryError;
+            }
+
+            const genericError = new Error(error.message);
+            genericError.status = 500;
+            throw genericError;
+        }
+    },
+
+    //Get student faces
+    async getStudentFaceEncoding(studentId) {
+        try {
+            const query = `
+                SELECT face_vector
+                FROM FaceEncodings
+                WHERE studentId = ?
+            `;
+            const [rows] = await pool.query(query, [studentId]);
+
+            if (rows.length === 0) {
+                const noDataError = new Error("You have not registered any face. Please register a face.");
+                noDataError.status = 404; // Not Found
+                throw noDataError;
+            }
+            return rows;
+        } catch (error) {
+            const genericError = new Error(error.message);
             genericError.status = 500;
             throw genericError;
         }

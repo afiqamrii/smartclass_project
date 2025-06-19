@@ -6,6 +6,9 @@ const router = express.Router();
 router.post("/addUtility", utilityController.addUtility); //Add a Utility
 router.get("/getUtility/:classroomId", utilityController.getAllUtilities); //Get all Utility
 
+//Delete utility
+router.delete("/deleteUtility/:utilityId", utilityController.deleteUtility);
+
 //Route to update utility status
 router.put("/updateUtilityStatus/:utilityId", utilityController.updateUtilityStatus); //Update utility status
 

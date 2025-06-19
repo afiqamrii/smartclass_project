@@ -31,8 +31,19 @@ const updateUtilityStatus = async (utilityId, utilityStatus) => {
     }
 };
 
+//Function to delete utility by ID
+const deleteUtility = async (utilityId) => {
+    try {
+        const deletedUtility = await UtilityModel.deleteUtility(utilityId);
+        return deletedUtility;
+    } catch (error) {
+        throw new Error("Error in service while deleting utility: " + error.message);
+    }
+};
+
 module.exports = {
     addUtility,
     getAllUtilities,
     updateUtilityStatus,
+    deleteUtility
 };

@@ -1,3 +1,4 @@
+
 const pool = require("../config/database").pool;
 const path = require('path');
 
@@ -36,6 +37,7 @@ const reportModel = {
                 FROM UtilityIssue ui
                 JOIN User u ON ui.userId = u.externalId
                 JOIN Classroom c ON ui.classroomId = c.classroomId
+                ORDER BY ui.timestamp DESC
             `;
             const [rows] = await pool.query(query);
             return rows;
@@ -62,10 +64,15 @@ const reportModel = {
                     ui.timestamp
                 FROM UtilityIssue ui
                 JOIN User u ON ui.userId = u.externalId
-                JOIN Classroom c ON ui.classroomId = c.classroomId
+                JOIN Classroom c ON ui.classroomId = c.
+                ORDER BY ui.timestamp DESC
                 WHERE ui.issueId = ?
+                
             `;
             const [rows] = await pool.query(query, [reportId]);
+
+            //Debug code: 
+            console.log("[DEBUG] Rows:", rows);
             return rows[0]; // Return the first report found
         } catch (error) {
             console.error("Error retrieving report by ID:", error.message);
@@ -124,6 +131,8 @@ const reportModel = {
                 JOIN User u ON ui.userId = u.externalId
                 JOIN Classroom c ON ui.classroomId = c.classroomId
                 WHERE ui.userId = ?
+                ORDER BY ui.timestamp DESC
+                
             `;
             const [rows] = await pool.query(query, [userId]);
             return rows;

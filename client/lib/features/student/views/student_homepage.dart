@@ -10,6 +10,7 @@ import 'package:smartclass_fyp_2024/constants/color_constants.dart';
 import 'package:smartclass_fyp_2024/features/student/manage_class/views/student_view_class_details.dart';
 import 'package:smartclass_fyp_2024/features/student/models/todayClass_card_models.dart';
 import 'package:smartclass_fyp_2024/features/student/providers/student_class_provider.dart';
+import 'package:smartclass_fyp_2024/features/student/testImageRecog.dart';
 import 'package:smartclass_fyp_2024/features/student/views/enroll_course/views/student_view_enrolled.dart';
 import 'package:smartclass_fyp_2024/features/student/views/report_utility/views/student_view_reports_history.dart';
 import 'package:smartclass_fyp_2024/features/student/views/template/student_bottom_navbar.dart';
@@ -764,6 +765,62 @@ class _StudentHomePageState extends ConsumerState<StudentHomePage> {
                     const Expanded(
                       child: Text(
                         'Report Utility Problem',
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontFamily: 'FigtreeRegular',
+                          fontWeight: FontWeight.w600,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+
+        //Test card
+        Expanded(
+          child: GestureDetector(
+            onTap: () => {
+              // Handle tap on the card here
+              Navigator.of(context).push(
+                toLeftTransition(
+                  const FaceScannerPage(),
+                ),
+              ),
+            },
+            child: Container(
+              height: 65,
+              decoration: BoxDecoration(
+                color: const Color.fromARGB(255, 250, 250, 250),
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.2),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Row(
+                  children: [
+                    Center(
+                      child: Image.asset(
+                        "assets/icons/reportIcon.png",
+                        width: 22,
+                        height: 22,
+                        fit: BoxFit.contain,
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    const Expanded(
+                      child: Text(
+                        'Test Image Recognition',
                         style: TextStyle(
                           fontSize: 11,
                           fontFamily: 'FigtreeRegular',

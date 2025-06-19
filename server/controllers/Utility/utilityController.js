@@ -142,8 +142,21 @@ const updateUtilityStatus = async (req, res) => {
     }
 };
 
+//Function to delete utility by ID
+const deleteUtility = async (req, res) => {
+    const utilityId = req.params.utilityId;
+    try {
+        // Call service to delete utility
+        const deletedUtility = await UtilityService.deleteUtility(utilityId);
+        res.status(200).json({ message: 'Utility deleted successfully', deletedUtility });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
 module.exports = {
     addUtility,
     getAllUtilities,
     updateUtilityStatus,
+    deleteUtility,
 };

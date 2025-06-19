@@ -1,5 +1,9 @@
 const attendanceModel = require("../models/attendanceModel");
 const enrollmentService = require("../services/enrollmentService");
+const { execFile } = require('child_process');
+const fs = require('fs');
+const path = require('path');
+const { spawn } = require('child_process');
 
 // Function to add a class
 const addAttendance = async (attendanceData) => {
@@ -63,4 +67,70 @@ const addStudentAttendance = async (classId, courseId) => {
     }
 }
 
-module.exports = { addAttendance , checkAttendance , generateAttendanceReport , addStudentAttendance };
+//Register student faces
+const registerStudentFaces = async (studentId, imagePath) => {
+    try {
+        // Wrap execFile in a Promise for better error handling
+        const encoding = await new Promise((resolve, reject) => {
+            execFile('python', ['face_recognition_module/register_face_encodings.py', imagePath], (err, stdout, stderr) => {
+                // Always delete the file after processing
+                fs.unlink(imagePath, () => {});
+                if (err || stdout.includes('ERROR')) {
+                    return reject(new Error('Face encoding failed.'));
+                }
+                resolve(stdout.trim());
+            });
+        });
+
+        // Save encoding in DB
+        const result = await attendanceModel.registerStudentFaces(studentId, encoding);
+        return { success: true, result };
+    } catch (error) {
+        error.status = error.status || 500;
+        throw error;
+    }
+};
+
+
+// Verify student faces
+const verifyStudentFaces = async (studentId, imagePath, classId) => {
+    try {
+        console.log("[DEBUG] Verifying face for student:", studentId);
+        console.log("[DEBUG] Uploaded imagePath:", imagePath);
+
+        // Get student face encoding from DB
+        const studentFaceEncoding = await attendanceModel.getStudentFaceEncoding(studentId);
+        const faceVector = studentFaceEncoding[0].face_vector;
+
+        console.log("[DEBUG] Face vector from DB:", faceVector);
+
+        // Call Python script with correct argument order: encoding, then image path
+        const result = await new Promise((resolve, reject) => {
+            execFile(
+                'python',
+                ['face_recognition_module/verify_face.py', faceVector, imagePath],
+                (err, stdout, stderr) => {
+                    fs.unlink(imagePath, () => {}); // delete image after processing
+
+                    console.log("[Python stdout]:", stdout);
+                    if (stderr) console.error("[Python stderr]:", stderr);
+                    if (err) console.error("[execFile error]:", err);
+
+                    if (err || stdout.includes("ERROR") || stdout.includes("not_match")) {
+                        return reject(new Error('Face verification failed. Please try again.'));
+                    }
+
+                    resolve(stdout.trim());
+                }
+            );
+        });
+
+        console.log("[DEBUG] Final result from Python:", result);
+        return { success: true, result };
+    } catch (error) {
+        error.status = error.status || 500;
+        throw error;
+    }
+};
+
+module.exports = { addAttendance , checkAttendance , generateAttendanceReport , addStudentAttendance , registerStudentFaces , verifyStudentFaces };

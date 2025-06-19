@@ -119,7 +119,6 @@ class UtilityService {
   //Update utility status by ID
   static Future<void> updateUtilityStatus(
       int utilityId, String newStatus, int classroomId, String deviceId) async {
-    
     //First send the new status to the backend
     final response = await http.put(
       Uri.parse(
@@ -148,6 +147,63 @@ class UtilityService {
           'UtilityService: Updated utility ID $utilityId to status $newStatus');
     } else {
       throw Exception('Failed to update utility status');
+    }
+  }
+
+  // Delete utility by ID
+  static Future<void> deleteUtility(BuildContext context, int utilityId) async {
+    try {
+      final response = await http.delete(
+        Uri.parse('${ApiConstants.baseUrl}/utility/deleteUtility/$utilityId'),
+      );
+
+      if (response.statusCode == 200) {
+        print('UtilityService: Utility Deleted successfully');
+        // Show a success message, then pop after it is dismissed
+        await Flushbar(
+          message: 'Utility deleted successfully!',
+          backgroundColor: Colors.green.shade600,
+          duration: const Duration(seconds: 3),
+          margin: const EdgeInsets.all(8),
+          borderRadius: BorderRadius.circular(8),
+          flushbarPosition: FlushbarPosition.TOP,
+          icon: const Icon(
+            Icons.check, // Use check icon for success
+            color: Colors.white,
+          ),
+        ).show(context);
+
+        // Now pop after Flushbar is dismissed
+        // ignore: use_build_context_synchronously
+        // Navigator.pop(context, true);
+      } else {
+        final errorMsg = jsonDecode(response.body)['error'];
+        Flushbar(
+          message: errorMsg,
+          backgroundColor: Colors.red.shade600,
+          duration: const Duration(seconds: 3),
+          margin: const EdgeInsets.all(8),
+          borderRadius: BorderRadius.circular(8),
+          flushbarPosition: FlushbarPosition.TOP,
+          icon: const Icon(
+            Icons.error,
+            color: Colors.white,
+          ),
+        ).show(context);
+      }
+    } catch (e) {
+      Flushbar(
+        message: 'Failed to delete utility',
+        backgroundColor: Colors.red.shade600,
+        duration: const Duration(seconds: 3),
+        margin: const EdgeInsets.all(8),
+        borderRadius: BorderRadius.circular(8),
+        flushbarPosition: FlushbarPosition.TOP,
+        icon: const Icon(
+          Icons.error,
+          color: Colors.white,
+        ),
+      ).show(context);
     }
   }
 }

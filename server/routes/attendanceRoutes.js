@@ -1,7 +1,15 @@
 const express = require("express");
 const attendanceController = require("../controllers/attendanceController");
+const multer = require('multer');
+const upload = multer({ dest: 'uploads/' });
 
 const router = express.Router();
+
+//Routes to register student faces
+router.post('/register/:studentId', upload.single('image'), attendanceController.registerStudentFaces);
+
+//Routes for 2 Face Verification
+router.post('/verify/face/:studentId/:classId', upload.single('image'), attendanceController.verifyStudentFaces);
 
 //Routes
 //Add attendance route
@@ -22,10 +30,10 @@ router.get("/checkattendance/:classId/:studentId", attendanceController.checkAtt
 // //Delete attendance
 // router.delete("/deleteattendance/:id", attendanceController.deleteAttendance);
 
-//Route to generate attendance report
+//Route to generate attend
+//Route to generate attendance report in PDF formatance report
 router.get("/generateattendancereport/:classId", attendanceController.generateAttendanceReport);
 
-//Route to generate attendance report in PDF format
 router.get('/attendance/report/:classId/pdf', attendanceController.generateAttendanceReportPDF);
 
 //Export module router

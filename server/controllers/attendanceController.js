@@ -179,4 +179,47 @@ exports.generateAttendanceReportPDF = async (req, res) => {
     }
 };
 
+//Register student faces
+exports.registerStudentFaces = async (req, res) => {
+    try {
+        if (!req.params.studentId) {
+            return res.status(400).json({ message: "Student ID is required" });
+        }
+        if (!req.file) {
+            return res.status(400).json({ message: "Image is required" });
+        }
+
+        const studentId = req.params.studentId;
+        const result = await attendanceService.registerStudentFaces(studentId, req.file.path);
+
+        res.status(200).json(result);
+    } catch (error) {
+        console.error(error);
+        res.status(error.status || 500).json({ message: error.message || "Internal Server Error" });
+    }
+};
+
+//Verify student faces
+exports.verifyStudentFaces = async (req, res) => {
+    try {
+        if (!req.params.studentId) {
+            return res.status(400).json({ message: "Student ID is required" });
+        }
+        if (!req.file) {
+            return res.status(400).json({ message: "Image is required" });
+        }
+
+        const studentId = req.params.studentId;
+        const classId = req.params.classId;
+
+        //Call service
+        const result = await attendanceService.verifyStudentFaces(studentId, req.file.path, classId);
+
+        res.status(200).json(result);
+    } catch (error) {
+        console.error(error);
+        res.status(error.status || 500).json({ message: error.message || "Internal Server Error" });
+    }
+};
+
 

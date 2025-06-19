@@ -1,4 +1,5 @@
 import 'package:skeletonizer/skeletonizer.dart';
+import 'package:smartclass_fyp_2024/features/admin/control_utility/services/utility_service.dart';
 import 'package:smartclass_fyp_2024/features/admin/control_utility/views/admin_add_utility.dart';
 import 'package:smartclass_fyp_2024/shared/widgets/pageTransition.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
@@ -30,6 +31,8 @@ class AdminControlUtilities extends ConsumerStatefulWidget {
 class _AdminControlUtilitiesState extends ConsumerState<AdminControlUtilities> {
   late IO.Socket socket;
   int totalUtilities = 0;
+  bool isDeleting = false;
+  Set<int> selectedUtilityIds = {};
 
   @override
   void initState() {
@@ -144,20 +147,50 @@ class _AdminControlUtilitiesState extends ConsumerState<AdminControlUtilities> {
                 spacing: 2.0,
                 runSpacing: 8.0,
                 children: [
-                  ...utilities.map(
-                    (utility) {
-                      return ControlUtilityCard(
-                        title: utility.utilityName,
-                        subtitle: utility.utilityType,
-                        imagePath: utility.utilityType,
-                        initialStatus:
-                            utility.utilityStatus == 'ON' ? true : false,
-                        utilityId: utility.utilityId,
-                        classroomId: widget.classroomId,
-                        deviceId: utility.deviceId,
-                      );
-                    },
-                  ),
+                  ...utilities.map((utility) {
+                    final isSelected =
+                        selectedUtilityIds.contains(utility.utilityId);
+                    return GestureDetector(
+                      onTap: () {
+                        if (isDeleting) {
+                          setState(() {
+                            if (isSelected) {
+                              selectedUtilityIds.remove(utility.utilityId);
+                            } else {
+                              selectedUtilityIds.add(utility.utilityId);
+                            }
+                          });
+                        }
+                      },
+                      child: Stack(
+                        alignment: Alignment.topRight,
+                        children: [
+                          Opacity(
+                            opacity: isDeleting && !isSelected ? 0.5 : 1,
+                            child: ControlUtilityCard(
+                              title: utility.utilityName,
+                              subtitle: utility.utilityType,
+                              imagePath: utility.utilityType,
+                              initialStatus: utility.utilityStatus == 'ON',
+                              utilityId: utility.utilityId,
+                              classroomId: widget.classroomId,
+                              deviceId: utility.deviceId,
+                            ),
+                          ),
+                          if (isDeleting)
+                            Padding(
+                              padding: const EdgeInsets.all(20.0),
+                              child: Icon(
+                                isSelected
+                                    ? Icons.check_circle
+                                    : Icons.radio_button_unchecked,
+                                color: isSelected ? Colors.green : Colors.grey,
+                              ),
+                            ),
+                        ],
+                      ),
+                    );
+                  }),
                   if (utilities.length < 4)
                     utilities.length < 4
                         ? _addUtilitySection(context)
@@ -216,28 +249,95 @@ class _AdminControlUtilitiesState extends ConsumerState<AdminControlUtilities> {
       ),
     );
   }
-}
 
-AppBar _appBar(BuildContext context) {
-  return AppBar(
-    backgroundColor: Colors.white,
-    elevation: 0,
-    title: const Text(
-      "Control Utilities",
-      style: TextStyle(
-        fontSize: 15,
-        color: Colors.black,
-        fontWeight: FontWeight.w600,
+  AppBar _appBar(BuildContext context) {
+    return AppBar(
+      backgroundColor: Colors.white,
+      elevation: 0,
+      title: Text(
+        isDeleting ? "Select Devices to Delete" : "Control Utilities",
+        style: const TextStyle(
+          fontSize: 15,
+          color: Colors.black,
+          fontWeight: FontWeight.w600,
+        ),
       ),
-    ),
-    centerTitle: true,
-    leading: IconButton(
-      icon: const Icon(
-        Icons.arrow_back_ios,
-        size: 20,
-        color: Colors.black,
+      centerTitle: true,
+      leading: IconButton(
+        icon: const Icon(
+          Icons.arrow_back_ios,
+          size: 20,
+          color: Colors.black,
+        ),
+        onPressed: () {
+          if (isDeleting) {
+            setState(() {
+              isDeleting = false;
+              selectedUtilityIds.clear();
+            });
+          } else {
+            Navigator.pop(context);
+          }
+        },
       ),
-      onPressed: () => Navigator.pop(context),
-    ),
-  );
+      actions: [
+        if (isDeleting && selectedUtilityIds.isNotEmpty)
+          IconButton(
+            icon: const Icon(
+              Icons.delete_forever_outlined,
+              color: Colors.red,
+            ),
+            onPressed: () async {
+              final confirm = await showDialog<bool>(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: const Text("Confirm Deletion"),
+                  content: const Text(
+                    "Are you sure you want to delete selected devices?",
+                  ),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context, false),
+                      child: const Text("Cancel"),
+                    ),
+                    TextButton(
+                      onPressed: () => Navigator.pop(context, true),
+                      child: const Text("Delete"),
+                    ),
+                  ],
+                ),
+              );
+
+              if (confirm == true) {
+                for (final id in selectedUtilityIds) {
+                  await UtilityService.deleteUtility(context, id);
+                }
+
+                // Refresh UI
+                setState(() {
+                  isDeleting = false;
+                  selectedUtilityIds.clear();
+                });
+                ref
+                    .read(utilityProvider.notifier)
+                    .loadUtilities(widget.classroomId);
+              }
+            },
+          ),
+        IconButton(
+          icon: Icon(
+            isDeleting ? Icons.cancel : Icons.delete_forever_outlined,
+            size: 20,
+            color: Colors.black,
+          ),
+          onPressed: () {
+            setState(() {
+              isDeleting = !isDeleting;
+              selectedUtilityIds.clear();
+            });
+          },
+        ),
+      ],
+    );
+  }
 }
