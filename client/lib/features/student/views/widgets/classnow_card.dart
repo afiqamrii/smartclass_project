@@ -1,6 +1,10 @@
+import 'dart:isolate';
+
 import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:smartclass_fyp_2024/shared/WebSocket/provider/socket_provider.dart';
+import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:async';
 
@@ -8,8 +12,10 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
 import 'package:smartclass_fyp_2024/features/student/providers/student_class_provider.dart';
+import 'package:smartclass_fyp_2024/features/student/testImageRecog.dart';
 import 'package:smartclass_fyp_2024/nfc/start_clock_in_nfc.dart';
 import 'package:smartclass_fyp_2024/shared/data/dataprovider/user_provider.dart';
+import 'package:smartclass_fyp_2024/shared/widgets/pageTransition.dart';
 
 class ClassNowCard extends ConsumerStatefulWidget {
   //Class Card variable neededdd
@@ -49,12 +55,19 @@ class _ClassNowCardState extends ConsumerState<ClassNowCard> {
   String currentAnimation = 'assets/animations/nfc.json';
   bool isAlreadyClockIn = false;
   bool isTimeout = false;
+  late IO.Socket socket;
+
+  //Get nfcclockin.isClockIn bool value
+  final ValueNotifier<bool> isClockIn = NfcClockInService.isClockingIn;
 
   @override
   void initState() {
     super.initState();
 
-    // ⬇️ Initialize NFC
+    // Initialize Socket
+    Future.microtask(() => _setupSocket());
+
+    // Initialize NFC
     NfcClockInService.initNfc();
 
     //Check if nfc is enabled or not
@@ -111,9 +124,38 @@ class _ClassNowCardState extends ConsumerState<ClassNowCard> {
     });
   }
 
+  void _setupSocket() {
+    final user = ref.read(userProvider);
+    final socketService = ref.read(socketServiceProvider.notifier);
+    socketService.init(user.externalId);
+
+    socket = ref.read(socketServiceProvider)!;
+
+    // Remove any old listeners
+    socket.off('pending_face_verification'); // Clean up first
+
+    // Listen for
+
+    socket.on('pending_face_verification', (data) {
+      if (!mounted) return;
+      // Handle the pending face verification event
+      //Redirect to face verification page
+      Navigator.push(
+        context,
+        toLeftTransition(
+          FaceScannerPage(
+            studentId: widget.userId,
+            classId: widget.classId,
+          ),
+        ),
+      );
+    });
+  }
+
   @override
   void dispose() {
     timer?.cancel();
+    socket.off('pending_face_verification');
     super.dispose();
   }
 
@@ -148,42 +190,62 @@ class _ClassNowCardState extends ConsumerState<ClassNowCard> {
     // ignore: unused_local_variable
     final user = ref.watch(userProvider);
 
-    ref.listen(
-      checkAttendanceProvider((widget.classId, widget.userId)),
-      (previous, next) {
-        next.whenData((attendanceList) {
-          final status = attendanceList.first.attendanceStatus;
-          if (status == "Present" &&
-              currentAnimation != 'assets/animations/animation_success.json') {
-            setState(() {
-              currentAnimation = 'assets/animations/animation_success.json';
-              isAlreadyClockIn = true;
-            });
+    // ref.listen(
+    //   checkAttendanceProvider((widget.classId, widget.userId)),
+    //   (previous, next) {
+    //     next.whenData((attendanceList) {
+    //       final status = attendanceList.first.attendanceStatus;
+    //       if (status == "Pending Face Verifications") {
+    //         Navigator.push(
+    //           context,
+    //           toLeftTransition(
+    //             FaceScannerPage(
+    //               studentId: widget.userId,
+    //               classId: widget.classId,
+    //             ),
+    //           ),
+    //         );
+    //       }
+    //     });
+    //   },
+    // );
 
-            Flushbar(
-              message:
-                  'Congrats ${user.userName}! Your attendance recorded successfully!',
-              duration: const Duration(seconds: 10),
-              backgroundColor: Colors.green.shade600,
-              margin: const EdgeInsets.all(8),
-              borderRadius: BorderRadius.circular(8),
-              flushbarPosition: FlushbarPosition.TOP,
-              icon: const Icon(
-                Icons.check_circle,
-                color: Colors.white,
-              ),
-            ).show(context);
+    // ref.listen(
+    //   checkAttendanceProvider((widget.classId, widget.userId)),
+    //   (previous, next) {
+    //     next.whenData((attendanceList) {
+    //       final status = attendanceList.first.attendanceStatus;
+    //       if (status == "Present" &&
+    //           currentAnimation != 'assets/animations/animation_success.json') {
+    //         setState(() {
+    //           currentAnimation = 'assets/animations/animation_success.json';
+    //           isAlreadyClockIn = true;
+    //         });
 
-            // ✅ Close bottom sheet after short delay (e.g., 2 seconds)
-            Future.delayed(const Duration(seconds: 2), () {
-              if (Navigator.of(context).canPop()) {
-                Navigator.of(context).pop();
-              }
-            });
-          }
-        });
-      },
-    );
+    //         Flushbar(
+    //           message:
+    //               'Congrats ${user.userName}! Your attendance recorded successfully!',
+    //           duration: const Duration(seconds: 10),
+    //           backgroundColor: Colors.green.shade600,
+    //           margin: const EdgeInsets.all(8),
+    //           borderRadius: BorderRadius.circular(8),
+    //           flushbarPosition: FlushbarPosition.TOP,
+    //           icon: const Icon(
+    //             Icons.check_circle,
+    //             color: Colors.white,
+    //           ),
+    //         ).show(context);
+
+    //         // Close bottom sheet after short delay (e.g., 2 seconds)
+    //         Future.delayed(const Duration(seconds: 2), () {
+    //           if (Navigator.of(context).canPop()) {
+    //             Navigator.of(context).pop();
+    //           }
+    //         });
+    //       }
+    //     });
+    //   },
+    // );
 
     // ignore: unused_local_variable
     final checkAttendance =
@@ -414,9 +476,9 @@ class _ClassNowCardState extends ConsumerState<ClassNowCard> {
                                 // or use an actual classId if available
                               );
                               // Start a timer to close the modal after 1 minutes
-                              Timer(const Duration(minutes: 1), () {
+                              Timer(const Duration(minutes: 5), () {
                                 NfcClockInService
-                                    .stopClockIn(); // ⛔ Stop NFC on timeout
+                                    .stopClockIn(); //  Stop NFC on timeout
                                 if (Navigator.of(modalContext).canPop()) {
                                   Navigator.of(modalContext).pop();
                                 }
@@ -467,46 +529,87 @@ class _ClassNowCardState extends ConsumerState<ClassNowCard> {
                                             ),
                                           ),
                                         ),
-                                        Lottie.asset(
-                                          currentAnimation,
-                                          frameRate: FrameRate.max,
-                                          width: 190,
-                                          fit: BoxFit.cover,
-                                          repeat: currentAnimation !=
-                                              'assets/animations/success_tick.json',
+                                        ValueListenableBuilder<bool>(
+                                          valueListenable:
+                                              NfcClockInService.isClockingIn,
+                                          builder: (context, isSending, child) {
+                                            return Lottie.asset(
+                                              isSending
+                                                  ? 'assets/animations/attendanceLoading.json'
+                                                  : currentAnimation,
+                                              width: 190,
+                                              fit: BoxFit.cover,
+                                            );
+                                          },
                                         ),
-                                        if (isAlreadyClockIn == false)
-                                          ElevatedButton(
-                                            onPressed: () {
-                                              NfcClockInService
-                                                  .stopClockIn(); // ⛔ Stop NFC on cancel
-                                              Navigator.pop(modalContext);
+                                        if (!isAlreadyClockIn)
+                                          ValueListenableBuilder(
+                                            valueListenable:
+                                                NfcClockInService.isClockingIn,
+                                            builder:
+                                                (context, isSending, child) {
+                                              return Text(
+                                                isSending
+                                                    ? "Waiting Server to responds..."
+                                                    : "",
+                                                style: const TextStyle(
+                                                  fontSize: 15,
+                                                  fontFamily: 'Figtree',
+                                                  color: Colors.black54,
+                                                ),
+                                              );
                                             },
-                                            style: ElevatedButton.styleFrom(
-                                              backgroundColor: Colors.white,
-                                              foregroundColor: Colors.black,
-                                              elevation: 2,
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(10),
-                                              ),
-                                              padding: EdgeInsets.symmetric(
-                                                vertical: 12,
-                                                horizontal:
-                                                    MediaQuery.of(context)
-                                                            .size
-                                                            .width *
-                                                        0.30,
-                                              ),
-                                            ),
-                                            child: isAlreadyClockIn
-                                                ? null
-                                                : Text(
-                                                    "Cancel",
-                                                    style: TextStyle(
-                                                        color:
-                                                            Colors.grey[500]),
-                                                  ),
+                                          ),
+                                        if (!isAlreadyClockIn)
+                                          ValueListenableBuilder<bool>(
+                                            valueListenable:
+                                                NfcClockInService.isClockingIn,
+                                            builder:
+                                                (context, isSending, child) {
+                                              // Show the cancel button only when NOT clocking in
+                                              return isSending
+                                                  ? const SizedBox.shrink()
+                                                  : ElevatedButton(
+                                                      onPressed: () {
+                                                        NfcClockInService
+                                                            .stopClockIn();
+                                                        Navigator.pop(
+                                                          modalContext,
+                                                        );
+                                                      },
+                                                      style: ElevatedButton
+                                                          .styleFrom(
+                                                        backgroundColor:
+                                                            Colors.white,
+                                                        foregroundColor:
+                                                            Colors.black,
+                                                        elevation: 2,
+                                                        shape:
+                                                            RoundedRectangleBorder(
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(10),
+                                                        ),
+                                                        padding: EdgeInsets
+                                                            .symmetric(
+                                                          vertical: 12,
+                                                          horizontal:
+                                                              MediaQuery.of(
+                                                                          context)
+                                                                      .size
+                                                                      .width *
+                                                                  0.30,
+                                                        ),
+                                                      ),
+                                                      child: Text(
+                                                        "Cancel",
+                                                        style: TextStyle(
+                                                          color:
+                                                              Colors.grey[500],
+                                                        ),
+                                                      ),
+                                                    );
+                                            },
                                           ),
                                       ],
                                     ),

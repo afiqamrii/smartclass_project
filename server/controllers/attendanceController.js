@@ -29,6 +29,32 @@ exports.addAttendance = async (req, res) => {
         console.log("Received add attendance request:", addAttendance);
 
         const result = await attendanceService.addAttendance(addAttendance);
+
+        const studentId = addAttendance.studentId;
+        const classId = addAttendance.classId;
+
+        //Debug
+        // console.log("Class ID:", classId);
+        // console.log("Student ID:", studentId);
+
+        //If attendance is succesfully added and its "Face Verification Pending", trigger user to face verification in socket
+        const socketId = global.connectedUsers?.[studentId];
+        if (socketId) {
+
+            //Debug
+            // console.log("Socket ID:", socketId);
+            // Emit the 'pending_face_verification' event
+            global._io.to(socketId).emit('pending_face_verification', {
+            classId,
+            studentId,
+            message: 'Face Verification Pending',
+            });
+        }
+
+        //Debug whether the socket is connected or not
+        // console.log("Socket ID:", socketId);
+
+
         res.status(200).json({ Status_Code: 200, message: "Class Add Attendance successfully", classId: result.classId });
     } catch (error) {
         console.error("Controller Error:", error);

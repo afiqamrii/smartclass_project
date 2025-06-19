@@ -182,7 +182,7 @@ class RoleCard extends StatelessWidget {
             if (imageAsset != null)
               Image.asset(
                 imageAsset!,
-                height: 55,
+                height: 59,
                 width: 80,
                 fit: BoxFit.cover,
               ),

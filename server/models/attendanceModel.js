@@ -52,7 +52,7 @@ const AttendanceModel = {
     
             // Check if a result exists and map the status
             if (rows.length > 0) {
-                if(rows[0].attendanceStatus === "Absent") return "Absent";
+                if(rows[0].attendanceStatus === "Pending Face Verification") return "Pending Face Verification";
                 if(rows[0].attendanceStatus === "Present") return "Present";
             }
     

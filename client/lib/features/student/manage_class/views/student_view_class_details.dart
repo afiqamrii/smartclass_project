@@ -43,19 +43,26 @@ class _StudentViewClassDetailsState
   }
 
   //Check if class is over or not
-  bool isClassOver(String classStartTime, String classEndTime) {
+  bool isClassOngoing(
+      String classDate, String classStartTime, String classEndTime) {
     final now = DateTime.now();
 
-    DateTime parseTime(String timeStr) {
-      final format = DateFormat.jm(); // handles '2:13 PM'
-      final time = format.parse(timeStr);
-      return DateTime(now.year, now.month, now.day, time.hour, time.minute);
-    }
+    // Parse date in format '16 June 2025'
+    final dateFormat = DateFormat('dd MMMM yyyy');
+    final date = dateFormat.parse(classDate);
 
-    final startTime = parseTime(classStartTime);
-    final endTime = parseTime(classEndTime);
+    // Parse time in format '2:13 PM'
+    final timeFormat = DateFormat.jm();
+    final startTime = timeFormat.parse(classStartTime);
+    final endTime = timeFormat.parse(classEndTime);
 
-    return now.isAfter(startTime) && now.isBefore(endTime);
+    // Combine date and time
+    final startDateTime = DateTime(
+        date.year, date.month, date.day, startTime.hour, startTime.minute);
+    final endDateTime =
+        DateTime(date.year, date.month, date.day, endTime.hour, endTime.minute);
+
+    return now.isAfter(startDateTime) && now.isBefore(endDateTime);
   }
 
   @override
@@ -64,11 +71,11 @@ class _StudentViewClassDetailsState
     _scrollController = ScrollController()
       ..addListener(
         () {
-          if (_scrollController.offset > 50 && !_isScrolled) {
+          if (_scrollController.offset > 300 && !_isScrolled) {
             setState(() {
               _isScrolled = true;
             });
-          } else if (_scrollController.offset <= 50 && _isScrolled) {
+          } else if (_scrollController.offset <= 250 && _isScrolled) {
             setState(() {
               _isScrolled = false;
             });
@@ -315,36 +322,7 @@ class _StudentViewClassDetailsState
                           const SizedBox(height: 10),
 
                           //Class status section
-                          if (!isClassOver(
-                              classItem.startTime, classItem.endTime))
-                            Row(
-                              children: [
-                                Text(
-                                  "Status : ",
-                                  style: TextStyle(
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w500,
-                                    color: Colors.grey.shade600,
-                                  ),
-                                ),
-                                Container(
-                                  padding: const EdgeInsets.all(7),
-                                  decoration: BoxDecoration(
-                                    color: Colors.green.shade100,
-                                    borderRadius: BorderRadius.circular(20),
-                                  ),
-                                  child: const Text(
-                                    "Completed",
-                                    style: TextStyle(
-                                      fontSize: 11,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-
-                          if (isClassOver(
+                          if (isClassOngoing(classItem.date,
                               classItem.startTime, classItem.endTime))
                             Row(
                               children: [
@@ -371,6 +349,33 @@ class _StudentViewClassDetailsState
                                   ),
                                 ),
                               ],
+                            )
+                          else
+                            Row(
+                              children: [
+                                Text(
+                                  "Status : ",
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w500,
+                                    color: Colors.grey.shade600,
+                                  ),
+                                ),
+                                Container(
+                                  padding: const EdgeInsets.all(7),
+                                  decoration: BoxDecoration(
+                                    color: Colors.green.shade100,
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  child: const Text(
+                                    "Completed",
+                                    style: TextStyle(
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           const SizedBox(height: 15),
                           // Summarization Section
@@ -389,15 +394,23 @@ class _StudentViewClassDetailsState
                                   width: double.infinity,
                                   height:
                                       MediaQuery.of(context).size.height * 0.5,
-                                  padding: const EdgeInsets.all(14),
+                                  padding: const EdgeInsets.all(20),
                                   decoration: BoxDecoration(
                                     color: Colors.grey.shade100,
                                     borderRadius: BorderRadius.circular(12),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.grey.withOpacity(0.5),
+                                        spreadRadius: 7,
+                                        blurRadius: 10,
+                                        offset: const Offset(0, 5),
+                                      ),
+                                    ],
                                   ),
                                   child: const Text(
-                                    "No summary available yet. Please check after the class has ended.",
+                                    "No summary available yet. Please check after the class has ended. Or wait for lecturer to approve.",
                                     style: TextStyle(
-                                      fontSize: 14,
+                                      fontSize: 13,
                                       color: Colors.black87,
                                     ),
                                   ),
@@ -421,9 +434,12 @@ class _StudentViewClassDetailsState
                                     children: [
                                       Padding(
                                         padding: const EdgeInsets.symmetric(
-                                            horizontal: 20.0, vertical: 15),
+                                          horizontal: 20.0,
+                                          vertical: 15,
+                                        ),
                                         child: _buildSummaryText(
-                                            summarizationData[0].summaryText),
+                                          summarizationData[0].summaryText,
+                                        ),
                                       ),
                                     ],
                                   ),

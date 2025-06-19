@@ -782,60 +782,60 @@ class _StudentHomePageState extends ConsumerState<StudentHomePage> {
         ),
 
         //Test card
-        Expanded(
-          child: GestureDetector(
-            onTap: () => {
-              // Handle tap on the card here
-              Navigator.of(context).push(
-                toLeftTransition(
-                  const FaceScannerPage(),
-                ),
-              ),
-            },
-            child: Container(
-              height: 65,
-              decoration: BoxDecoration(
-                color: const Color.fromARGB(255, 250, 250, 250),
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.2),
-                    blurRadius: 10,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
-              ),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Row(
-                  children: [
-                    Center(
-                      child: Image.asset(
-                        "assets/icons/reportIcon.png",
-                        width: 22,
-                        height: 22,
-                        fit: BoxFit.contain,
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    const Expanded(
-                      child: Text(
-                        'Test Image Recognition',
-                        style: TextStyle(
-                          fontSize: 11,
-                          fontFamily: 'FigtreeRegular',
-                          fontWeight: FontWeight.w600,
-                        ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ),
+        // Expanded(
+        //   child: GestureDetector(
+        //     onTap: () => {
+        //       // Handle tap on the card here
+        //       Navigator.of(context).push(
+        //         toLeftTransition(
+        //           const FaceScannerPage(),
+        //         ),
+        //       ),
+        //     },
+        //     child: Container(
+        //       height: 65,
+        //       decoration: BoxDecoration(
+        //         color: const Color.fromARGB(255, 250, 250, 250),
+        //         borderRadius: BorderRadius.circular(16),
+        //         boxShadow: [
+        //           BoxShadow(
+        //             color: Colors.black.withOpacity(0.2),
+        //             blurRadius: 10,
+        //             offset: const Offset(0, 4),
+        //           ),
+        //         ],
+        //       ),
+        //       child: Padding(
+        //         padding: const EdgeInsets.symmetric(horizontal: 20),
+        //         child: Row(
+        //           children: [
+        //             Center(
+        //               child: Image.asset(
+        //                 "assets/icons/reportIcon.png",
+        //                 width: 22,
+        //                 height: 22,
+        //                 fit: BoxFit.contain,
+        //               ),
+        //             ),
+        //             const SizedBox(width: 10),
+        //             const Expanded(
+        //               child: Text(
+        //                 'Test Image Recognition',
+        //                 style: TextStyle(
+        //                   fontSize: 11,
+        //                   fontFamily: 'FigtreeRegular',
+        //                   fontWeight: FontWeight.w600,
+        //                 ),
+        //                 maxLines: 2,
+        //                 overflow: TextOverflow.ellipsis,
+        //               ),
+        //             ),
+        //           ],
+        //         ),
+        //       ),
+        //     ),
+        //   ),
+        // ),
       ],
     );
   }

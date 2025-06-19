@@ -18,7 +18,14 @@ import 'package:google_mlkit_commons/google_mlkit_commons.dart';
 // And ensure you have configured platform-specific settings for camera usage.
 
 class FaceScannerPage extends StatefulWidget {
-  const FaceScannerPage({super.key});
+  final String studentId;
+  final int classId;
+
+  const FaceScannerPage({
+    super.key,
+    required this.studentId,
+    required this.classId,
+  });
 
   @override
   State<FaceScannerPage> createState() => _FaceScannerPageState();
@@ -30,7 +37,7 @@ class _FaceScannerPageState extends State<FaceScannerPage>
   CameraController? _cameraController;
   final FaceDetector _faceDetector = FaceDetector(
     options: FaceDetectorOptions(
-      performanceMode: FaceDetectorMode.fast, // Try fast mode for debug
+      performanceMode: FaceDetectorMode.fast,
       enableClassification: true,
     ),
   );

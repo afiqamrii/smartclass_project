@@ -27,10 +27,11 @@ class Classsessionapi {
   }
 
   //GET API to get upcoming classes
-  static Future<List<TodayclassCardModels>> getUpcomingClasses(String studentId) async {
+  static Future<List<TodayclassCardModels>> getUpcomingClasses(
+      String studentId) async {
     while (true) {
-      Response response = await get(
-          Uri.parse("${ApiConstants.baseUrl}/class/viewupcomingclass/$studentId"));
+      Response response = await get(Uri.parse(
+          "${ApiConstants.baseUrl}/class/viewupcomingclass/$studentId"));
       if (response.statusCode == 200) {
         final List result = jsonDecode(response.body)['Data'];
         return result.map(((e) => TodayclassCardModels.fromJson(e))).toList();
@@ -41,10 +42,11 @@ class Classsessionapi {
   }
 
   //GET API to get past classes
-  static Future<List<TodayclassCardModels>> getPastClasses(String studentId) async {
+  static Future<List<TodayclassCardModels>> getPastClasses(
+      String studentId) async {
     while (true) {
-      Response response =
-          await get(Uri.parse("${ApiConstants.baseUrl}/class/viewpastclass/$studentId"));
+      Response response = await get(
+          Uri.parse("${ApiConstants.baseUrl}/class/viewpastclass/$studentId"));
       if (response.statusCode == 200) {
         final List result = jsonDecode(response.body)['Data'];
         return result.map(((e) => TodayclassCardModels.fromJson(e))).toList();
@@ -55,23 +57,24 @@ class Classsessionapi {
   }
 
   //GET API for now class
-  static Future<List<TodayclassCardModels>> getNowClasses(String studentId) async {
-  Response response = await get(
-      Uri.parse("${ApiConstants.baseUrl}/class/viewcurrentclass/$studentId"));
-  if (response.statusCode == 200) {
-    final List result = jsonDecode(response.body)['Data'];
-    return result.map(((e) => TodayclassCardModels.fromJson(e))).toList();
-  } else {
-    throw Exception("Failed to load classes");
+  static Future<List<TodayclassCardModels>> getNowClasses(
+      String studentId) async {
+    Response response = await get(
+        Uri.parse("${ApiConstants.baseUrl}/class/viewcurrentclass/$studentId"));
+    if (response.statusCode == 200) {
+      final List result = jsonDecode(response.body)['Data'];
+      return result.map(((e) => TodayclassCardModels.fromJson(e))).toList();
+    } else {
+      throw Exception("Failed to load classes");
+    }
   }
-}
 
   //Check studeent attendance statu
   //GET API for now class
   static Stream<List<CheckAttendanceModel>> checkAttendance(
       int classId, String studentId) async* {
     while (true) {
-      await Future.delayed(const Duration(seconds: 5));
+      await Future.delayed(const Duration(seconds: 60));
       final response = await get(Uri.parse(
           "${ApiConstants.baseUrl}/clockInAttendance/checkattendance/$classId/$studentId"));
 

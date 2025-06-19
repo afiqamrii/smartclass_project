@@ -8,6 +8,7 @@ class NfcClockInService {
   static late bool _initialized;
   static late NfcState _nfcState;
   static final int port = 0;
+  static ValueNotifier<bool> isClockingIn = ValueNotifier(false);
 
   static Future<void> initNfc() async {
     _nfcState = await NfcHce.checkDeviceNfcState();
@@ -53,7 +54,10 @@ class NfcClockInService {
 
     NfcHce.stream.listen((command) {
       debugPrint('📡 NFC Command Received: ${command.data}');
-      // Optionally handle data here
+      isClockingIn.value = true;
+      Future.delayed(const Duration(minutes: 10), () {
+        isClockingIn.value = false;
+      });
     });
   }
 
