@@ -29,7 +29,7 @@ class LecturerViewClass extends ConsumerStatefulWidget {
 class _LecturerViewClassState extends ConsumerState<LecturerViewClass> {
   // ignore: unused_field
   bool _isRefreshing = false;
-  Map<int, bool> _pendingToggle = {};
+  // Map<int, bool> _pendingToggle = {};
   bool hasAutoStopped = false;
 
   Future<void> _handleRefresh(WidgetRef ref) async {

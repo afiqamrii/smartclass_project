@@ -7,22 +7,26 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:smartclass_fyp_2024/constants/color_constants.dart';
+import 'package:smartclass_fyp_2024/features/student/attendance/views/face_recognition_get_started.dart';
+import 'package:smartclass_fyp_2024/features/student/attendance/views/face_recognition_not_matched.dart';
+import 'package:smartclass_fyp_2024/features/student/attendance/views/face_recognition_successfull.dart';
 import 'package:smartclass_fyp_2024/features/student/manage_class/views/student_view_class_details.dart';
 import 'package:smartclass_fyp_2024/features/student/models/todayClass_card_models.dart';
 import 'package:smartclass_fyp_2024/features/student/providers/student_class_provider.dart';
-import 'package:smartclass_fyp_2024/features/student/testImageRecog.dart';
 import 'package:smartclass_fyp_2024/features/student/views/enroll_course/views/student_view_enrolled.dart';
 import 'package:smartclass_fyp_2024/features/student/views/report_utility/views/student_view_reports_history.dart';
 import 'package:smartclass_fyp_2024/features/student/views/template/student_bottom_navbar.dart';
 import 'package:smartclass_fyp_2024/features/student/views/widgets/classnow_card.dart';
 import 'package:smartclass_fyp_2024/features/student/views/widgets/student_todayclass_card.dart';
 import 'package:smartclass_fyp_2024/features/student/views/widgets/tabs_item.dart';
+import 'package:smartclass_fyp_2024/shared/WebSocket/provider/socket_provider.dart';
 import 'package:smartclass_fyp_2024/shared/components/unavailablePage.dart';
 import 'package:smartclass_fyp_2024/shared/data/dataprovider/user_provider.dart';
 import 'package:smartclass_fyp_2024/shared/data/models/user.dart';
 import 'package:smartclass_fyp_2024/shared/data/views/notification_icon.dart';
 import 'package:smartclass_fyp_2024/shared/widgets/loading.dart';
 import 'package:smartclass_fyp_2024/shared/widgets/pageTransition.dart';
+import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 class StudentHomePage extends ConsumerStatefulWidget {
   const StudentHomePage({super.key});
@@ -35,6 +39,9 @@ class _StudentHomePageState extends ConsumerState<StudentHomePage> {
   bool _isRefreshing = false; // Add loading state
   int limit = 3; // Set the limit for the number of items to display
   int _tabIndex = 0;
+  late IO.Socket socket;
+
+  bool isAlreadyClockIn = false;
 
   Timer? _nowClassRefreshTimer;
 
@@ -63,8 +70,7 @@ class _StudentHomePageState extends ConsumerState<StudentHomePage> {
     });
 
     await ref.read(userProvider.notifier).refreshUserData();
-    await ref
-        .refresh(nowClassProviders(ref.read(userProvider).externalId).future);
+    ref.refresh(nowClassProviders(ref.read(userProvider).externalId).future);
     // ignore: duplicate_ignore
     // ignore: unused_result
     ref.refresh(upcomingClassProviders(ref.read(userProvider).externalId));
@@ -788,7 +794,11 @@ class _StudentHomePageState extends ConsumerState<StudentHomePage> {
         //       // Handle tap on the card here
         //       Navigator.of(context).push(
         //         toLeftTransition(
-        //           const FaceScannerPage(),
+        //           // const FaceRecognitionGetStarted(
+        //           //   studentId: "S67158",
+        //           //   classId: 78,
+        //           // ),
+        //           const FaceRecognitionNotMatched(),
         //         ),
         //       ),
         //     },

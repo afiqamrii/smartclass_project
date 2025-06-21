@@ -65,6 +65,10 @@ exports.addAttendance = async (req, res) => {
 exports.checkAttendance = async (req, res) => {
     try {
         const checkAttendance = req.params;
+
+        //Debug
+        // console.log("Received check attendance request:", checkAttendance);
+
         const result = await attendanceService.checkAttendance(checkAttendance);
         res.status(200).json({ attendanceStatus : result.attendanceStatus });
     } catch (error) {

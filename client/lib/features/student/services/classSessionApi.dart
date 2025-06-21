@@ -74,7 +74,7 @@ class Classsessionapi {
   static Stream<List<CheckAttendanceModel>> checkAttendance(
       int classId, String studentId) async* {
     while (true) {
-      await Future.delayed(const Duration(seconds: 60));
+      // await Future.delayed(const Duration(seconds: 2));
       final response = await get(Uri.parse(
           "${ApiConstants.baseUrl}/clockInAttendance/checkattendance/$classId/$studentId"));
 

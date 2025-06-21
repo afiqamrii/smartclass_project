@@ -9,7 +9,6 @@ import 'package:skeletonizer/skeletonizer.dart';
 import 'package:smartclass_fyp_2024/constants/color_constants.dart';
 import 'package:smartclass_fyp_2024/features/lecturer/manage_attendance/widgets/lecturer_class_now_card.dart';
 import 'package:smartclass_fyp_2024/features/lecturer/views/course_enrollment/views/lecturer_select_course.dart';
-import 'package:smartclass_fyp_2024/features/lecturer/views/manage_class/models/create_class_model.dart';
 import 'package:smartclass_fyp_2024/features/student/models/todayClass_card_models.dart';
 import 'package:smartclass_fyp_2024/features/student/views/report_utility/views/student_view_reports_history.dart';
 import 'package:smartclass_fyp_2024/features/student/views/widgets/student_todayclass_card.dart';

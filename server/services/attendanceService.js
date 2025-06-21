@@ -109,15 +109,58 @@ const verifyStudentFaces = async (studentId, imagePath, classId) => {
             execFile(
                 'python',
                 ['face_recognition_module/verify_face.py', faceVector, imagePath],
-                (err, stdout, stderr) => {
+                async (err, stdout, stderr) => {
                     fs.unlink(imagePath, () => {}); // delete image after processing
 
                     console.log("[Python stdout]:", stdout);
                     if (stderr) console.error("[Python stderr]:", stderr);
                     if (err) console.error("[execFile error]:", err);
-
+                    
+                    //If not matched return error
                     if (err || stdout.includes("ERROR") || stdout.includes("not_match")) {
-                        return reject(new Error('Face verification failed. Please try again.'));
+                        return reject(new Error('Face not matched. Please try again.'));
+                    }
+
+                    //If matched add student attendance
+                    if (stdout.includes("match")) {
+
+                        console.log("[DEBUG] Face matched for student:", studentId);
+                        console.log("[DEBUG] Adding attendance for student:", studentId);
+
+                        // Get the current UTC time
+                        const currentDate = new Date();
+
+                        // Format the date directly in 'Asia/Kuala_Lumpur' time zone
+                        const timeStamp = currentDate.toLocaleString('en-US', {
+                            timeZone: 'Asia/Kuala_Lumpur', // This does the UTC+8 conversion
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric',
+                            hour: 'numeric',
+                            minute: '2-digit',
+                            second: '2-digit',
+                            hour12: true
+                        });
+
+                        const resultsAttendance = await attendanceModel.addAttendance(classId, studentId , "Present" , timeStamp);
+
+                        //If success add student attendance
+                        if(resultsAttendance.affectedRows > 0) {
+                            console.log("[DEBUG] Attendance added for student:", studentId);
+
+                            //Trigger socket
+                            const socketId = global.connectedUsers?.[studentId];
+                            if (socketId) {
+                                //Debug
+                                // console.log("Socket ID:", socketId);
+                                // Emit the 'pending_face_verification' event
+                                global._io.to(socketId).emit('attendance_verified', {
+                                classId,
+                                studentId,
+                                message: 'Face Verification Successful',
+                                });
+                            }
+                        }
                     }
 
                     resolve(stdout.trim());
@@ -125,7 +168,7 @@ const verifyStudentFaces = async (studentId, imagePath, classId) => {
             );
         });
 
-        console.log("[DEBUG] Final result from Python:", result);
+        // console.log("[DEBUG] Final result from Python:", result);
         return { success: true, result };
     } catch (error) {
         error.status = error.status || 500;

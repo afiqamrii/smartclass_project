@@ -55,7 +55,7 @@ class NfcClockInService {
     NfcHce.stream.listen((command) {
       debugPrint('📡 NFC Command Received: ${command.data}');
       isClockingIn.value = true;
-      Future.delayed(const Duration(minutes: 10), () {
+      Future.delayed(const Duration(seconds: 10), () {
         isClockingIn.value = false;
       });
     });

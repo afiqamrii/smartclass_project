@@ -1,8 +1,7 @@
-import 'dart:isolate';
-
-import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:smartclass_fyp_2024/features/student/attendance/provider/attendance_provider.dart';
+import 'package:smartclass_fyp_2024/features/student/attendance/views/face_recognition_get_started.dart';
 import 'package:smartclass_fyp_2024/shared/WebSocket/provider/socket_provider.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -12,7 +11,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
 import 'package:smartclass_fyp_2024/features/student/providers/student_class_provider.dart';
-import 'package:smartclass_fyp_2024/features/student/testImageRecog.dart';
 import 'package:smartclass_fyp_2024/nfc/start_clock_in_nfc.dart';
 import 'package:smartclass_fyp_2024/shared/data/dataprovider/user_provider.dart';
 import 'package:smartclass_fyp_2024/shared/widgets/pageTransition.dart';
@@ -53,7 +51,7 @@ class _ClassNowCardState extends ConsumerState<ClassNowCard> {
   Timer? timer;
   bool isLessThan10Minutes = false;
   String currentAnimation = 'assets/animations/nfc.json';
-  bool isAlreadyClockIn = false;
+  // bool isAlreadyClockIn = false;
   bool isTimeout = false;
   late IO.Socket socket;
 
@@ -143,12 +141,21 @@ class _ClassNowCardState extends ConsumerState<ClassNowCard> {
       Navigator.push(
         context,
         toLeftTransition(
-          FaceScannerPage(
+          FaceRecognitionGetStarted(
             studentId: widget.userId,
             classId: widget.classId,
           ),
         ),
       );
+    });
+
+    socket.on('attendance_verified', (data) {
+      if (!mounted) return;
+      // Handle if the attendance is verified
+      //Set isAlreadyClockIn to true
+      // Set provider value to true
+      ref.read(attendanceStatusProvider(widget.classId).notifier).state = true;
+      _handleRefresh(ref);
     });
   }
 
@@ -156,6 +163,8 @@ class _ClassNowCardState extends ConsumerState<ClassNowCard> {
   void dispose() {
     timer?.cancel();
     socket.off('pending_face_verification');
+    socket.off('attendance_verified');
+
     super.dispose();
   }
 
@@ -190,26 +199,20 @@ class _ClassNowCardState extends ConsumerState<ClassNowCard> {
     // ignore: unused_local_variable
     final user = ref.watch(userProvider);
 
-    // ref.listen(
-    //   checkAttendanceProvider((widget.classId, widget.userId)),
-    //   (previous, next) {
-    //     next.whenData((attendanceList) {
-    //       final status = attendanceList.first.attendanceStatus;
-    //       if (status == "Pending Face Verifications") {
-    //         Navigator.push(
-    //           context,
-    //           toLeftTransition(
-    //             FaceScannerPage(
-    //               studentId: widget.userId,
-    //               classId: widget.classId,
-    //             ),
-    //           ),
-    //         );
-    //       }
-    //     });
-    //   },
-    // );
+    // final isAlreadyClockIn =
+    //     ref.watch(attendanceStatusProvider(widget.classId));
 
+    // Get attendance status from backend
+    final checkAttendance =
+        ref.watch(checkAttendanceProvider((widget.classId, widget.userId)));
+
+    bool isAlreadyClockIn = false;
+    checkAttendance.whenData((attendanceList) {
+      if (attendanceList.isNotEmpty &&
+          attendanceList.first.attendanceStatus == "Present") {
+        isAlreadyClockIn = true;
+      }
+    });
     // ref.listen(
     //   checkAttendanceProvider((widget.classId, widget.userId)),
     //   (previous, next) {
@@ -248,8 +251,8 @@ class _ClassNowCardState extends ConsumerState<ClassNowCard> {
     // );
 
     // ignore: unused_local_variable
-    final checkAttendance =
-        ref.watch(checkAttendanceProvider((widget.classId, widget.userId)));
+    // final checkAttendance =
+    //     ref.watch(checkAttendanceProvider((widget.classId, widget.userId)));
 
     final countdownText =
         remaining.isNegative ? "Class Ended" : formatDuration(remaining);
@@ -465,9 +468,10 @@ class _ClassNowCardState extends ConsumerState<ClassNowCard> {
                                 top: Radius.circular(30),
                               ),
                             ),
+                            isDismissible: true,
                             context: context,
                             builder: (modalContext) {
-                              // 🔄 Start NFC Clock-In when modal shows
+                              // Start NFC Clock-In when modal shows
                               NfcClockInService.startClockIn(
                                 studentId: widget
                                     .userId, // you can replace this with a dynamic value
@@ -475,14 +479,14 @@ class _ClassNowCardState extends ConsumerState<ClassNowCard> {
                                 classId: widget.classId.toString(),
                                 // or use an actual classId if available
                               );
-                              // Start a timer to close the modal after 1 minutes
-                              Timer(const Duration(minutes: 5), () {
-                                NfcClockInService
-                                    .stopClockIn(); //  Stop NFC on timeout
-                                if (Navigator.of(modalContext).canPop()) {
-                                  Navigator.of(modalContext).pop();
-                                }
-                              });
+                              // // Start a timer to close the modal after 1 minutes
+                              // Timer(const Duration(minutes: 5), () {
+                              //   NfcClockInService
+                              //       .stopClockIn(); //  Stop NFC on timeout
+                              //   if (Navigator.of(modalContext).canPop()) {
+                              //     Navigator.of(modalContext).pop();
+                              //   }
+                              // });
 
                               return IntrinsicHeight(
                                 child: Container(
@@ -529,19 +533,27 @@ class _ClassNowCardState extends ConsumerState<ClassNowCard> {
                                             ),
                                           ),
                                         ),
-                                        ValueListenableBuilder<bool>(
-                                          valueListenable:
-                                              NfcClockInService.isClockingIn,
-                                          builder: (context, isSending, child) {
-                                            return Lottie.asset(
-                                              isSending
-                                                  ? 'assets/animations/attendanceLoading.json'
-                                                  : currentAnimation,
-                                              width: 190,
-                                              fit: BoxFit.cover,
-                                            );
-                                          },
-                                        ),
+                                        if (isAlreadyClockIn)
+                                          Lottie.asset(
+                                            'assets/animations/animation_success.json',
+                                            width: 160,
+                                            fit: BoxFit.cover,
+                                          ),
+                                        if (!isAlreadyClockIn)
+                                          ValueListenableBuilder<bool>(
+                                            valueListenable:
+                                                NfcClockInService.isClockingIn,
+                                            builder:
+                                                (context, isSending, child) {
+                                              return Lottie.asset(
+                                                isSending
+                                                    ? 'assets/animations/attendanceLoading.json'
+                                                    : currentAnimation,
+                                                width: 190,
+                                                fit: BoxFit.cover,
+                                              );
+                                            },
+                                          ),
                                         if (!isAlreadyClockIn)
                                           ValueListenableBuilder(
                                             valueListenable:
@@ -617,7 +629,10 @@ class _ClassNowCardState extends ConsumerState<ClassNowCard> {
                                 ),
                               );
                             },
-                          );
+                          ).whenComplete(() {
+                            debugPrint('Modal closed. Stopping NFC service.');
+                            NfcClockInService.stopClockIn();
+                          });
                         },
                         icon: SvgPicture.asset(
                           'assets/icons/fingerprint.svg',
