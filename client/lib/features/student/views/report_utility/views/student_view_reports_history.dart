@@ -272,7 +272,13 @@ SizedBox _maintainanceCardSection(
           ),
         );
       },
-      error: (error, stackTrace) => Center(child: Text('Error: $error')),
+      error: (error, stackTrace) => const Center(
+        child: Center(
+          child: Text(
+            'No reports found yet.',
+          ),
+        ),
+      ),
       loading: () => const Center(child: CircularProgressIndicator()),
     ),
   );

@@ -6,6 +6,7 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:smartclass_fyp_2024/features/super_admin/manage_user/models/user_models.dart';
 import 'package:smartclass_fyp_2024/features/super_admin/manage_user/providers/manage_user_provider.dart';
 import 'package:smartclass_fyp_2024/features/super_admin/manage_user/views/super_admin_view_user_details.dart';
+
 import 'package:smartclass_fyp_2024/shared/widgets/pageTransition.dart';
 
 class SuperAdminViewAllUsers extends ConsumerStatefulWidget {
@@ -142,16 +143,21 @@ class _SuperAdminViewAllUsersState
           itemBuilder: (context, index) {
             final user = filteredUsers[index];
             return ListTile(
-              leading: CircleAvatar(
-                radius: 22,
-                backgroundColor: Colors.grey.shade300,
-                child: Text(
-                  user.name[0].toUpperCase(),
-                  style: const TextStyle(
-                    color: Colors.black,
-                  ),
-                ),
-              ),
+              leading: (user.user_picture_url.isNotEmpty)
+                  ? CircleAvatar(
+                      radius: 20,
+                      backgroundImage: NetworkImage(user.user_picture_url),
+                    )
+                  : CircleAvatar(
+                      radius: 22,
+                      backgroundColor: Colors.grey.shade300,
+                      child: Text(
+                        user.name[0].toUpperCase(),
+                        style: const TextStyle(
+                          color: Colors.black,
+                        ),
+                      ),
+                    ),
               title: Text(
                 user.name,
                 style: const TextStyle(
@@ -173,7 +179,6 @@ class _SuperAdminViewAllUsersState
                 Icons.person_outline_rounded,
               ),
               onTap: () {
-                // Handle user detail view
                 Navigator.push(
                   context,
                   toLeftTransition(

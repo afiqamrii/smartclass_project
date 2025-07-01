@@ -132,10 +132,13 @@ class _LectHomepageState extends ConsumerState<LectHomepage> {
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            const CircleAvatar(
+                            CircleAvatar(
                               radius: 20,
-                              backgroundImage:
-                                  AssetImage('assets/pictures/compPicture.jpg'),
+                              backgroundImage: user.user_picture_url.isNotEmpty
+                                  ? NetworkImage(user.user_picture_url)
+                                  : const AssetImage(
+                                      'assets/pictures/compPicture.jpg',
+                                    ) as ImageProvider,
                             ),
                             const SizedBox(width: 15),
                             Column(

@@ -3,6 +3,7 @@ import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:smartclass_fyp_2024/constants/color_constants.dart';
 import 'package:smartclass_fyp_2024/features/lecturer/views/manage_class/models/course_model.dart';
 import 'package:smartclass_fyp_2024/features/lecturer/views/manage_class/providers/course_providers.dart';
@@ -25,9 +26,11 @@ class _StudentEnrollCourseState extends ConsumerState<StudentEnrollCourse> {
   final TextEditingController courseController = TextEditingController();
   final TextEditingController titleController = TextEditingController();
   bool isLoading = false;
+  final RefreshController _refreshController =
+      RefreshController(initialRefresh: false);
 
   Future<void> _enrollCourse(String studentId, int courseId, String courseName,
-      String lecturerId) async {
+      String lecturerId, String lecturerEmail) async {
     setState(() => isLoading = true);
 
     // Call the service to enroll the course
@@ -37,103 +40,130 @@ class _StudentEnrollCourseState extends ConsumerState<StudentEnrollCourse> {
       studentId.toString(),
       courseName,
       lecturerId,
+      lecturerEmail, // Get email from user provider
+      ref.read(userProvider).userEmail,
     );
 
     // After enrollment, clear the controllers
     setState(() => isLoading = false);
   }
 
+  void _onRefresh() async {
+    // ignore: unused_result
+    ref.refresh(courseListStudentProvider(ref.read(userProvider).externalId.toString()));
+    await Future.delayed(const Duration(seconds: 1));
+    _refreshController.refreshCompleted();
+  }
+
+  void _onLoading() async {
+    await Future.delayed(const Duration(seconds: 1));
+    if (mounted) setState(() {});
+    _refreshController.loadComplete();
+  }
+
   @override
   Widget build(BuildContext context) {
     final user = ref.watch(userProvider);
-    final courseListAsync = ref.watch(courseListProvider);
+    final courseListAsync = ref.watch(courseListStudentProvider(user.externalId.toString()));
 
     return Scaffold(
       appBar: _appBar(context),
       backgroundColor: Colors.white,
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: courseListAsync.when(
-          data: (courses) => Form(
-            key: _formKey,
-            child: ListView(
-              children: [
-                _buildLabel('Student Name'),
-                const SizedBox(height: 10),
-                _buildReadOnlyBox(user.name),
-                const SizedBox(height: 20),
-                _buildLabel('Student ID'),
-                const SizedBox(height: 10),
-                _buildReadOnlyBox(user.externalId.toString()),
-                const SizedBox(height: 20),
-                _buildLabel('Select Course'),
-                const SizedBox(height: 10),
-                courseDropdown(
-                  context,
-                  courseListAsync,
-                  courseController,
-                  titleController,
-                ),
-                const SizedBox(height: 30),
-                // Enroll button
-                ElevatedButton(
-                  onPressed: isLoading
-                      ? null
-                      : () {
-                          if (courseController.text.isEmpty) {
-                            Flushbar(
-                              message: 'Please select a course to enroll.',
-                              duration: const Duration(seconds: 3),
-                              backgroundColor: Colors.red.shade600,
-                              margin: const EdgeInsets.all(8),
-                              borderRadius: BorderRadius.circular(8),
-                              flushbarPosition: FlushbarPosition.TOP,
-                              icon:
-                                  const Icon(Icons.error, color: Colors.white),
-                            ).show(context);
-                            return;
-                          }
-
-                          // Confirmation dialog
-                          showDialog(
-                            context: context,
-                            barrierDismissible: false,
-                            builder: (context) => _buildConfirmationDialog(
-                                context, user, courseListAsync),
-                          );
-                        },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: ColorConstants.primaryColor,
-                    elevation: 3,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14),
-                    ),
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                  ),
-                  child: isLoading
-                      ? SizedBox(
-                          height: 20,
-                          width: 20,
-                          child: LoadingAnimationWidget.staggeredDotsWave(
-                            color: ColorConstants.primaryColor,
-                            size: 25,
-                          ),
-                        )
-                      : const Text(
-                          'Enroll Course',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14,
-                            color: Colors.white,
-                          ),
-                        ),
-                ),
-              ],
-            ),
+      body: SmartRefresher(
+        controller: _refreshController,
+        enablePullDown: true,
+        header: const ClassicHeader(
+          releaseIcon: Icon(
+            Icons.arrow_upward,
+            color: Colors.grey,
           ),
-          loading: () => const Center(child: CircularProgressIndicator()),
-          error: (err, stack) =>
-              Center(child: Text('Error loading courses: $err')),
+        ),
+        onRefresh: _onRefresh,
+        onLoading: _onLoading,
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: courseListAsync.when(
+            data: (courses) => Form(
+              key: _formKey,
+              child: ListView(
+                children: [
+                  _buildLabel('Student Name'),
+                  const SizedBox(height: 10),
+                  _buildReadOnlyBox(user.name),
+                  const SizedBox(height: 20),
+                  _buildLabel('Student ID'),
+                  const SizedBox(height: 10),
+                  _buildReadOnlyBox(user.externalId.toString()),
+                  const SizedBox(height: 20),
+                  _buildLabel('Select Course'),
+                  const SizedBox(height: 10),
+                  courseDropdown(
+                    context,
+                    courseListAsync,
+                    courseController,
+                    titleController,
+                  ),
+                  const SizedBox(height: 30),
+                  // Enroll button
+                  ElevatedButton(
+                    onPressed: isLoading
+                        ? null
+                        : () {
+                            if (courseController.text.isEmpty) {
+                              Flushbar(
+                                message: 'Please select a course to enroll.',
+                                duration: const Duration(seconds: 3),
+                                backgroundColor: Colors.red.shade600,
+                                margin: const EdgeInsets.all(8),
+                                borderRadius: BorderRadius.circular(8),
+                                flushbarPosition: FlushbarPosition.TOP,
+                                icon: const Icon(Icons.error,
+                                    color: Colors.white),
+                              ).show(context);
+                              return;
+                            }
+
+                            // Confirmation dialog
+                            showDialog(
+                              context: context,
+                              barrierDismissible: false,
+                              builder: (context) => _buildConfirmationDialog(
+                                  context, user, courseListAsync),
+                            );
+                          },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: ColorConstants.primaryColor,
+                      elevation: 3,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                    ),
+                    child: isLoading
+                        ? SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: LoadingAnimationWidget.staggeredDotsWave(
+                              color: ColorConstants.primaryColor,
+                              size: 25,
+                            ),
+                          )
+                        : const Text(
+                            'Enroll Course',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                              color: Colors.white,
+                            ),
+                          ),
+                  ),
+                ],
+              ),
+            ),
+            loading: () => const Center(child: CircularProgressIndicator()),
+            error: (err, stack) =>
+                Center(child: Text('Error loading courses: $err')),
+          ),
         ),
       ),
     );
@@ -213,11 +243,11 @@ class _StudentEnrollCourseState extends ConsumerState<StudentEnrollCourse> {
                       if (_formKey.currentState!.validate() &&
                           _selectedCourse != null) {
                         _enrollCourse(
-                          user.externalId,
-                          _selectedCourse!.courseId,
-                          _selectedCourse!.courseName,
-                          _selectedCourse!.lecturerId,
-                        );
+                            user.externalId,
+                            _selectedCourse!.courseId,
+                            _selectedCourse!.courseName,
+                            _selectedCourse!.lecturerId,
+                            _selectedCourse!.lecturerEmail);
                       }
                     },
                     style: ElevatedButton.styleFrom(
@@ -295,6 +325,14 @@ class _StudentEnrollCourseState extends ConsumerState<StudentEnrollCourse> {
                       fontSize: 13,
                       fontWeight:
                           isSelected ? FontWeight.bold : FontWeight.normal,
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+                  Text(
+                    '${item.lecturerName} | ${item.lecturerEmail}',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.grey.shade600,
                     ),
                   ),
                   const SizedBox(height: 15),

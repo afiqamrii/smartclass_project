@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:smartclass_fyp_2024/constants/color_constants.dart';
+import 'package:smartclass_fyp_2024/features/academic_admin/assign_lecturer/views/academician_select_courses.dart';
 import 'package:smartclass_fyp_2024/features/academic_admin/manage_classroom/views/academic_admin_view_all_class.dart';
 import 'package:smartclass_fyp_2024/features/academic_admin/manage_courses/views/academic_admin_view_all_course.dart';
 import 'package:smartclass_fyp_2024/features/admin/constants/features_card.dart';
@@ -58,6 +59,7 @@ class _AcademicHomepageState extends ConsumerState<AcademicHomepage> {
             SliverAppBar(
               pinned: false,
               expandedHeight: 90,
+              automaticallyImplyLeading: false,
               backgroundColor: ColorConstants.backgroundColor,
               elevation: 0,
               flexibleSpace: FlexibleSpaceBar(
@@ -132,6 +134,7 @@ class _AcademicHomepageState extends ConsumerState<AcademicHomepage> {
         spacing: 3.0,
         runSpacing: 3.0,
         children: [
+          //Manage Classroom
           featureCard(
             context: context,
             imagePath: 'assets/pictures/management.png',
@@ -144,6 +147,7 @@ class _AcademicHomepageState extends ConsumerState<AcademicHomepage> {
               ),
             ),
           ),
+          //Manage Courses
           featureCard(
             context: context,
             imagePath: 'assets/pictures/course.png',
@@ -153,6 +157,19 @@ class _AcademicHomepageState extends ConsumerState<AcademicHomepage> {
               context,
               toLeftTransition(
                 const AcademicAdminViewAllCourse(),
+              ),
+            ),
+          ),
+          //Assign Lecturer to course
+          featureCard(
+            context: context,
+            imagePath: 'assets/pictures/lecturer.png',
+            title: 'Assign Lecturer to Course',
+            color: Colors.green,
+            onTap: () => Navigator.push(
+              context,
+              toLeftTransition(
+                const AcademicianSelectCourses(),
               ),
             ),
           ),
@@ -168,11 +185,13 @@ class _AcademicHomepageState extends ConsumerState<AcademicHomepage> {
         Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const CircleAvatar(
-              radius: 25,
-              backgroundImage: AssetImage(
-                'assets/pictures/compPicture.jpg',
-              ),
+            CircleAvatar(
+              radius: 20,
+              backgroundImage: user.user_picture_url.isNotEmpty
+                  ? NetworkImage(user.user_picture_url)
+                  : const AssetImage(
+                      'assets/pictures/compPicture.jpg',
+                    ) as ImageProvider,
             ),
             const SizedBox(width: 15),
             Column(
@@ -182,7 +201,7 @@ class _AcademicHomepageState extends ConsumerState<AcademicHomepage> {
                 Text(
                   user.userName,
                   style: const TextStyle(
-                    fontSize: 17,
+                    fontSize: 16,
                     fontFamily: 'Figtree',
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
@@ -198,7 +217,7 @@ class _AcademicHomepageState extends ConsumerState<AcademicHomepage> {
                               ? "PPH Staff"
                               : "Academic Staff",
                   style: const TextStyle(
-                    fontSize: 13,
+                    fontSize: 12,
                     fontFamily: 'FigtreeRegular',
                     fontWeight: FontWeight.w400,
                     color: Colors.white,

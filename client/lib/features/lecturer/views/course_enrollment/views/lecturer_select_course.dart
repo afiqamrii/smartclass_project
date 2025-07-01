@@ -149,6 +149,9 @@ class _LecturerSelectCourseState extends ConsumerState<LecturerSelectCourse> {
                                       LecturerViewEnrollRequest(
                                         lecturerId: user.externalId,
                                         courseId: courses.courseId,
+                                        courseName: courses.courseName,
+                                        courseCode: courses.courseCode,
+                                        
                                       ),
                                     ),
                                   );

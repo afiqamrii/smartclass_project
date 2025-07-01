@@ -18,4 +18,7 @@ router.get("/courseenrollment/:lecturerId/:courseId", enrollmentController.lectu
 //Update enrollment status
 router.put("/updateenrollment", enrollmentController.updateEnrollmentStatus); //Update enrollment status
 
+//Withdraw enrollment
+router.delete("/withdraw/:enrollmentId", enrollmentController.withdrawEnrollment); //Withdraw enrollment
+
 module.exports = router;

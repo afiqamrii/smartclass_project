@@ -2,15 +2,47 @@ const pool = require("../config/database").pool;
 const moment = require("moment");
 
 const ClassModel = {
-    // Add a class to the database
-    async addClass(courseId , classLocation , timeStart, timeEnd, date  , lecturerId) {
+        // Add a class to the database
+        async addClass(courseId, classLocation, timeStart, timeEnd, date, lecturerId) {
         try {
             const query = `
-            INSERT INTO ClassSession (date , timeStart , timeEnd , classroomId  , lecturerId , courseId)
-            VALUES (?, ?, ?, ?, ?, ?)
+            INSERT INTO ClassSession (date, timeStart, timeEnd, classroomId, lecturerId, courseId)
+            SELECT * FROM (
+            SELECT ?, ?, ?, ?, ?, ?
+            ) AS tmp
+            WHERE NOT EXISTS (
+            SELECT 1
+            FROM ClassSession
+            WHERE lecturerId = ?
+                AND date = ?
+                AND (
+                (? BETWEEN timeStart AND timeEnd)
+                OR (? BETWEEN timeStart AND timeEnd)
+                OR (timeStart BETWEEN ? AND ?)
+                OR (timeEnd BETWEEN ? AND ?)
+                )
+            );
             `;
-            const values = [date , timeStart , timeEnd , classLocation  , lecturerId , courseId];
+
+            const values = [
+            date, timeStart, timeEnd, classLocation, lecturerId, courseId,
+            lecturerId, date,
+            timeStart, timeEnd,
+            timeStart, timeEnd,
+            timeStart, timeEnd
+            ];
+
+            
+
             const [result] = await pool.query(query, values);
+
+            //If no rows affected, it means the class already exists and return error to user
+            if (result.affectedRows === 0) {
+                // Debugging: Log the error message
+                console.error("Class already exists for this day at the specified time.");
+                return 0; 
+            }
+
             console.log("Class added successfully:", result);
             return result.insertId;
         }
@@ -19,6 +51,7 @@ const ClassModel = {
             return null;
         }
     },
+
 
     // Retrieve all classes from the database
     async getAllClasses(lecturerId){

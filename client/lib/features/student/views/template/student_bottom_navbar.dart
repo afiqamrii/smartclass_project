@@ -1,19 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:smartclass_fyp_2024/features/student/views/class_history/student_class_history.dart';
 import 'package:smartclass_fyp_2024/features/student/views/student_homepage.dart';
 import 'package:smartclass_fyp_2024/features/student/views/manage_profile/student_profilepage.dart';
+import 'package:smartclass_fyp_2024/shared/data/dataprovider/user_provider.dart';
 
-class StudentBottomNavbar extends StatefulWidget {
+class StudentBottomNavbar extends ConsumerStatefulWidget {
   final int initialIndex;
 
   const StudentBottomNavbar({super.key, required this.initialIndex});
 
   @override
-  State<StudentBottomNavbar> createState() => _StudentBottomNavbarState();
+  ConsumerState<StudentBottomNavbar> createState() =>
+      _StudentBottomNavbarState();
 }
 
-class _StudentBottomNavbarState extends State<StudentBottomNavbar> {
+class _StudentBottomNavbarState extends ConsumerState<StudentBottomNavbar> {
   late int _currentIndex;
   final List<Widget> _screens = [
     const StudentHomePage(),
@@ -29,6 +32,9 @@ class _StudentBottomNavbarState extends State<StudentBottomNavbar> {
 
   @override
   Widget build(BuildContext context) {
+    // Get user data
+    final user = ref.watch(userProvider);
+
     return Scaffold(
       body: _screens[_currentIndex],
       bottomNavigationBar: Container(
@@ -54,21 +60,24 @@ class _StudentBottomNavbarState extends State<StudentBottomNavbar> {
                 Colors.purple.withOpacity(0.1), // selected tab background color
             padding: const EdgeInsets.all(11),
             gap: 6,
-            tabs: const [
-              GButton(
+            tabs: [
+              const GButton(
                 icon: Icons.home,
                 text: 'Home',
               ),
-              GButton(
+              const GButton(
                 icon: Icons.class_,
                 text: 'My Class',
               ),
               GButton(
                 icon: Icons.person,
                 leading: CircleAvatar(
-                  backgroundImage: AssetImage(
-                      'assets/pictures/compPicture.jpg'), //Later letak gambar disini from database / gambar user
-                  radius: 15,
+                  radius: 17,
+                  backgroundImage: user.user_picture_url.isNotEmpty
+                      ? NetworkImage(user.user_picture_url)
+                      : const AssetImage(
+                          'assets/pictures/compPicture.jpg',
+                        ) as ImageProvider,
                 ),
                 text: 'Profile',
               ),

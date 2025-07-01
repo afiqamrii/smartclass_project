@@ -12,6 +12,8 @@ class CourseEnrollmentService {
     String studentId,
     String courseName,
     String lecturerId,
+    String lecturerEmail,
+    String studentEmail, // Get email from user provider
   ) async {
     try {
       final response = await http.post(
@@ -21,6 +23,9 @@ class CourseEnrollmentService {
           'courseId': courseId,
           'studentId': studentId,
           'lecturerId': lecturerId,
+          'courseName': courseName,
+          'lecturerEmail': lecturerEmail,
+          'studentEmail': studentEmail, // Include student email
         }),
       );
 
@@ -62,6 +67,76 @@ class CourseEnrollmentService {
       // print('Error enrolling course: $e');
       Flushbar(
         message: 'Failed to enroll course',
+        backgroundColor: Colors.red.shade600,
+        duration: const Duration(seconds: 3),
+        margin: const EdgeInsets.all(8),
+        borderRadius: BorderRadius.circular(8),
+        flushbarPosition: FlushbarPosition.TOP,
+        icon: const Icon(
+          Icons.error,
+          color: Colors.white,
+        ),
+      ).show(context);
+    }
+  }
+
+  // Method to withdraw from a course
+  static Future<void> withdrawFromCourse(
+    BuildContext context,
+    int enrollmentId,
+    String studentId,
+    String courseName,
+    String studentEmail, // Get email from user provider
+  ) async {
+    try {
+      final response = await http.delete(
+        Uri.parse('${ApiConstants.baseUrl}/enrollment/withdraw/$enrollmentId'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'studentId': studentId,
+          'courseName': courseName,
+          'studentEmail': studentEmail, // Include student email
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        print('CourseEnrollmentService: Course enrollment successful');
+        // Show a success message, then pop after it is dismissed
+        await Flushbar(
+          message: 'Course withdrawal for $courseName successful!',
+          backgroundColor: Colors.green.shade600,
+          duration: const Duration(seconds: 3),
+          margin: const EdgeInsets.all(8),
+          borderRadius: BorderRadius.circular(8),
+          flushbarPosition: FlushbarPosition.TOP,
+          icon: const Icon(
+            Icons.check, // Use check icon for success
+            color: Colors.white,
+          ),
+        ).show(context);
+
+        // Now pop after Flushbar is dismissed
+        // ignore: use_build_context_synchronously
+        Navigator.pop(context, true);
+      } else {
+        final errorMsg = jsonDecode(response.body)['error'];
+        Flushbar(
+          message: 'Failed to withdraw from course: $errorMsg',
+          backgroundColor: Colors.red.shade600,
+          duration: const Duration(seconds: 3),
+          margin: const EdgeInsets.all(8),
+          borderRadius: BorderRadius.circular(8),
+          flushbarPosition: FlushbarPosition.TOP,
+          icon: const Icon(
+            Icons.error,
+            color: Colors.white,
+          ),
+        ).show(context);
+      }
+    } catch (e) {
+      // print('Error enrolling course: $e');
+      Flushbar(
+        message: 'Failed to withdraw from course',
         backgroundColor: Colors.red.shade600,
         duration: const Duration(seconds: 3),
         margin: const EdgeInsets.all(8),

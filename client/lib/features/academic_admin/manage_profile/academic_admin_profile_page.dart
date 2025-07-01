@@ -13,10 +13,12 @@ class AcademicAdminProfilePage extends ConsumerStatefulWidget {
   const AcademicAdminProfilePage({super.key});
 
   @override
-  ConsumerState<AcademicAdminProfilePage> createState() => _AcademicAdminProfilePageState();
+  ConsumerState<AcademicAdminProfilePage> createState() =>
+      _AcademicAdminProfilePageState();
 }
 
-class _AcademicAdminProfilePageState extends ConsumerState<AcademicAdminProfilePage> {
+class _AcademicAdminProfilePageState
+    extends ConsumerState<AcademicAdminProfilePage> {
   void signOutUser(BuildContext context) {
     AuthService().signOut(context, 4);
   }
@@ -55,7 +57,10 @@ class _AcademicAdminProfilePageState extends ConsumerState<AcademicAdminProfileP
           Container(
             width: double.infinity,
             child: Padding(
-              padding: const EdgeInsets.only(left: 25.0),
+              padding: const EdgeInsets.only(
+                left: 25.0,
+                top: 10,
+              ),
               child: Column(
                 children: [
                   const Row(
@@ -70,18 +75,20 @@ class _AcademicAdminProfilePageState extends ConsumerState<AcademicAdminProfileP
                       ),
                     ],
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 15),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Row(
                         children: [
                           //Put picture profiles hereee
-                          const CircleAvatar(
+                          CircleAvatar(
                             radius: 20,
-                            backgroundImage: AssetImage(
-                              'assets/pictures/compPicture.jpg',
-                            ),
+                            backgroundImage: user.user_picture_url.isNotEmpty
+                                ? NetworkImage(user.user_picture_url)
+                                : const AssetImage(
+                                    'assets/pictures/compPicture.jpg',
+                                  ) as ImageProvider,
                           ),
                           const SizedBox(width: 15),
                           Column(
@@ -152,17 +159,9 @@ class _AcademicAdminProfilePageState extends ConsumerState<AcademicAdminProfileP
                               onTap: () {
                                 Navigator.push(
                                   context,
-                                  toLeftTransition(const AcademicAdminAccountDetails()),
+                                  toLeftTransition(
+                                      const AcademicAdminAccountDetails()),
                                 );
-                              },
-                            ),
-
-                            // Reported Issues
-                            buildAccountOption(
-                              iconPath: 'assets/icons/report.png',
-                              title: 'Reported Issues',
-                              onTap: () {
-                                // TODO: Navigate to Report Issues Page
                               },
                             ),
 

@@ -4,9 +4,14 @@ const authController = require("../controllers/authController");
 const auth = require("../middlewares/auth");
 const path = require("path"); 
 const app = express();
+const multer = require('multer');
+const upload = multer({ dest: 'uploads/' });
 
 //Sign Up Route
 authRouter.post("/api/signup" , authController.signUp);
+
+//Student sign up route
+authRouter.post("/api/studentsignup" ,  upload.single('image') , authController.studentSignUp);
 
 //Verify Email Route
 authRouter.get("/verify/:userId/:uniqueString" , authController.verifyEmail);
@@ -43,6 +48,9 @@ authRouter.get("/" , auth , authController.getUserData);
 
 //User update profile details route
 authRouter.put("/updateprofile" ,  authController.updateProfile);
+
+//Update profile with image route
+authRouter.put("/updateprofileimage" , upload.single('image') , authController.updateProfileImage);
 
 
 module.exports = authRouter;

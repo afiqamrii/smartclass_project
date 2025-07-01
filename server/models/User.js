@@ -47,6 +47,10 @@ const User = sequelize.define("User", {
     type: DataTypes.STRING(45),
     allowNull: true,
   },
+  user_picture_url: {
+    type: DataTypes.STRING(255),
+    allowNull: true, // Allow null for optional profile images
+  },
 }, {
   tableName: "User",
   timestamps: false, // Disable createdAt/updatedAt

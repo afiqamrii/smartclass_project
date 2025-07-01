@@ -7,6 +7,17 @@ final courseListProvider = FutureProvider<List<CourseModel>>((ref) async {
 });
 
 // Provider for fetching courses by lecturer ID
+final courseListByLecturerProvider =
+    FutureProvider.family<List<CourseModel>, String>((ref, lecturerId) async {
+  return await CourseApi.lectFetchCourses(lecturerId);
+});
+
+final courseListStudentProvider =
+    FutureProvider.family<List<CourseModel>, String>((ref, studentId) async {
+  return await CourseApi.studentFetchCourses(studentId);
+});
+
+// Provider for fetching courses by lecturer ID
 final courseListByLecturerIdProvider =
     FutureProvider.family<List<CourseModel>, String>((ref, lecturerId) async {
   return await CourseApi.fetchCoursesByLecturerId(lecturerId);

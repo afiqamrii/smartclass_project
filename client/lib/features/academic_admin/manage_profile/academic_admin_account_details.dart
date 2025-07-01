@@ -15,7 +15,8 @@ class AcademicAdminAccountDetails extends ConsumerStatefulWidget {
       _AcademicAdminAccountDetailsState();
 }
 
-class _AcademicAdminAccountDetailsState extends ConsumerState<AcademicAdminAccountDetails> {
+class _AcademicAdminAccountDetailsState
+    extends ConsumerState<AcademicAdminAccountDetails> {
   final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
 
@@ -78,9 +79,12 @@ class _AcademicAdminAccountDetailsState extends ConsumerState<AcademicAdminAccou
             fit: StackFit.expand,
             children: [
               CircleAvatar(
-                backgroundImage: Image.network(
-                        "https://images.unsplash.com/photo-1745555926235-faa237ea89a0?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80")
-                    .image,
+                radius: 20,
+                backgroundImage: user.user_picture_url.isNotEmpty
+                    ? NetworkImage(user.user_picture_url)
+                    : const AssetImage(
+                        'assets/pictures/compPicture.jpg',
+                      ) as ImageProvider,
               ),
             ],
           ),
@@ -187,7 +191,7 @@ class _AcademicAdminAccountDetailsState extends ConsumerState<AcademicAdminAccou
           Navigator.push(
             context,
             toRightTransition(
-              const AcademicianBottomNavbar(initialIndex: 2),
+              const AcademicianBottomNavbar(initialIndex: 1),
             ),
           );
         },

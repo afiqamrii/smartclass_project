@@ -59,6 +59,7 @@ class _AdminHomepageState extends ConsumerState<AdminHomepage> {
               pinned: false,
               expandedHeight: 90,
               backgroundColor: ColorConstants.backgroundColor,
+              automaticallyImplyLeading: false,
               elevation: 0,
               flexibleSpace: FlexibleSpaceBar(
                 collapseMode: CollapseMode.pin,
@@ -99,9 +100,9 @@ class _AdminHomepageState extends ConsumerState<AdminHomepage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           // _searchBarSection(),
-                          const SizedBox(height: 20),
-                          _consumptionSection(context),
-                          const SizedBox(height: 20),
+                          // const SizedBox(height: 20),
+                          // _consumptionSection(context),
+                          const SizedBox(height: 10),
                           const Text(
                             'Features',
                             style: TextStyle(
@@ -176,11 +177,13 @@ class _AdminHomepageState extends ConsumerState<AdminHomepage> {
         Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const CircleAvatar(
-              radius: 25,
-              backgroundImage: AssetImage(
-                'assets/pictures/compPicture.jpg',
-              ),
+            CircleAvatar(
+              radius: 20,
+              backgroundImage: user.user_picture_url.isNotEmpty
+                  ? NetworkImage(user.user_picture_url)
+                  : const AssetImage(
+                      'assets/pictures/compPicture.jpg',
+                    ) as ImageProvider,
             ),
             const SizedBox(width: 15),
             Column(
@@ -190,7 +193,7 @@ class _AdminHomepageState extends ConsumerState<AdminHomepage> {
                 Text(
                   user.userName,
                   style: const TextStyle(
-                    fontSize: 18,
+                    fontSize: 16,
                     fontFamily: 'Figtree',
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
@@ -204,7 +207,7 @@ class _AdminHomepageState extends ConsumerState<AdminHomepage> {
                           ? "Lecturer"
                           : "PPH Staff",
                   style: const TextStyle(
-                    fontSize: 14,
+                    fontSize: 12,
                     fontFamily: 'FigtreeRegular',
                     fontWeight: FontWeight.w400,
                     color: Colors.white,
@@ -233,100 +236,100 @@ class _AdminHomepageState extends ConsumerState<AdminHomepage> {
     );
   }
 
-  Container _consumptionSection(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.grey[300],
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.5),
-            spreadRadius: 1,
-            blurRadius: 6,
-            offset: const Offset(6, 7),
-          ),
-        ],
-      ),
-      padding: const EdgeInsets.all(20),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'Average Consumption',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontFamily: 'FigtreeRegular',
-                  fontWeight: FontWeight.w700,
-                  color: Colors.black,
-                ),
-              ),
-              const SizedBox(height: 5),
-              Text(
-                '+35%',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontFamily: 'Figtree',
-                  fontWeight: FontWeight.bold,
-                  color: Colors.green[800],
-                ),
-              ),
-              const SizedBox(height: 5),
-              Text(
-                '25.3 kWh',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontFamily: 'FigtreeRegular',
-                  fontWeight: FontWeight.w400,
-                  color: Colors.grey[600],
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(width: 20),
-          Flexible(
-            child: Image.asset(
-              'assets/pictures/electric.png',
-              width: 100,
-              fit: BoxFit.contain,
-            ),
-          ),
-          const SizedBox(width: 10),
-        ],
-      ),
-    );
-  }
+  // Container _consumptionSection(BuildContext context) {
+  //   return Container(
+  //     decoration: BoxDecoration(
+  //       color: Colors.grey[300],
+  //       borderRadius: BorderRadius.circular(20),
+  //       boxShadow: [
+  //         BoxShadow(
+  //           color: Colors.grey.withOpacity(0.5),
+  //           spreadRadius: 1,
+  //           blurRadius: 6,
+  //           offset: const Offset(6, 7),
+  //         ),
+  //       ],
+  //     ),
+  //     padding: const EdgeInsets.all(20),
+  //     child: Row(
+  //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //       children: [
+  //         Column(
+  //           crossAxisAlignment: CrossAxisAlignment.start,
+  //           children: [
+  //             const Text(
+  //               'Average Consumption',
+  //               style: TextStyle(
+  //                 fontSize: 16,
+  //                 fontFamily: 'FigtreeRegular',
+  //                 fontWeight: FontWeight.w700,
+  //                 color: Colors.black,
+  //               ),
+  //             ),
+  //             const SizedBox(height: 5),
+  //             Text(
+  //               '+35%',
+  //               style: TextStyle(
+  //                 fontSize: 18,
+  //                 fontFamily: 'Figtree',
+  //                 fontWeight: FontWeight.bold,
+  //                 color: Colors.green[800],
+  //               ),
+  //             ),
+  //             const SizedBox(height: 5),
+  //             Text(
+  //               '25.3 kWh',
+  //               style: TextStyle(
+  //                 fontSize: 14,
+  //                 fontFamily: 'FigtreeRegular',
+  //                 fontWeight: FontWeight.w400,
+  //                 color: Colors.grey[600],
+  //               ),
+  //             ),
+  //           ],
+  //         ),
+  //         const SizedBox(width: 20),
+  //         Flexible(
+  //           child: Image.asset(
+  //             'assets/pictures/electric.png',
+  //             width: 100,
+  //             fit: BoxFit.contain,
+  //           ),
+  //         ),
+  //         const SizedBox(width: 10),
+  //       ],
+  //     ),
+  //   );
+  // }
 
-  SearchBar _searchBarSection() {
-    return SearchBar(
-      backgroundColor: WidgetStatePropertyAll(
-        Colors.grey[100],
-      ),
-      leading: const Icon(
-        Icons.search,
-        color: Colors.grey,
-      ),
-      hintText: 'Search here...',
-      shadowColor: WidgetStatePropertyAll(
-        Colors.grey[300],
-      ),
-      hintStyle: const WidgetStatePropertyAll(
-        TextStyle(
-          color: Colors.grey,
-          fontSize: 14,
-          fontFamily: 'FigtreeRegular',
-        ),
-      ),
-      shape: WidgetStatePropertyAll(
-        RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
-      ),
-      padding: const WidgetStatePropertyAll(
-        EdgeInsets.all(8),
-      ),
-    );
-  }
+  // SearchBar _searchBarSection() {
+  //   return SearchBar(
+  //     backgroundColor: WidgetStatePropertyAll(
+  //       Colors.grey[100],
+  //     ),
+  //     leading: const Icon(
+  //       Icons.search,
+  //       color: Colors.grey,
+  //     ),
+  //     hintText: 'Search here...',
+  //     shadowColor: WidgetStatePropertyAll(
+  //       Colors.grey[300],
+  //     ),
+  //     hintStyle: const WidgetStatePropertyAll(
+  //       TextStyle(
+  //         color: Colors.grey,
+  //         fontSize: 14,
+  //         fontFamily: 'FigtreeRegular',
+  //       ),
+  //     ),
+  //     shape: WidgetStatePropertyAll(
+  //       RoundedRectangleBorder(
+  //         borderRadius: BorderRadius.circular(20),
+  //       ),
+  //     ),
+  //     padding: const WidgetStatePropertyAll(
+  //       EdgeInsets.all(8),
+  //     ),
+  //   );
+  // }
 }

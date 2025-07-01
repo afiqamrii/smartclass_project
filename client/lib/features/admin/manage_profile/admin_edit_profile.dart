@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:quickalert/models/quickalert_type.dart';
 import 'package:quickalert/widgets/quickalert_dialog.dart';
 import 'package:smartclass_fyp_2024/features/admin/manage_profile/admin_account_details.dart';
@@ -29,6 +32,8 @@ class _AdminEditProfileState extends ConsumerState<AdminEditProfile> {
   //Import AuthServices
   final authService = AuthService();
 
+  File? selectedImage;
+
   @override
   void initState() {
     super.initState();
@@ -47,41 +52,90 @@ class _AdminEditProfileState extends ConsumerState<AdminEditProfile> {
     super.dispose();
   }
 
-  //Update Profile method
+  // Method to pick image
+  Future<void> _pickImage() async {
+    final picker = ImagePicker();
+
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => SafeArea(
+        child: Wrap(
+          children: [
+            ListTile(
+              leading: const Icon(Icons.photo_camera),
+              title: const Text('Take Photo'),
+              onTap: () async {
+                final picked =
+                    await picker.pickImage(source: ImageSource.camera);
+                if (picked != null) {
+                  setState(() {
+                    selectedImage = File(picked.path);
+                  });
+                }
+                Navigator.of(context).pop();
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.photo_library),
+              title: const Text('Choose from Gallery'),
+              onTap: () async {
+                final picked =
+                    await picker.pickImage(source: ImageSource.gallery);
+                if (picked != null) {
+                  setState(() {
+                    selectedImage = File(picked.path);
+                  });
+                }
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Update profile method
   void updateProfile(BuildContext context, WidgetRef ref, int userId) async {
     if (_formKey.currentState!.validate()) {
-      // Check if user made any changes
       bool isUsernameChanged =
           _usernameController.text.trim() != widget.user.userName;
       bool isNameChanged = _nameController.text.trim() != widget.user.name;
+      bool isImageChanged = selectedImage != null;
 
-      if (!isUsernameChanged && !isNameChanged) {
-        // No changes detected
+      if (!isUsernameChanged && !isNameChanged && !isImageChanged) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('No changes were made.'),
             backgroundColor: Colors.orange,
           ),
         );
-        return; // Stop the update
+        return;
       }
 
-      // Prepare fields to update
       String? updatedUsername =
           isUsernameChanged ? _usernameController.text.trim() : null;
       String? updatedName = isNameChanged ? _nameController.text.trim() : null;
 
       try {
-        await Future.any([
-          authService.updateUserProfile(
+        if (isImageChanged) {
+          // update with image
+          await authService.updateUserProfileWithImage(
             context: context,
             userId: userId,
             userName: updatedUsername ?? widget.user.userName,
             name: updatedName ?? widget.user.name,
-          ),
-        ]);
-
-        // You can show a success message after update here if you want
+            userPicture: selectedImage!,
+          );
+        } else {
+          // update only text fields
+          await authService.updateUserProfile(
+            context: context,
+            userId: userId,
+            userName: updatedUsername ?? widget.user.userName,
+            name: updatedName ?? widget.user.name,
+          );
+        }
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -139,17 +193,20 @@ class _AdminEditProfileState extends ConsumerState<AdminEditProfile> {
               child: Stack(
                 clipBehavior: Clip.none,
                 children: [
-                  const CircleAvatar(
+                  CircleAvatar(
                     radius: 45,
-                    backgroundImage: NetworkImage(
-                      "https://images.unsplash.com/photo-1745555926235-faa237ea89a0?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-                    ),
+                    backgroundImage: selectedImage != null
+                        ? FileImage(selectedImage!)
+                        : (user.user_picture_url.isNotEmpty
+                            ? NetworkImage(user.user_picture_url)
+                            : const AssetImage(
+                                'assets/pictures/compPicture.jpg')),
                   ),
                   Positioned(
                     bottom: 0,
                     right: -30,
                     child: RawMaterialButton(
-                      onPressed: () {},
+                      onPressed: _pickImage,
                       elevation: 2,
                       fillColor: Colors.white,
                       shape: const CircleBorder(),

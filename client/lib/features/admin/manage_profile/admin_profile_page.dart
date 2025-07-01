@@ -55,7 +55,10 @@ class _AdminProfilePageState extends ConsumerState<AdminProfilePage> {
           Container(
             width: double.infinity,
             child: Padding(
-              padding: const EdgeInsets.only(left: 25.0),
+              padding: const EdgeInsets.only(
+                left: 25.0,
+                top: 10,
+              ),
               child: Column(
                 children: [
                   const Row(
@@ -70,18 +73,20 @@ class _AdminProfilePageState extends ConsumerState<AdminProfilePage> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 15),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Row(
                         children: [
                           //Put picture profiles hereee
-                          const CircleAvatar(
+                          CircleAvatar(
                             radius: 20,
-                            backgroundImage: AssetImage(
-                              'assets/pictures/compPicture.jpg',
-                            ),
+                            backgroundImage: user.user_picture_url.isNotEmpty
+                                ? NetworkImage(user.user_picture_url)
+                                : const AssetImage(
+                                    'assets/pictures/compPicture.jpg',
+                                  ) as ImageProvider,
                           ),
                           const SizedBox(width: 15),
                           Column(
@@ -154,15 +159,6 @@ class _AdminProfilePageState extends ConsumerState<AdminProfilePage> {
                                   context,
                                   toLeftTransition(const AdminAccountDetails()),
                                 );
-                              },
-                            ),
-
-                            // Reported Issues
-                            buildAccountOption(
-                              iconPath: 'assets/icons/report.png',
-                              title: 'Reported Issues',
-                              onTap: () {
-                                // TODO: Navigate to Report Issues Page
                               },
                             ),
 

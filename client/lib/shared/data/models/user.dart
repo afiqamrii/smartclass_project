@@ -1,3 +1,5 @@
+// ignore_for_file: non_constant_identifier_names
+
 import 'dart:convert';
 
 class User {
@@ -10,6 +12,7 @@ class User {
   final String token;
   final int roleId;
   final String externalId;
+  final String user_picture_url;
 
   User({
     this.userId,
@@ -21,6 +24,7 @@ class User {
     required this.token,
     required this.roleId,
     required this.externalId,
+    required this.user_picture_url,
   });
 
   // Convert a User object to a Map
@@ -52,6 +56,7 @@ class User {
       roleId: map['roleId'] ?? 0,
       token: map['token'] ?? '',
       externalId: map['externalId'] ?? '',
+      user_picture_url: map['user_picture_url'] ?? '',
     );
   }
 

@@ -14,11 +14,15 @@ final searchQueryProvider = StateProvider<String>((ref) => '');
 class LecturerViewEnrollRequest extends ConsumerStatefulWidget {
   final String lecturerId;
   final int courseId;
+  final String courseName;
+  final String courseCode;
 
   const LecturerViewEnrollRequest({
     super.key,
     required this.lecturerId,
     required this.courseId,
+    required this.courseName,
+    required this.courseCode,
   });
 
   @override
@@ -50,13 +54,19 @@ class _LecturerViewEnrollRequestState
 
   // Function to update the enrollment request status
   Future<void> updateEnrollmentRequestStatus(
-      int enrollmentId, String status) async {
+    int enrollmentId,
+    String status,
+    String studentEmail,
+  ) async {
     try {
       // ignore: unused_local_variable
       final response =
           await CourseEnrollmentRequestApi.updateEnrollmentRequestStatus(
         enrollmentId,
         status,
+        studentEmail, // Pass the user's email
+        widget.courseName, // Pass the course name
+        widget.courseCode, // Pass the course code
       );
 
       // Show success Flushbar
@@ -313,6 +323,7 @@ class _LecturerViewEnrollRequestState
                                                         updateEnrollmentRequestStatus(
                                                           req.enrollmentId,
                                                           'Approved',
+                                                          req.studentEmail, // Pass the student's email
                                                         );
                                                       },
                                                       style: ElevatedButton
@@ -388,6 +399,7 @@ class _LecturerViewEnrollRequestState
                                                         updateEnrollmentRequestStatus(
                                                           req.enrollmentId,
                                                           'Rejected',
+                                                          req.studentEmail, // Pass the student's email
                                                         );
                                                       },
                                                       style: ElevatedButton

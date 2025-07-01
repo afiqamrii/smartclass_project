@@ -12,6 +12,7 @@ const SuperAdminModel = {
                 u.userEmail,
                 u.roleId,
                 u.externalId,
+                u.user_picture_url,
                 r.roleName,
                 u.is_approved AS status
                 

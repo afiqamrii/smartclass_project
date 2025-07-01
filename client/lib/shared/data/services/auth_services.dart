@@ -1,9 +1,12 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
+import 'package:mime/mime.dart';
 import 'package:smartclass_fyp_2024/constants/api_constants.dart';
 import 'package:smartclass_fyp_2024/features/academic_admin/bottom_nav/academician_bottom_navbar.dart';
 import 'package:smartclass_fyp_2024/features/academic_admin/manage_profile/academic_admin_account_details.dart';
@@ -57,6 +60,7 @@ class AuthService {
         token: '',
         roleId: roleId,
         externalId: externalId,
+        user_picture_url: '',
       );
 
       http.Response res = await http.post(
@@ -76,6 +80,8 @@ class AuthService {
           //Direct to Greet page back
           //Student
           if (roleId == 1) {
+            //Send to database to register student faces in datbase
+
             Navigator.pushAndRemoveUntil(
               context,
               toRightTransition(
@@ -116,6 +122,87 @@ class AuthService {
       );
     } catch (e) {
       // ignore: use_build_context_synchronously
+      showSnackBar(context, e.toString());
+    }
+  }
+
+  //SIGNUP with Face Recognition Student
+  Future<void> signUpUserWithFace({
+    required BuildContext context,
+    required WidgetRef ref,
+    required String userName,
+    required String name,
+    required String userEmail,
+    required String userPassword,
+    required String confirmPassword,
+    required int roleId,
+    required String externalId,
+    required File? imageFile, // The image file to be uploaded
+  }) async {
+    try {
+      // 1. Create a MultipartRequest
+      final request = http.MultipartRequest(
+        'POST',
+        Uri.parse('${ApiConstants.baseUrl}/api/studentsignup'),
+      );
+
+      // 2. Create the user data payload
+      // Note: We are not creating a full `User` object here because we will
+      // send the data as individual fields in the multipart request.
+      Map<String, String> userData = {
+        'userName': userName,
+        'name': name,
+        'userEmail': userEmail,
+        'userPassword': userPassword,
+        'confirmPassword': confirmPassword,
+        'roleId': roleId.toString(), // Convert int to String for fields
+        'externalId': externalId,
+      };
+
+      // 3. Add user data fields to the request
+      request.fields.addAll(userData);
+
+      // 4. Add the image file to the request if it exists
+      if (imageFile != null) {
+        // Look up the MIME type of the file
+        String? mimeType = lookupMimeType(imageFile.path);
+
+        // Add the file as a MultipartFile
+        request.files.add(
+          await http.MultipartFile.fromPath(
+            'image', // This 'image' key must match what your backend API expects
+            imageFile.path,
+            contentType:
+                MediaType.parse(mimeType ?? 'application/octet-stream'),
+          ),
+        );
+      }
+
+      // 5. Send the request and get the response
+      // We use `send()` for MultipartRequest, which returns a StreamedResponse.
+      final streamedResponse = await request.send();
+
+      // 6. Convert the StreamedResponse to a regular http.Response
+      final response = await http.Response.fromStream(streamedResponse);
+
+      // 7. Handle the response
+      httpErrorHandle(
+        response: response,
+        context: context,
+        onSuccess: () {
+          showSnackBar(
+              context, 'Account created! Check your email for verification!');
+
+          // Navigation logic based on roleId
+          Navigator.pushAndRemoveUntil(
+            context,
+            toRightTransition(const StudentGreetsPage()),
+            (route) => false,
+          );
+        },
+      );
+    } catch (e) {
+      // Show an error message if something goes wrong during the process
       showSnackBar(context, e.toString());
     }
   }
@@ -485,6 +572,70 @@ class AuthService {
         //   ),
         //   (route) => false,
         // );
+      }
+    } catch (e) {
+      showSnackBar(context, e.toString());
+    }
+  }
+
+  Future<void> updateUserProfileWithImage({
+    required BuildContext context,
+    required int userId,
+    required String userName,
+    required String name,
+    required File? userPicture, 
+  }) async {
+    final navigator = Navigator.of(context);
+
+    if (userPicture == null) {
+      showSnackBar(context, 'Please select an image to upload.');
+      return;
+    }
+
+    try {
+      final uri = Uri.parse('${ApiConstants.baseUrl}/updateprofileimage');
+      final request = http.MultipartRequest("PUT", uri)
+        ..fields['userId'] = userId.toString()
+        ..fields['userName'] = userName
+        ..fields['name'] = name;
+
+      // Add image file
+      var fileBytes = await userPicture.readAsBytes();
+      String mimeType = lookupMimeType(userPicture.path) ?? 'image/jpeg';
+      request.files.add(http.MultipartFile.fromBytes(
+        'image',
+        fileBytes,
+        filename: 'profile_image_$userId.jpg',
+        contentType: MediaType.parse(mimeType),
+      ));
+
+      // Send the request
+      final streamedResponse = await request.send();
+      final res = await http.Response.fromStream(streamedResponse);
+
+      httpErrorHandle(
+        response: res,
+        context: context,
+        onSuccess: () {
+          showSnackBar(context, jsonDecode(res.body)['message']);
+        },
+      );
+
+      if (res.statusCode == 200) {
+        // Redirect based on role
+        if (userId == Role.lecturer) {
+          navigator.pushAndRemoveUntil(
+            toLeftTransition(const LecturerAccountDetails()),
+            (route) => false,
+          );
+        } else if (userId == Role.student) {
+          navigator.pushAndRemoveUntil(
+            toLeftTransition(const StudentAccountDetails()),
+            (route) => false,
+          );
+        }
+      } else {
+        showSnackBar(context, 'Failed to update profile: ${res.statusCode}');
       }
     } catch (e) {
       showSnackBar(context, e.toString());

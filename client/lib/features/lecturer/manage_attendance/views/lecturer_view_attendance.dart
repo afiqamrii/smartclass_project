@@ -5,6 +5,7 @@ import 'package:open_file/open_file.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:smartclass_fyp_2024/features/lecturer/manage_attendance/providers/attendance_providers.dart';
 import 'package:smartclass_fyp_2024/features/lecturer/manage_attendance/services/attendance_services.dart';
+import 'package:smartclass_fyp_2024/shared/data/dataprovider/user_provider.dart';
 
 class LecturerViewAttendance extends ConsumerStatefulWidget {
   final int classId;
@@ -41,9 +42,26 @@ class _LecturerViewAttendanceState
     _refreshController.loadComplete();
   }
 
+  // Function to mark attendance as present
+  Future<void> markAttendance(
+      BuildContext context, String studentId, int classId) async {
+    // Call the service to mark attendance
+    await AttendanceService.markAttendance(
+      context,
+      studentId,
+      classId,
+    );
+
+    // Refresh the attendance list
+    ref.read(attendanceProvider(widget.classId));
+  }
+
   @override
   Widget build(BuildContext context) {
     final attendanceAsync = ref.watch(attendanceProvider(widget.classId));
+
+    //Get user data
+    final user = ref.watch(userProvider);
 
     return Scaffold(
       appBar: _appBar(context, widget.classId),
@@ -107,14 +125,23 @@ class _LecturerViewAttendanceState
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
-                                const CircleAvatar(
+                                CircleAvatar(
                                   radius: 22,
                                   backgroundColor: Colors.indigo,
-                                  child: Icon(
-                                    Icons.person,
-                                    color: Colors.white,
-                                  ),
+                                  child: user.user_picture_url.isNotEmpty
+                                      ? CircleAvatar(
+                                          radius: 20,
+                                          backgroundImage: NetworkImage(
+                                            user.user_picture_url,
+                                          ),
+                                        )
+                                      : const Icon(
+                                          Icons.person,
+                                          color: Colors.white,
+                                          size: 30,
+                                        ),
                                 ),
                                 const SizedBox(width: 12),
                                 Expanded(
@@ -151,34 +178,91 @@ class _LecturerViewAttendanceState
                                 ),
                                 const SizedBox(width: 5),
                                 Padding(
-                                  padding: const EdgeInsets.only(bottom: 10.0),
-                                  child: Chip(
-                                    label: Text(
-                                      item.attendanceStatus,
-                                      style: const TextStyle(fontSize: 10),
-                                    ),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(30),
-                                      side: BorderSide.none,
-                                    ),
-                                    side: BorderSide.none,
-                                    backgroundColor:
-                                        item.attendanceStatus.toLowerCase() ==
+                                  padding: const EdgeInsets.only(top: 15.0),
+                                  child: Column(
+                                    children: [
+                                      Chip(
+                                        label: Text(
+                                          item.attendanceStatus,
+                                          style: const TextStyle(
+                                            fontSize: 9,
+                                          ),
+                                        ),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(30),
+                                          side: BorderSide.none,
+                                        ),
+                                        backgroundColor: item.attendanceStatus
+                                                    .toLowerCase() ==
                                                 'present'
                                             ? Colors.green.shade100
                                             : Colors.red.shade100,
-                                    labelStyle: TextStyle(
-                                      color:
-                                          item.attendanceStatus.toLowerCase() ==
+                                        labelStyle: TextStyle(
+                                          color: item.attendanceStatus
+                                                      .toLowerCase() ==
                                                   'present'
                                               ? Colors.green.shade700
                                               : Colors.red.shade700,
-                                    ),
+                                        ),
+                                      ),
+                                      if (item.attendanceStatus.toLowerCase() !=
+                                          'present')
+                                        TextButton(
+                                          onPressed: () {
+                                            // Confirm before marking attendance as present
+                                            showDialog(
+                                              context: context,
+                                              builder: (context) {
+                                                return AlertDialog(
+                                                  title: const Text(
+                                                    'Confirm Mark Present ?',
+                                                  ),
+                                                  content: const Text(
+                                                    'Are you sure you want to mark this student as present?',
+                                                  ),
+                                                  actions: [
+                                                    TextButton(
+                                                      child: const Text('Yes'),
+                                                      onPressed: () {
+                                                        Navigator.of(context)
+                                                            .pop();
+                                                        // Mark attendance as present
+                                                        markAttendance(
+                                                          context,
+                                                          item.studentId,
+                                                          widget.classId,
+                                                        );
+                                                      },
+                                                    ),
+                                                    TextButton(
+                                                      child: const Text('No'),
+                                                      onPressed: () {
+                                                        Navigator.of(context)
+                                                            .pop();
+                                                      },
+                                                    ),
+                                                  ],
+                                                );
+                                              },
+                                            );
+                                          },
+                                          style: TextButton.styleFrom(
+                                            foregroundColor: Colors.indigo,
+                                          ),
+                                          child: const Text(
+                                            'Mark Present',
+                                            style: TextStyle(
+                                              fontSize: 10,
+                                            ),
+                                          ),
+                                        ),
+                                    ],
                                   ),
                                 ),
                               ],
                             ),
-                            const SizedBox(height: 5),
+                            const SizedBox(height: 2),
                             Row(
                               children: [
                                 const Icon(

@@ -169,18 +169,22 @@ class _SuperAdminViewPendingApprovalState
                 children: [
                   Row(
                     children: [
-                      CircleAvatar(
-                        radius: 24,
-                        backgroundColor: Colors.grey.shade300,
-                        child: Text(
-                          user.name[0].toUpperCase(),
-                          style: const TextStyle(
-                            color: Colors.black,
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
+                      (user.user_picture_url.isNotEmpty)
+                          ? CircleAvatar(
+                              radius: 20,
+                              backgroundImage:
+                                  NetworkImage(user.user_picture_url),
+                            )
+                          : CircleAvatar(
+                              radius: 22,
+                              backgroundColor: Colors.grey.shade300,
+                              child: Text(
+                                user.name[0].toUpperCase(),
+                                style: const TextStyle(
+                                  color: Colors.black,
+                                ),
+                              ),
+                            ),
                       const SizedBox(width: 12),
                       Expanded(
                         child: Column(

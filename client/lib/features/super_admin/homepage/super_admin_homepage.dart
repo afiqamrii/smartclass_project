@@ -58,6 +58,7 @@ class _SuperAdminHomepageState extends ConsumerState<SuperAdminHomepage> {
             SliverAppBar(
               pinned: false,
               expandedHeight: 90,
+              automaticallyImplyLeading: false,
               backgroundColor: ColorConstants.backgroundColor,
               elevation: 0,
               flexibleSpace: FlexibleSpaceBar(
@@ -180,11 +181,13 @@ class _SuperAdminHomepageState extends ConsumerState<SuperAdminHomepage> {
         Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const CircleAvatar(
-              radius: 25,
-              backgroundImage: AssetImage(
-                'assets/pictures/compPicture.jpg',
-              ),
+            CircleAvatar(
+              radius: 20,
+              backgroundImage: user.user_picture_url.isNotEmpty
+                  ? NetworkImage(user.user_picture_url)
+                  : const AssetImage(
+                      'assets/pictures/compPicture.jpg',
+                    ) as ImageProvider,
             ),
             const SizedBox(width: 15),
             Column(
@@ -194,7 +197,7 @@ class _SuperAdminHomepageState extends ConsumerState<SuperAdminHomepage> {
                 Text(
                   user.userName,
                   style: const TextStyle(
-                    fontSize: 17,
+                    fontSize: 16,
                     fontFamily: 'Figtree',
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
@@ -212,7 +215,7 @@ class _SuperAdminHomepageState extends ConsumerState<SuperAdminHomepage> {
                                   ? "Academic Staff"
                                   : "Super Admin",
                   style: const TextStyle(
-                    fontSize: 13,
+                    fontSize: 12,
                     fontFamily: 'FigtreeRegular',
                     fontWeight: FontWeight.w400,
                     color: Colors.white,

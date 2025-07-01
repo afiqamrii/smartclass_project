@@ -3,15 +3,21 @@ import 'package:flutter/material.dart';
 class CourseStatusCard extends StatelessWidget {
   final String courseName;
   final String courseCode;
+  final String lecturerName;
   final String imageUrl;
-  final bool isVerified; // true = Verified, false = Pending
+  final bool isVerified;
+  final int enrollmentId; // optional field for enrollment ID
+  final VoidCallback? onWithdraw; // add this to handle button tap
 
   const CourseStatusCard({
     super.key,
     required this.courseName,
     required this.courseCode,
+    required this.lecturerName,
     required this.imageUrl,
     required this.isVerified,
+    required this.enrollmentId, // required field for enrollment ID
+    this.onWithdraw, // optional callback
   });
 
   @override
@@ -19,14 +25,13 @@ class CourseStatusCard extends StatelessWidget {
     return Card(
       elevation: 4,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      clipBehavior: Clip.antiAlias, // ensures child content respects radius
+      clipBehavior: Clip.antiAlias,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // Image with overlay and status badge
+          // Image and overlay
           Stack(
             children: [
-              // Background image
               SizedBox(
                 height: 130,
                 width: double.infinity,
@@ -48,8 +53,6 @@ class CourseStatusCard extends StatelessWidget {
                   },
                 ),
               ),
-
-              // Gradient overlay
               Positioned.fill(
                 child: Container(
                   decoration: BoxDecoration(
@@ -64,24 +67,35 @@ class CourseStatusCard extends StatelessWidget {
                   ),
                 ),
               ),
-
-              // Course name and code
               Positioned(
                 bottom: 15,
                 left: 15,
                 right: 0,
-                child: Text(
-                  '$courseCode - $courseName',
-                  style: const TextStyle(
-                    fontSize: 17,
-                    fontFamily: 'Figtree',
-                    color: Colors.white,
-                    fontWeight: FontWeight.w600,
-                  ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '$courseCode - $courseName',
+                      style: const TextStyle(
+                        fontSize: 17,
+                        fontFamily: 'Figtree',
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 3),
+                    Text(
+                      'Lecturer - $lecturerName',
+                      style: const TextStyle(
+                        fontSize: 12,
+                        fontFamily: 'Figtree',
+                        color: Colors.white70,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
                 ),
               ),
-
-              // Status badge
               Positioned(
                 top: 12,
                 right: 12,
@@ -97,7 +111,7 @@ class CourseStatusCard extends StatelessWidget {
                     borderRadius: BorderRadius.circular(30),
                   ),
                   child: Text(
-                    isVerified ? "Verified" : "Pending",
+                    isVerified ? "Approved" : "Pending",
                     style: const TextStyle(
                       fontSize: 9,
                       fontFamily: 'Figtree',
@@ -108,6 +122,40 @@ class CourseStatusCard extends StatelessWidget {
                 ),
               ),
             ],
+          ),
+
+          // Withdraw button
+          Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 12,
+              vertical: 8,
+            ),
+            child: SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                onPressed: onWithdraw,
+                icon: const Icon(
+                  Icons.cancel,
+                  color: Colors.red,
+                  size: 16,
+                ),
+                label: const Text(
+                  'Withdraw Enrollment',
+                  style: TextStyle(
+                    fontFamily: 'Figtree',
+                    color: Colors.red,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                style: OutlinedButton.styleFrom(
+                  side: const BorderSide(color: Colors.red),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+              ),
+            ),
           ),
         ],
       ),

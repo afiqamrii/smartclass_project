@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:smartclass_fyp_2024/constants/color_constants.dart';
+import 'package:smartclass_fyp_2024/features/student/views/registration/signup_page/face_register_page.dart';
 import 'package:smartclass_fyp_2024/shared/components/confirmPassword_textfield.dart';
 import 'package:smartclass_fyp_2024/shared/components/login_textfield.dart';
 import 'package:smartclass_fyp_2024/shared/components/custom_buttom.dart';
@@ -27,8 +29,30 @@ class StudentSignupPage extends ConsumerWidget {
   //Sign user in method
   void signUserIn(BuildContext context, WidgetRef ref) async {
     ref.read(loadingProvider.notifier).state = true; //Start loading
+    final faceImage = ref.read(faceImageProvider); // get image
+    if (faceImage == null) {
+      // Show error if no image is selected
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please capture your face image first.')),
+      );
+      ref.read(loadingProvider.notifier).state = false; //Stop loading
+      return;
+    }
+    // Check if all fields are filled
+    if (userNameController.text.isEmpty ||
+        name.text.isEmpty ||
+        emailController.text.isEmpty ||
+        passwordController.text.isEmpty ||
+        confirmPasswordController.text.isEmpty ||
+        studentIdController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please fill all fields.')),
+      );
+      ref.read(loadingProvider.notifier).state = false; //Stop loading
+      return;
+    }
 
-    await authService.signUpUser(
+    await authService.signUpUserWithFace(
       context: context,
       ref: ref,
       userName: userNameController.text,
@@ -37,7 +61,8 @@ class StudentSignupPage extends ConsumerWidget {
       userPassword: passwordController.text,
       confirmPassword: confirmPasswordController.text,
       roleId: Role.student, //Set roleId to 1 (Student)
-      externalId: studentIdController.text, //Set externalId to studentId
+      externalId: studentIdController.text, //Set externalId to
+      imageFile: faceImage, //Pass the captured face image
     );
 
     ref.read(loadingProvider.notifier).state = false; //Stop loading
@@ -46,6 +71,7 @@ class StudentSignupPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     double screenWidth = MediaQuery.of(context).size.width;
+    final faceImage = ref.watch(faceImageProvider); // watch image for preview
 
     return Scaffold(
       appBar: const Appbar(),
@@ -240,6 +266,217 @@ class StudentSignupPage extends ConsumerWidget {
                   hintText: 'Confirm Password',
                   obscureText: true,
                 ),
+
+                const SizedBox(height: 15),
+                if (faceImage == null)
+                  Padding(
+                    padding: EdgeInsets.only(left: screenWidth * 0.05),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Register your face',
+                          style: TextStyle(
+                            color: Colors.grey[600],
+                            fontSize: 15,
+                            fontFamily: 'Figtree',
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                const SizedBox(height: 5),
+
+                // Preview section
+                if (faceImage == null)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 15.0,
+                    ),
+                    child: Column(
+                      children: [
+                        Card(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          elevation: 4,
+                          child: Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Column(
+                              children: [
+                                const Icon(
+                                  Icons.face_retouching_natural,
+                                  size: 45,
+                                  color: ColorConstants.primaryColor,
+                                ),
+                                const SizedBox(height: 10),
+                                const Text(
+                                  "Register Your Face",
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                                const Text(
+                                  "Please scan your face clearly in a well-lit area.\n"
+                                  "This photo will be saved for attendance verification.",
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                                const SizedBox(height: 12),
+                                ElevatedButton.icon(
+                                  icon: const Icon(
+                                    Icons.camera_alt,
+                                    size: 15,
+                                  ),
+                                  label: const Text(
+                                    "Scan Face",
+                                    style: TextStyle(
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor:
+                                        ColorConstants.backgroundColor,
+                                    foregroundColor: Colors.white,
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 24,
+                                      vertical: 12,
+                                    ),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(30),
+                                    ),
+                                  ),
+                                  onPressed: () async {
+                                    final capturedFile = await Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            const FaceRegisterPage(),
+                                      ),
+                                    );
+
+                                    if (capturedFile != null) {
+                                      ref
+                                          .read(faceImageProvider.notifier)
+                                          .state = capturedFile;
+                                    }
+                                  },
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                      ],
+                    ),
+                  ),
+
+                const SizedBox(height: 15),
+                // Preview section
+                if (faceImage != null)
+                  Padding(
+                    padding: const EdgeInsets.only(
+                      left: 20.0,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Preview of Captured Face",
+                          style: TextStyle(
+                            fontSize: 15,
+                            color: Colors.grey[600],
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            ClipOval(
+                              child: Image.file(
+                                faceImage,
+                                width: 150,
+                                height: 150,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 10),
+                        const Text(
+                          "This image will be used for attendance verification.",
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey,
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        const Text(
+                          "If you want to change the image, please click on the 'Scan Face' button again.",
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey,
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        const Text(
+                          "Note: Please ensure the image is clear and well-lit.",
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.redAccent,
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        //Button to retake face image
+                        ElevatedButton.icon(
+                            icon: const Icon(
+                              Icons.camera_alt,
+                              size: 15,
+                              color: Colors.white,
+                            ),
+                            label: const Text(
+                              "Retake Face Image",
+                              style: TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: ColorConstants.backgroundColor,
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 10,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30),
+                              ),
+                            ),
+                            onPressed: () async {
+                              final capturedFile = await Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      const FaceRegisterPage(),
+                                ),
+                              );
+
+                              if (capturedFile != null) {
+                                ref.read(faceImageProvider.notifier).state =
+                                    capturedFile;
+                              }
+                            }),
+                      ],
+                    ),
+                  ),
 
                 const SizedBox(height: 30),
 

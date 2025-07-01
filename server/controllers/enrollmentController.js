@@ -1,18 +1,24 @@
-const enrollmentService = require("../services/enrollmentService");
+
+const enrollmentService = require('../services/enrollmentService');
 const NotificationService = require('../services/Notifications/notificationsService');
 
 const enrollStudent = async (req, res) => {
     try {
         const {courseId ,studentId , lecturerId} = req.body;
+        const studentEmail = req.body.studentEmail; 
+        const lecturerEmail = req.body.lecturerEmail;
+        const courseName = req.body.courseName;
+        
+
         
         // Log the received request for debugging
-        console.log("Received enroll student request:", { courseId, studentId });
+        console.log("Received enroll student request:", { courseId, studentId, lecturerId, studentEmail, lecturerEmail , courseName });
         
         // Validate input
         if (!courseId || !studentId) {
             return res.status(400).json({ error: "Course ID and Student ID are required" });
         }
-        const result = await enrollmentService.enrollStudent(studentId, courseId);
+        const result = await enrollmentService.enrollStudent(studentId, courseId, studentEmail, lecturerEmail, courseName, lecturerId);
 
         // Step 2 : Store notification in database (via notification service) for student
         await NotificationService.createNotification(
@@ -163,7 +169,10 @@ const lecturerGetEnrollment = async (req, res) => {
 // Update enrollment status
 const updateEnrollmentStatus = async (req, res) => {
     try {
-        const { enrollmentId, status } = req.body;
+        const { enrollmentId, status , email, courseName, courseCode} = req.body;
+
+        // Debugging purpose
+        console.log("Received request to update enrollment status:", { enrollmentId, status , email, courseName, courseCode });
 
         // Validate input
         if (!enrollmentId || !status) {
@@ -171,7 +180,7 @@ const updateEnrollmentStatus = async (req, res) => {
         }
 
         // Call service to update enrollment status
-        const result = await enrollmentService.updateEnrollmentStatus(enrollmentId, status);
+        const result = await enrollmentService.updateEnrollmentStatus(enrollmentId, status, email, courseName, courseCode);
         res.status(200).json({ message: "Enrollment status updated successfully", result });
     } catch (error) {
         console.error("Controller Error:", error);
@@ -179,6 +188,37 @@ const updateEnrollmentStatus = async (req, res) => {
     }
 };
 
+//Withdraw enrollment
+const withdrawEnrollment = async (req, res) => {
+    try {
+        //Debug
+        console.log("Received request to withdraw enrollment");
+        const enrollmentId = req.params.enrollmentId;
 
-module.exports = { enrollStudent , getStudentEnrollment , getAllEnrollment, lecturerGetEnrollment , updateEnrollmentStatus };
+        //Get from body
+        const { studentId, courseName, studentEmail} = req.body;
+
+
+        // Validate input
+        if (!enrollmentId || !studentId || !courseName || !studentEmail) {
+            return res.status(400).json({ error: "Enrollment ID, Student ID, Course Name, and Student Email are required" });
+        }
+
+        // Call service to withdraw enrollment
+        const result = await enrollmentService.withdrawEnrollment(enrollmentId , studentId);
+
+        //If success, send email notification to student 
+        //
+
+
+
+        res.status(200).json({ message: "Enrollment withdrawn successfully", result });
+    } catch (error) {
+        console.error("Controller Error:", error);
+        res.status(500).json({ error: error.message });
+    }
+};
+
+
+module.exports = { enrollStudent , getStudentEnrollment , getAllEnrollment, lecturerGetEnrollment , updateEnrollmentStatus , withdrawEnrollment };
 

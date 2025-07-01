@@ -2,11 +2,13 @@ import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:quickalert/quickalert.dart';
 import 'package:smartclass_fyp_2024/features/lecturer/views/manage_class/lecturer_show_all_classes.dart';
 import 'package:smartclass_fyp_2024/features/lecturer/views/manage_class/models/course_model.dart';
 import 'package:smartclass_fyp_2024/features/lecturer/views/manage_class/models/create_class_model.dart';
 import 'package:smartclass_fyp_2024/features/lecturer/views/manage_class/providers/course_providers.dart';
+import 'package:smartclass_fyp_2024/shared/components/custom_buttom.dart';
 import 'package:smartclass_fyp_2024/shared/data/dataprovider/classroom_provider.dart';
 import 'package:smartclass_fyp_2024/shared/data/dataprovider/user_provider.dart';
 import 'package:smartclass_fyp_2024/shared/data/models/classroom_models.dart';
@@ -33,18 +35,50 @@ class _LectCreateClassState extends ConsumerState<LectCreateClass> {
 
   final _formKey = GlobalKey<FormState>();
   bool _isSubmitted = false;
+  bool _isLoading = false;
+
+  final RefreshController _refreshController =
+      RefreshController(initialRefresh: false);
+
+  Future<void> _handleRefresh() async {
+    // ignore: unused_local_variable
+    final courseListAsync = ref.refresh(
+        courseListByLecturerProvider(ref.watch(userProvider).externalId));
+
+    await Future.delayed(const Duration(seconds: 1));
+    _refreshController.refreshCompleted();
+  }
+
+  void _onLoading() async {
+    await Future.delayed(const Duration(seconds: 1));
+    if (mounted) setState(() {});
+    _refreshController.loadComplete();
+  }
 
   @override
   Widget build(BuildContext context) {
     final user = ref.watch(userProvider);
-    final courseListAsync = ref.watch(courseListProvider);
+    final courseListAsync =
+        ref.watch(courseListByLecturerProvider(user.externalId));
     final classroomAsyncValue = ref.watch(classroomApiProvider);
 
     return Scaffold(
         backgroundColor: Colors.white,
         appBar: appBar(context),
-        body: _createClassSection(
-            context, user, courseListAsync, classroomAsyncValue),
+        body: SmartRefresher(
+          onRefresh: _handleRefresh,
+          enablePullDown: true,
+          header: const ClassicHeader(
+            releaseIcon: Icon(
+              Icons.arrow_upward,
+              color: Colors.grey,
+            ),
+          ),
+          onLoading: _onLoading,
+          controller: _refreshController,
+          child: _createClassSection(
+              context, user, courseListAsync, classroomAsyncValue),
+        ),
         resizeToAvoidBottomInset: true);
   }
 
@@ -150,8 +184,15 @@ class _LectCreateClassState extends ConsumerState<LectCreateClass> {
 
             // Create Class Button
             Center(
-              child: ElevatedButton.icon(
-                onPressed: () async {
+              child: CustomButton(
+                text: "Saves Class",
+                icon: Icons.check,
+                isLoading: _isLoading,
+                onTap: () async {
+                  setState(() {
+                    _isSubmitted = true;
+                  });
+
                   // Basic validation
                   if (courseController.text.isEmpty ||
                       titleController.text.isEmpty ||
@@ -168,6 +209,10 @@ class _LectCreateClassState extends ConsumerState<LectCreateClass> {
                     return;
                   }
 
+                  setState(() {
+                    _isLoading = true;
+                  });
+
                   final classData = CreateClassModel(
                     classId: 0,
                     courseId: int.parse(courseController.text),
@@ -182,6 +227,10 @@ class _LectCreateClassState extends ConsumerState<LectCreateClass> {
 
                   final response = await Api.addClass(classData);
 
+                  setState(() {
+                    _isLoading = false;
+                  });
+
                   if (response != null && response['Status_Code'] == 200) {
                     QuickAlert.show(
                       context: context,
@@ -195,38 +244,18 @@ class _LectCreateClassState extends ConsumerState<LectCreateClass> {
                         );
                       },
                     );
-                  } else {
+                  } else if (response == null) {
                     QuickAlert.show(
                       context: context,
                       type: QuickAlertType.error,
-                      text: "Failed to create class. Try again!",
+                      text:
+                          "You already have a class for this day at the specified time. Please choose a different time or day.",
                       onConfirmBtnTap: () {
                         Navigator.pop(context);
                       },
                     );
                   }
                 },
-                icon: const Icon(
-                  Icons.check,
-                  color: Color.fromARGB(255, 255, 255, 255),
-                ),
-                label: const Text(
-                  "Saves Class",
-                  style: TextStyle(
-                    fontSize: 16.0,
-                    color: Color.fromARGB(255, 255, 255, 255),
-                  ),
-                ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xff323232),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(54.0),
-                  ),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 20.0,
-                    vertical: 12.0,
-                  ),
-                ),
               ),
             ),
           ],

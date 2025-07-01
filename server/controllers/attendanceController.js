@@ -252,4 +252,49 @@ exports.verifyStudentFaces = async (req, res) => {
     }
 };
 
+// Manually add attendance for a student
+exports.addManualAttendance = async (req, res) => {
+    try {
+        const { studentId, classId, attendanceStatus } = req.body;
+
+        // Get the current UTC time
+        const currentDate = new Date();
+
+        // Format the date directly in 'Asia/Kuala_Lumpur' time zone
+        const timeStamp = currentDate.toLocaleString('en-US', {
+            timeZone: 'Asia/Kuala_Lumpur', // This does the UTC+8 conversion
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: 'numeric',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: true
+        });
+
+        // console.log('Formatted timestamp:', timeStamp);
+
+        // Add it to request body
+        req.body.timeStamp = timeStamp;
+
+        // Validate input
+        if (!studentId || !classId || !attendanceStatus) {
+            return res.status(400).json({ message: "Student ID, Class ID, and Attendance Status are required" });
+        }
+
+        // Call service to add manual attendance
+        const result = await attendanceService.addAttendance({
+            classId,
+            studentId,
+            attendanceStatus,
+            timeStamp
+        });
+        
+        res.status(200).json({ Status_Code: 200, message: "Attendance added successfully", result });
+    } catch (error) {
+        console.error("Controller Error:", error);
+        res.status(500).json({ message: error.message });
+    }
+}
+
 

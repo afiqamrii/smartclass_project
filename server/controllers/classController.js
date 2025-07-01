@@ -16,6 +16,18 @@ exports.addClass = async (req, res) => {
         }
 
         const result = await classService.addClass(addClass);
+
+        //Debug
+        console.log("Result from service:", result);
+        
+        //if no classId is returned, it means the class already exists and return error to user
+        if (!result || result === 0 || result.classId === 0 || result.success === false) {
+            return res.status(400).json({
+                Status_Code: 400,
+                message: "You already have a class for this day at the specified time. Please choose a different time or day."
+            });
+        }
+
         res.status(200).json({ Status_Code: 200, message: "Class added successfully", classId: result.classId });
     } catch (error) {
         console.error("Controller Error:", error);

@@ -7,9 +7,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:smartclass_fyp_2024/constants/color_constants.dart';
-import 'package:smartclass_fyp_2024/features/student/attendance/views/face_recognition_get_started.dart';
-import 'package:smartclass_fyp_2024/features/student/attendance/views/face_recognition_not_matched.dart';
-import 'package:smartclass_fyp_2024/features/student/attendance/views/face_recognition_successfull.dart';
 import 'package:smartclass_fyp_2024/features/student/manage_class/views/student_view_class_details.dart';
 import 'package:smartclass_fyp_2024/features/student/models/todayClass_card_models.dart';
 import 'package:smartclass_fyp_2024/features/student/providers/student_class_provider.dart';
@@ -19,7 +16,6 @@ import 'package:smartclass_fyp_2024/features/student/views/template/student_bott
 import 'package:smartclass_fyp_2024/features/student/views/widgets/classnow_card.dart';
 import 'package:smartclass_fyp_2024/features/student/views/widgets/student_todayclass_card.dart';
 import 'package:smartclass_fyp_2024/features/student/views/widgets/tabs_item.dart';
-import 'package:smartclass_fyp_2024/shared/WebSocket/provider/socket_provider.dart';
 import 'package:smartclass_fyp_2024/shared/components/unavailablePage.dart';
 import 'package:smartclass_fyp_2024/shared/data/dataprovider/user_provider.dart';
 import 'package:smartclass_fyp_2024/shared/data/models/user.dart';
@@ -124,6 +120,7 @@ class _StudentHomePageState extends ConsumerState<StudentHomePage> {
             SliverAppBar(
               pinned: false,
               expandedHeight: 90,
+              automaticallyImplyLeading: false,
               backgroundColor:
                   ColorConstants.backgroundColor, // Set background color
               elevation: 0, // No shadow
@@ -145,11 +142,13 @@ class _StudentHomePageState extends ConsumerState<StudentHomePage> {
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            const CircleAvatar(
+                            CircleAvatar(
                               radius: 20,
-                              backgroundImage: AssetImage(
-                                'assets/pictures/compPicture.jpg',
-                              ),
+                              backgroundImage: user.user_picture_url.isNotEmpty
+                                  ? NetworkImage(user.user_picture_url)
+                                  : const AssetImage(
+                                      'assets/pictures/compPicture.jpg',
+                                    ) as ImageProvider,
                             ),
                             const SizedBox(width: 15),
                             Column(

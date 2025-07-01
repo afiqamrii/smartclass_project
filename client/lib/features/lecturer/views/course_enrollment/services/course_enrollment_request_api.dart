@@ -47,7 +47,12 @@ class CourseEnrollmentRequestApi {
 
   //Function to update the enrollment request status
   static Future<void> updateEnrollmentRequestStatus(
-      int enrollmentId, String status) async {
+    int enrollmentId,
+    String status,
+    String email,
+    String courseName,
+    String courseCode,
+  ) async {
     try {
       final response = await http.put(
         Uri.parse('${ApiConstants.baseUrl}/enrollment/updateenrollment'),
@@ -55,6 +60,9 @@ class CourseEnrollmentRequestApi {
         body: jsonEncode({
           'enrollmentId': enrollmentId,
           'status': status,
+          'email': email, // Pass the user's email
+          'courseName': courseName, // Pass the course name
+          'courseCode': courseCode, // Pass the course code
         }),
       );
 

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:smartclass_fyp_2024/features/student/views/enroll_course/providers/student_enrollment_providers.dart';
+import 'package:smartclass_fyp_2024/features/student/views/enroll_course/services/student_course_enrollment_services.dart';
 import 'package:smartclass_fyp_2024/features/student/views/enroll_course/views/student_enroll_course.dart';
 import 'package:smartclass_fyp_2024/features/student/views/enroll_course/widget/enrollment_card.dart';
 import 'package:smartclass_fyp_2024/shared/data/dataprovider/user_provider.dart';
@@ -50,9 +51,30 @@ class _StudentViewEnrolledState extends ConsumerState<StudentViewEnrolled> {
     super.dispose();
   }
 
+  //Withdraw enrollment function
+  void withdrawCourse(
+    BuildContext context,
+    int enrollmentId,
+    String studentId,
+    String courseName,
+    String studentEmail,
+  ) async {
+    //Call api
+    await CourseEnrollmentService.withdrawFromCourse(
+      context,
+      enrollmentId,
+      studentId,
+      courseName,
+      studentEmail,
+    );
+
+    // Refresh the enrollment list after withdrawal
+    ref.invalidate(enrollmentListProvider(studentId));
+  }
+
   final List<String> _filters = [
     "All", // Default filter
-    "Verified",
+    "Approved",
     "Pending",
   ];
 
@@ -69,7 +91,7 @@ class _StudentViewEnrolledState extends ConsumerState<StudentViewEnrolled> {
     return Scaffold(
       appBar: _appBar(context),
       backgroundColor: Colors.white,
-      body: SmartRefresher( 
+      body: SmartRefresher(
         controller: _refreshController,
         enablePullDown: true,
         header: const ClassicHeader(
@@ -220,11 +242,47 @@ class _StudentViewEnrolledState extends ConsumerState<StudentViewEnrolled> {
                                 child: CourseStatusCard(
                                   courseName: enrolledCourse.courseName,
                                   courseCode: enrolledCourse.courseCode,
+                                  lecturerName: enrolledCourse.lecturerName,
                                   imageUrl: enrolledCourse.courseImageUrl,
+                                  enrollmentId: enrolledCourse.enrollmentId,
                                   isVerified:
                                       enrolledCourse.status == 'Approved'
                                           ? true
                                           : false,
+                                  onWithdraw: () {
+                                    // Handle withdrawal action
+                                    showDialog(
+                                      context: context,
+                                      builder: (context) {
+                                        return AlertDialog(
+                                          title: const Text('Withdraw Course'),
+                                          content: Text(
+                                            'Are you sure you want to withdraw from ${enrolledCourse.courseName}?',
+                                          ),
+                                          actions: [
+                                            TextButton(
+                                              onPressed: () {
+                                                Navigator.pop(context);
+                                              },
+                                              child: const Text('Cancel'),
+                                            ),
+                                            TextButton(
+                                              onPressed: () {
+                                                withdrawCourse(
+                                                  context,
+                                                  enrolledCourse.enrollmentId,
+                                                  enrolledCourse.studentId,
+                                                  enrolledCourse.courseName,
+                                                  user.userEmail,
+                                                );
+                                              },
+                                              child: const Text('Withdraw'),
+                                            ),
+                                          ],
+                                        );
+                                      },
+                                    );
+                                  },
                                 ),
                               ),
                               const SizedBox(height: 2),

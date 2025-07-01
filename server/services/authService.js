@@ -6,6 +6,95 @@ const UserVerification = require("../models/UserVerification");
 const PasswordReset = require("../models/PasswordReset");
 const { Op } = require('sequelize');
 
+const { Storage } = require('@google-cloud/storage');
+const reportModel = require('../models/reportModel');
+const axios = require('axios');
+const FormData = require('form-data');
+const { GoogleAuth } = require('google-auth-library');
+require("dotenv").config();
+const path = require('path');
+const fs = require('fs');
+
+let credentials;
+let auth;
+
+// Initialize GoogleAuth with credentials from environment variable (same as gcsTokenRoute.js)
+if (process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON) {
+  credentials = JSON.parse(process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON);
+
+  // Fix formatting of private_key by replacing escaped newlines
+  if (credentials.private_key) {
+    credentials.private_key = credentials.private_key.replace(/\\n/g, '\n');
+  }
+
+  auth = new GoogleAuth({
+    scopes: ['https://www.googleapis.com/auth/devstorage.read_write'],
+  });
+
+  // Load the credentials into the auth instance
+  (async () => {
+    try {
+      await auth.fromJSON(credentials);
+    } catch (error) {
+      console.error("Failed to initialize GoogleAuth with provided credentials:", error);
+    }
+  })();
+} else {
+  console.error("GOOGLE_APPLICATION_CREDENTIALS_JSON environment variable is missing.");
+}
+
+async function getBearerToken() {
+  try {
+    if (!auth) throw new Error('GoogleAuth is not initialized.');
+    const client = await auth.getClient();
+    const accessTokenResponse = await client.getAccessToken();
+
+    if (!accessTokenResponse || !accessTokenResponse.token) {
+      throw new Error('Failed to get access token');
+    }
+    return accessTokenResponse.token;
+  } catch (error) {
+    console.error('Error fetching access token:', error);
+    throw error;
+  }
+}
+
+exports.uploadImageToGCS = async (imageFile) => {
+  try {
+    const accessToken = await getBearerToken();
+
+    const gcsFileName = `usersImages/${Date.now()}_${imageFile.originalname}`;
+    const uploadUrl = `${process.env.gcsStorageUrl}/${process.env.bucketName}/o?uploadType=multipart&name=${encodeURIComponent(gcsFileName)}`;
+
+    const form = new FormData();
+    form.append('metadata', JSON.stringify({
+      name: gcsFileName,
+      contentType: imageFile.mimetype,
+    }), {
+      contentType: 'application/json',
+    });
+    const fileBuffer = fs.readFileSync(imageFile.path);
+    form.append('media', fileBuffer, {
+    filename: imageFile.originalname,
+    contentType: imageFile.mimetype,
+    });
+
+    const response = await axios.post(uploadUrl, form, {
+      headers: {
+        ...form.getHeaders(),
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+
+    const imageUrl = `https://storage.googleapis.com/${process.env.bucketName}/${gcsFileName}`;
+    return imageUrl;
+  } catch (error) {
+    console.error('Error uploading image to GCS:', error.response?.data || error.message);
+    throw new Error('Failed to upload image');
+  }
+};
+
+
 //Email handler
 const nodemailer = require("nodemailer");
 
@@ -184,31 +273,67 @@ const sendVerificationEmail = async ({userId, userEmail} , res) => {
 //Verify Email
 exports.verifyEmail = async (userId, uniqueString) => {
     try {
-      const userVerification = await UserVerification.findOne({ where: { userId } });
-      if (!userVerification) {
-        return { error: true, message: "No verification record found!" };
-      }
-  
-      // Check if expired
-      if (userVerification.expiresAt < Date.now()) {
+        const userVerification = await UserVerification.findOne({ where: { userId } });
+        if (!userVerification) {
+            return { error: true, message: "No verification record found!" };
+        }
+    
+        // Check if expired
+        if (userVerification.expiresAt < Date.now()) {
+            await UserVerification.destroy({ where: { userId } });
+            return { error: true, message: "Verification link has expired." };
+        }
+    
+        // Compare hashed unique string
+        const match = await bcrypt.compare(uniqueString, userVerification.uniqueString);
+        if (!match) {
+            return { error: true, message: "Invalid verification details." };
+        }
+
+        // Update user's verified status
+        await User.update({ verified: true }, { where: { userId: userId } });
         await UserVerification.destroy({ where: { userId } });
-        return { error: true, message: "Verification link has expired." };
-      }
-  
-      // Compare hashed unique string
-      const match = await bcrypt.compare(uniqueString, userVerification.uniqueString);
-      if (!match) {
-        return { error: true, message: "Invalid verification details." };
-      }
-  
-      // Update user's verified status
-      await User.update({ verified: true }, { where: { userId: userId } });
-      await UserVerification.destroy({ where: { userId } });
-  
-      return { error: false, message: "Email has been successfully verified! Now wait for admin approval. We will notify you once approved" };
+
+        // Fetch the verified user's details
+        const verifiedUser = await User.findOne({ where: { userId } });
+        if (!verifiedUser) {
+            return { error: true, message: "Verified user not found." };
+        }
+
+        // Send notification email to superadmin
+        const superadminEmail = process.env.SUPERADMIN_EMAIL; 
+
+        const mailOptions = {
+            from: process.env.AUTH_EMAIL,
+            to: superadminEmail,
+            subject: "New User Email Verified - Pending Your Approval",
+            html: `
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 10px;">
+                    <div style="text-align: center; margin-bottom: 20px;">
+                        <img src="https://i.imgur.com/LndAkqq.png" alt="IntelliClass Logo" style="max-width: 150px;">
+                    </div>
+                    <h2 style="color: #FF9800; text-align: center;">New User Verified</h2>
+                    <p style="font-size: 16px; color: #333;">A new user has verified their email and is now pending admin approval. Here are the user details:</p>
+                    <ul style="font-size: 15px; color: #333; line-height: 1.6;">
+                        <li><strong>Name:</strong> ${verifiedUser.name}</li>
+                    </ul>
+                    <p style="font-size: 14px; color: #555;">Please login to the admin dashboard to review and approve the user account.</p>
+                    <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
+                    <p style="font-size: 12px; color: #999; text-align: center;">&copy; ${new Date().getFullYear()} IntelliClass. All rights reserved.</p>
+                </div>
+            `
+        };
+
+        // Send the email (assuming you're using nodemailer)
+        await transporter.sendMail(mailOptions);
+
+        return { 
+            error: false, 
+            message: "Email has been successfully verified! Now wait for admin approval. We will notify you once approved." 
+        };
     } catch (err) {
-      console.log(err);
-      return { error: true, message: "Error occurred during verification." };
+        console.log(err);
+        return { error: true, message: "Error occurred during verification." };
     }
 };
 
@@ -487,6 +612,33 @@ exports.updateProfile = async (userId, userName, name) => {
         }
     };
 };
+
+exports.updateProfileImage = async (userId, userName, name, user_picture_url) => {
+    // Update user profile image
+    // Check if username is already in use by another user (not this user)
+    const existingUserName = await User.findOne({ 
+        where: { 
+            userName,
+            userId: { [Op.ne]: userId } // username exists but belongs to different user
+        }
+    });
+
+    if(existingUserName){
+        throw new Error("Username is already in use!");
+    }
+
+    // Update user profile
+    await User.update({ userName, name , user_picture_url  }, { where: { userId } });
+
+    console.log("Profile updated successfully!");
+    return {
+        status: 200,
+        json: {
+            success: true,
+            message: "Profile updated successfully."
+        }
+    };
+};      
 
 
 

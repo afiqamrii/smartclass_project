@@ -1,5 +1,7 @@
 import 'dart:convert';
+import 'package:another_flushbar/flushbar.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -50,6 +52,68 @@ class AttendanceService {
     } catch (e) {
       print('Download error: $e');
       return null;
+    }
+  }
+
+  // Mark attendance as present
+  static Future<void> markAttendance(
+    BuildContext context,
+    String studentId,
+    int classId,
+  ) async {
+    try {
+      final response = await http.post(
+        Uri.parse('${ApiConstants.baseUrl}/clockInAttendance/manualattendance'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({
+          'studentId': studentId,
+          'classId': classId,
+          'attendanceStatus': 'Present',
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        await Flushbar(
+          message: 'Student marked present successfully!',
+          duration: const Duration(seconds: 3),
+          backgroundColor: Colors.green.shade600,
+          margin: const EdgeInsets.all(8),
+          borderRadius: BorderRadius.circular(8),
+          flushbarPosition: FlushbarPosition.TOP,
+          icon: const Icon(
+            Icons.check_circle,
+            color: Colors.white,
+          ),
+        ).show(context);
+      } else {
+        final jsonData = jsonDecode(response.body);
+        final error = jsonData['message'] ?? 'Failed to mark attendance.';
+        await Flushbar(
+          message: error,
+          duration: const Duration(seconds: 3),
+          backgroundColor: Colors.red.shade600,
+          margin: const EdgeInsets.all(8),
+          borderRadius: BorderRadius.circular(8),
+          flushbarPosition: FlushbarPosition.TOP,
+          icon: const Icon(
+            Icons.error,
+            color: Colors.white,
+          ),
+        ).show(context);
+      }
+    } catch (e) {
+      await Flushbar(
+        message: 'Error occurred while marking attendance. Please try again.',
+        duration: const Duration(seconds: 3),
+        backgroundColor: Colors.red.shade600,
+        margin: const EdgeInsets.all(8),
+        borderRadius: BorderRadius.circular(8),
+        flushbarPosition: FlushbarPosition.TOP,
+        icon: const Icon(
+          Icons.error_outline,
+          color: Colors.white,
+        ),
+      ).show(context);
     }
   }
 }

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:smartclass_fyp_2024/shared/data/models/user.dart';
 import 'package:smartclass_fyp_2024/shared/data/services/auth_services.dart';
@@ -13,6 +15,7 @@ class UserProvider extends StateNotifier<User> {
           token: '',
           roleId: 0,
           externalId: '',
+          user_picture_url: '',
         ));
 
   // Set user data from JSON
@@ -41,3 +44,6 @@ final userProvider = StateNotifierProvider<UserProvider, User>((ref) {
 
 // For UI loading state
 final loadingProvider = StateProvider<bool>((ref) => false);
+
+//For image
+final faceImageProvider = StateProvider<File?>((ref) => null);

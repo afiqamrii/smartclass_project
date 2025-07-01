@@ -15,6 +15,9 @@ router.post('/verify/face/:studentId/:classId', upload.single('image'), attendan
 //Add attendance route
 router.put("/addattendance", attendanceController.addAttendance);
 
+//Manually add attendance for a student
+router.post("/manualattendance", attendanceController.addManualAttendance);
+
 //Check student attendance
 router.get("/checkattendance/:classId/:studentId", attendanceController.checkAttendance);
 

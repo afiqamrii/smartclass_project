@@ -8,7 +8,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mlkit_face_detection/google_mlkit_face_detection.dart';
 import 'package:google_mlkit_commons/google_mlkit_commons.dart';
-import 'package:http/http.dart' as http;
 import 'package:smartclass_fyp_2024/features/student/attendance/services/face_recognition_api.dart';
 import 'package:smartclass_fyp_2024/shared/data/dataprovider/user_provider.dart';
 import 'package:smartclass_fyp_2024/shared/data/models/user.dart'; // Add this for making HTTP requests
@@ -138,7 +137,7 @@ class _FaceScannerPageState extends ConsumerState<FaceScannerPage>
           : ImageFormatGroup.bgra8888,
     );
 
-    await _cameraController!.initialize();
+  await _cameraController!.initialize();
     _cameraImageRotation =
         InputImageRotationValue.fromRawValue(frontCamera.sensorOrientation);
 

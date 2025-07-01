@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:smartclass_fyp_2024/features/lecturer/views/manage_class/providers/course_providers.dart';
 import 'package:smartclass_fyp_2024/features/student/views/widgets/student_todayclass_card.dart';
 import 'package:smartclass_fyp_2024/shared/data/dataprovider/data_provider.dart';
 import 'package:smartclass_fyp_2024/features/lecturer/views/manage_class/lecturer_view_class.dart';
@@ -31,6 +32,10 @@ class _LectViewAllClassState extends ConsumerState<LectViewAllClass> {
   Future<void> _handleRefresh() async {
     //Refresh the class data
     ref.refresh(classDataProvider(ref.watch(userProvider).externalId));
+
+    // ignore: unused_local_variable
+    final courseListAsync = ref.watch(
+        courseListByLecturerProvider(ref.watch(userProvider).externalId));
 
     await Future.delayed(const Duration(seconds: 1));
     _refreshController.refreshCompleted();

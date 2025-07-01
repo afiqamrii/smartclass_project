@@ -77,11 +77,13 @@ class _StudentProfilepageState extends ConsumerState<StudentProfilepage> {
                       Row(
                         children: [
                           //Put picture profiles hereee
-                          const CircleAvatar(
+                          CircleAvatar(
                             radius: 20,
-                            backgroundImage: AssetImage(
-                              'assets/pictures/compPicture.jpg',
-                            ),
+                            backgroundImage: user.user_picture_url.isNotEmpty
+                                ? NetworkImage(user.user_picture_url)
+                                : const AssetImage(
+                                    'assets/pictures/compPicture.jpg',
+                                  ) as ImageProvider,
                           ),
                           const SizedBox(width: 15),
                           Column(
@@ -155,15 +157,6 @@ class _StudentProfilepageState extends ConsumerState<StudentProfilepage> {
                                   toLeftTransition(
                                       const StudentAccountDetails()),
                                 );
-                              },
-                            ),
-
-                            // Reported Issues
-                            buildAccountOption(
-                              iconPath: 'assets/icons/report.png',
-                              title: 'Reported Issues',
-                              onTap: () {
-                                // TODO: Navigate to Report Issues Page
                               },
                             ),
 
