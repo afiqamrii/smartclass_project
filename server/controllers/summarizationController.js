@@ -105,3 +105,66 @@ exports.saveSummarization = async (req, res) => {
     }
 }
 
+// Function to summarize transcription
+exports.summarizeTranscription = async (req, res) => {
+  try {
+    const { transcriptionText, prompt, recordingId, classId } = req.body;
+
+    // Basic validation
+    if (!transcriptionText || !recordingId || !classId) {
+      return res.status(400).json({ message: 'Missing required fields: transcriptionText, recordingId, classId' });
+    }
+
+    // Call the service to perform the summarization
+    const result = await summarizationService.getSummaryAndSave(transcriptionText, prompt, recordingId, classId);
+
+    res.status(200).json({
+      message: 'Summarization successful',
+      data: result
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: 'Error during summarization',
+      error: error.message
+    });
+  }
+};
+
+// Function to get summary prompt
+exports.getSummaryPrompt = async (req, res) => {
+    try {
+
+        //Debug
+        console.log("Received summary prompt request");
+
+        //Get parameter lecturer id
+        const lecturerId = req.params.lecturerId;
+        // Call the service to get the summary prompt
+        const summaryPrompt = await summarizationService.getSummaryPrompt(lecturerId);
+
+        res.status(200).json({
+            message: "Summary prompt fetched successfully",
+            prompts: summaryPrompt || []  // return empty list if null
+        });
+    } catch (error) {
+        console.error("Controller Error:", error);
+        res.status(500).json({ message: "Failed to fetch summary prompt" });
+    }
+};
+
+//Save summary prompt
+exports.saveSummaryPrompt = async (req, res) => {
+    try {
+
+        //Debug
+        console.log("Received save summary prompt request");
+        console.log(req.body);
+        
+        const {lecturerId , prompt } = req.body;
+        const result = await summarizationService.saveSummaryPrompt(prompt, lecturerId);
+        res.status(200).json({ message: "Summary prompt saved successfully", Updated_Id: result });
+    } catch (error) {
+        console.error("Controller Error:", error);
+        res.status(500).json({ message: "Failed to save summary prompt" });
+    }
+};

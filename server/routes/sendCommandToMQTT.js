@@ -80,7 +80,7 @@ router.post('/controlUtility', (req, res) => {
   });
 
   // Debug print to check the payload
-  // console.log("Payload to MQTT:", payload);
+  console.log("Payload to MQTT:", payload);
 
   mqttClient.publish(topic, payload, (err) => {
     if (err) {

@@ -73,6 +73,7 @@ class _ViewReportDetailsState extends ConsumerState<ViewReportDetails> {
     await Future.any(
       [
         ReportApi.updateReportStatus(
+          ref.read(userProvider).externalId,
           reportId,
         ),
       ],

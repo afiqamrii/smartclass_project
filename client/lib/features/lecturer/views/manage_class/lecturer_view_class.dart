@@ -6,6 +6,7 @@ import 'package:quickalert/widgets/quickalert_dialog.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:smartclass_fyp_2024/constants/api_constants.dart';
 import 'package:smartclass_fyp_2024/features/lecturer/manage_attendance/views/lecturer_view_attendance.dart';
+import 'package:smartclass_fyp_2024/features/lecturer/views/manage_summarization/lectuer_view_transcription.dart';
 import 'package:smartclass_fyp_2024/shared/data/dataprovider/data_provider.dart';
 import 'package:smartclass_fyp_2024/shared/data/dataprovider/recording_state_notifier.dart';
 import 'package:smartclass_fyp_2024/shared/data/dataprovider/user_provider.dart';
@@ -255,11 +256,13 @@ class _LecturerViewClassState extends ConsumerState<LecturerViewClass> {
                   color: Colors.black.withOpacity(0.1),
                 ),
                 //View Summarization section
-                _viewSummarizationSection(context, classItem),
+                _viewTranscriptionSection(context, classItem),
                 Divider(
                   thickness: 1,
                   color: Colors.black.withOpacity(0.1),
                 ),
+                //View Transcription section
+                _viewSummarizationSection(context, classItem),
               ],
             ),
           ),
@@ -476,6 +479,48 @@ class _LecturerViewClassState extends ConsumerState<LecturerViewClass> {
           children: [
             const Text(
               "View Summarizations",
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+              ),
+            ),
+            Icon(
+              Icons.arrow_forward_ios,
+              size: 16,
+              color: Colors.black.withOpacity(0.5),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _viewTranscriptionSection(
+      BuildContext context, ClassCreateModel classItem) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          toLeftTransition(
+            LectuerViewTranscription(
+              classId: classItem.classId,
+            ),
+          ),
+        );
+      },
+      child: Padding(
+        padding: const EdgeInsets.only(
+          left: 0.0,
+          top: 10,
+          bottom: 10,
+          // right: 10,
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text(
+              "View Transcriptions",
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,

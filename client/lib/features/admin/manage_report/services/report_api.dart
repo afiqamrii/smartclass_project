@@ -48,9 +48,10 @@ class ReportApi {
   }
 
   //Update report status
-  static Future<void> updateReportStatus(int reportId) async {
+  static Future<void> updateReportStatus(String userId, int reportId) async {
     final response = await http.put(
-      Uri.parse('${ApiConstants.baseUrl}/report/updatereportstatus/$reportId'),
+      Uri.parse(
+          '${ApiConstants.baseUrl}/report/updatereportstatus/$reportId/$userId'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },

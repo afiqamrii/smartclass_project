@@ -46,6 +46,20 @@ const SummarizationModel = {
         }
     },
 
+    //Lecturer access transcription by class id
+    async accessTranscriptionById(classId) {
+        try{
+            const query = `
+            SELECT * FROM ClassRecording WHERE classId = ?
+        `;
+        const [rows] = await pool.query(query, [classId]);
+        return rows;
+        } catch (err) {
+            console.error("Error retrieving data:", err.message);
+            return [];
+        }
+    },
+
     //Retrieve summarizaation by class id for student
     async studentAccessSummarizationById(classId) {
         try{
@@ -92,6 +106,15 @@ const SummarizationModel = {
 
     //Save Summarized Text
     async saveSummarization(summarizedText, recordingId ,classId ,recordingStatus) {
+
+        //debug
+        // console.log("Saving summarization with data:", {
+        //     summarizedText,
+        //     recordingId,
+        //     classId,
+        //     recordingStatus
+        // });
+
         try{
             const query = `
             UPDATE ClassRecording
@@ -105,7 +128,35 @@ const SummarizationModel = {
             return [];
         }
         
-    }
+    },
+
+    // Function to get summary and save it
+    async getSummaryPrompt(lecturerId) {
+        try{
+            const query = `
+            SELECT * FROM SummaryPrompt WHERE lecturerId = ?
+        `;
+        const [result] = await pool.execute(query, [lecturerId]);
+        return result;
+        } catch (err) {
+            console.error("Error updating data:", err.message);
+            return [];
+        }
+    },
+
+    //Function to save summary prompt
+    async saveSummaryPrompt(prompt, lecturerId) {
+        try{
+            const query = `
+            INSERT INTO SummaryPrompt (summary_prompt, lecturerId) VALUES (?, ?)
+        `;
+        const [result] = await pool.execute(query, [prompt, lecturerId]);
+        return result;
+        } catch (err) {
+            console.error("Error updating data:", err.message);
+            return [];
+        }
+    },
 };
 
 module.exports = SummarizationModel;

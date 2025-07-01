@@ -1,5 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:smartclass_fyp_2024/features/lecturer/views/manage_summarization/models/summary_prompt_models.dart';
 import 'package:smartclass_fyp_2024/features/student/models/todayClass_card_models.dart';
+import 'package:smartclass_fyp_2024/shared/data/dataprovider/user_provider.dart';
 import 'package:smartclass_fyp_2024/shared/data/models/classSum_model.dart';
 import 'package:smartclass_fyp_2024/shared/data/models/class_models.dart';
 import 'package:smartclass_fyp_2024/shared/data/models/summarization_models.dart';
@@ -48,4 +50,11 @@ final studentSummarizationProvider =
   yield* ref
       .watch(classProviderSummarization)
       .getStudentSummarization(classId); // Use classProvider from api.dart
+});
+
+final savedPromptsProvider =
+    FutureProvider<List<SummaryPromptModels>>((ref) async {
+  final lecturerId = ref.watch(userProvider).externalId;
+  return await Summarizationapi.getSavedPrompts(lecturerId);
+  
 });

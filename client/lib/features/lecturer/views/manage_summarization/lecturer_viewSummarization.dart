@@ -190,9 +190,12 @@ class _LecturerViewsummarizationState
                           children: [
                             Padding(
                               padding: const EdgeInsets.symmetric(
-                                  horizontal: 20.0, vertical: 15),
+                                horizontal: 20.0,
+                                vertical: 15,
+                              ),
                               child: _buildSummaryText(
-                                  summarizationData[0].summaryText),
+                                summarizationData[0].summaryText,
+                              ),
                             ),
                           ],
                         ),

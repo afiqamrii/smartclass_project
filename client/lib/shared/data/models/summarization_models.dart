@@ -2,12 +2,14 @@ class SummarizationModels {
   final int recordingId;
   final int classId;
   final String summaryText;
+  final String transcriptionText;
   final String publishStatus;
 
   SummarizationModels({
     required this.recordingId,
     required this.classId,
     required this.summaryText,
+    required this.transcriptionText,
     required this.publishStatus,
   });
 
@@ -25,6 +27,7 @@ class SummarizationModels {
       recordingId: json['recordingId'],
       classId: json['classId'],
       summaryText: json['summaryText'],
+      transcriptionText: json['transcriptionText'],
       publishStatus: json['publishStatus'],
     );
   }
